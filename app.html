@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinePrintFix — Analyze Your Document</title>
+  <meta name="description" content="Upload a contract or terms of service and get a plain-English breakdown of what you need to know." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg2: #f7f5f2;
+      --text: #1a1a18;
+      --text2: #6b6b67;
+      --border: rgba(0,0,0,0.1);
+      --border2: rgba(0,0,0,0.18);
+      --accent: #D85A30;
+      --accent-light: #FAECE7;
+      --accent-mid: #F0997B;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg2);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .app-shell {
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border);
+      width: 100%;
+      max-width: 560px;
+      overflow: hidden;
+    }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--bg);
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; font-weight: 700;
+      text-decoration: none; color: var(--text);
+    }
+    .logo span { color: var(--accent); }
+    .step-pill {
+      font-size: 11px; color: var(--text2);
+      background: var(--bg2); padding: 4px 10px;
+      border-radius: 20px; border: 0.5px solid var(--border);
+    }
+
+    .screen-body { padding: 1.5rem 1.5rem 2rem; }
+    .screen-title { font-size: 20px; font-weight: 500; margin-bottom: 5px; font-family: 'Playfair Display', serif; }
+    .screen-sub { font-size: 13px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.55; }
+
+    /* UPLOAD TABS */
+    .upload-tabs {
+      display: flex; border: 0.5px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin-bottom: 1.25rem;
+    }
+    .utab {
+      flex: 1; padding: 9px 6px; font-size: 12px; font-weight: 500;
+      text-align: center; cursor: pointer; color: var(--text2);
+      background: var(--bg2); border: none;
+      border-right: 0.5px solid var(--border);
+      font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+      transition: background 0.12s, color 0.12s;
+    }
+    .utab:last-child { border-right: none; }
+    .utab.active { background: var(--bg); color: var(--accent); }
+
+    .upload-panel { display: none; }
+    .upload-panel.active { display: block; }
+
+    /* DROP ZONE */
+    .drop-zone {
+      border: 1.5px dashed var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 1rem; text-align: center; cursor: pointer;
+      transition: background 0.12s;
+    }
+    .drop-zone:hover { background: var(--bg2); }
+    .drop-icon { font-size: 30px; color: var(--text2); margin-bottom: 10px; }
+    .drop-title { font-size: 14px; font-weight: 500; margin-bottom: 5px; }
+    .drop-sub { font-size: 12px; color: var(--text2); }
+
+    /* TEXTAREA */
+    textarea {
+      width: 100%; height: 180px; resize: vertical;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius-lg);
+      padding: 14px; font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text); background: var(--bg); line-height: 1.6;
+    }
+    textarea::placeholder { color: var(--text2); }
+    .char-count { font-size: 11px; color: var(--text2); text-align: right; margin-top: 4px; }
+
+    /* FORM */
+    .form-field { margin-bottom: 1rem; }
+    .form-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+    input[type=text], input[type=email], input[type=password] {
+      width: 100%; padding: 10px 12px;
+      border: 0.5px solid var(--border2);
+      border-radius: var(--radius); font-size: 13px;
+      font-family: 'DM Sans', sans-serif; color: var(--text);
+      background: var(--bg); outline: none;
+    }
+    input:focus { border-color: var(--accent); }
+
+    .agree-row {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 11px; color: var(--text2);
+      margin-bottom: 1.25rem; line-height: 1.5;
+    }
+    .agree-row input { margin-top: 2px; flex-shrink: 0; }
+
+    .divider-row {
+      display: flex; align-items: center; gap: 10px;
+      margin: 1rem 0; font-size: 11px; color: var(--text2);
+    }
+    .divider-row::before, .divider-row::after {
+      content: ''; flex: 1; height: 0.5px; background: var(--border);
+    }
+
+    /* BUTTONS */
+    .btn-full {
+      width: 100%; padding: 12px;
+      background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius);
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: opacity 0.15s;
+    }
+    .btn-full:hover { opacity: 0.88; }
+    .btn-full.secondary {
+      background: transparent; color: var(--text);
+      border: 0.5px solid var(--border2); margin-top: 10px;
+    }
+    .btn-full:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ANALYZING */
+    .analyzing-wrap { text-align: center; padding: 2.5rem 1rem; }
+    .pulse-ring {
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem; font-size: 24px; color: var(--accent);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .analyzing-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+    .analyzing-sub { font-size: 12px; color: var(--text2); margin-bottom: 2rem; }
+    .progress-steps { display: flex; flex-direction: column; gap: 10px; max-width: 260px; margin: 0 auto; text-align: left; }
+    .prog-step { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text2); }
+    .prog-dot {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 10px;
+    }
+    .prog-dot.done { background: #EAF3DE; color: #3B6D11; }
+    .prog-dot.active { background: var(--accent-light); color: var(--accent); animation: pulse 1s infinite; }
+    .prog-dot.pending { background: var(--bg2); color: var(--text2); }
+
+    /* RESULTS */
+    .results-meta {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; background: var(--bg2);
+      border-radius: var(--radius); margin-bottom: 1.25rem;
+      border: 0.5px solid var(--border);
+    }
+    .results-meta i { color: var(--accent); font-size: 20px; }
+    .rdb-name { font-size: 13px; font-weight: 500; }
+    .rdb-sub { font-size: 11px; color: var(--text2); }
+
+    .score-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+    .score-card { background: var(--bg2); border-radius: var(--radius); padding: 10px; text-align: center; }
+    .score-num { font-size: 24px; font-weight: 500; line-height: 1; margin-bottom: 3px; }
+    .score-label { font-size: 10px; color: var(--text2); }
+
+    .result-tabs {
+      display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 1rem;
+    }
+    .rtab {
+      padding: 8px 14px; font-size: 12px; font-weight: 500; cursor: pointer;
+      color: var(--text2); border: none; background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      border-bottom: 2px solid transparent; margin-bottom: -0.5px;
+      display: flex; align-items: center; gap: 5px; transition: color 0.12s;
+    }
+    .rtab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .rtab-panel { display: none; }
+    .rtab-panel.active { display: block; }
+
+    .flag-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 12px; border-radius: var(--radius);
+      margin-bottom: 8px; border: 0.5px solid transparent;
+    }
+    .flag-item.red { background: #FAECE7; border-color: #F5C4B3; }
+    .flag-item.amber { background: #FAEEDA; border-color: #FAC775; }
+    .flag-item.green { background: #EAF3DE; border-color: #C0DD97; }
+    .flag-badge {
+      font-size: 10px; font-weight: 500; padding: 2px 8px;
+      border-radius: 10px; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+    }
+    .flag-badge.red { background: #F5C4B3; color: #712B13; }
+    .flag-badge.amber { background: #FAC775; color: #633806; }
+    .flag-badge.green { background: #C0DD97; color: #27500A; }
+    .flag-text { font-size: 12px; line-height: 1.55; }
+    .flag-clause { font-size: 10px; color: var(--text2); margin-top: 3px; }
+
+    .section-block { margin-bottom: 8px; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: var(--bg2);
+      border-radius: var(--radius); cursor: pointer;
+      border: 0.5px solid var(--border);
+    }
+    .section-header.open { border-radius: var(--radius) var(--radius) 0 0; }
+    .sh-title { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 7px; }
+    .sh-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; }
+    .sh-badge.warn { background: var(--accent-light); color: #993C1D; }
+    .sh-badge.ok { background: #EAF3DE; color: #3B6D11; }
+    .section-body {
+      padding: 12px; font-size: 12px; line-height: 1.65; color: var(--text2);
+      border: 0.5px solid var(--border); border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    .question-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 10px 12px; margin-bottom: 6px;
+      border: 0.5px solid var(--border); border-radius: var(--radius);
+      font-size: 12px; line-height: 1.55;
+    }
+    .q-num {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent-light); color: var(--accent);
+      font-size: 10px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    .summary-box {
+      background: var(--bg2); border-radius: var(--radius-lg);
+      padding: 12px 14px; margin-bottom: 1rem;
+      border: 0.5px solid var(--border); font-size: 12px; line-height: 1.65; color: var(--text2);
+    }
+
+    /* AI RESPONSE AREA */
+    .ai-response {
+      background: var(--bg2); border-radius: var(--radius-lg);
+      padding: 14px; margin-bottom: 1rem;
+      border: 0.5px solid var(--border); font-size: 13px; line-height: 1.7;
+      white-space: pre-wrap; min-height: 60px;
+    }
+    .ai-response.loading { color: var(--text2); font-style: italic; }
+
+    .new-doc-btn {
+      width: 100%; margin-top: 1.25rem; padding: 9px;
+      font-size: 12px; font-weight: 500; color: var(--text2);
+      background: transparent; border: 0.5px solid var(--border);
+      border-radius: var(--radius); cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .new-doc-btn:hover { background: var(--bg2); }
+
+    .top-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      background: transparent; border: 0.5px solid var(--border);
+      padding: 5px 10px; border-radius: var(--radius);
+      font-size: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; gap: 4px; color: var(--text2);
+    }
+    .icon-btn:hover { background: var(--bg2); }
+
+    .error-box {
+      background: #FAECE7; border: 0.5px solid #F5C4B3;
+      border-radius: var(--radius); padding: 12px; margin-top: 1rem;
+      font-size: 12px; color: #712B13; display: none;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 0; align-items: flex-start; }
+      .app-shell { border-radius: 0; border: none; min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- SCREEN 1: UPLOAD -->
+  <div id="screen-upload" class="screen active">
+    <div class="topbar">
+      <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+      <div class="step-pill">Step 1 of 3 — Upload</div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-title">Upload your document</div>
+      <div class="screen-sub">We'll scan it and flag anything you should know about — in plain English. No legal background needed.</div>
+
+      <div class="upload-tabs">
+        <button class="utab active" id="utab-pdf" onclick="switchUploadTab('pdf')">
+          <i class="ti ti-file-text"></i> PDF
+        </button>
+        <button class="utab" id="utab-paste" onclick="switchUploadTab('paste')">
+          <i class="ti ti-clipboard-text"></i> Paste text
+        </button>
+        <button class="utab" id="utab-photo" onclick="switchUploadTab('photo')">
+          <i class="ti ti-camera"></i> Photo
+        </button>
+      </div>
+
+      <!-- PDF UPLOAD -->
+      <div id="panel-pdf" class="upload-panel active">
+        <div class="drop-zone" id="drop-zone"
+          ondragover="event.preventDefault(); this.style.background='var(--bg2)'"
+          ondragleave="this.style.background=''"
+          ondrop="handleDrop(event)">
+          <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="handleFile(this.files[0])" />
+          <div class="drop-icon"><i class="ti ti-cloud-upload"></i></div>
+          <div class="drop-title" id="drop-title">Drag & drop your PDF here</div>
+          <div class="drop-sub" id="drop-sub">Contracts, NDAs, leases, terms of service — up to 20MB</div>
+          <button style="margin-top:14px; background:var(--accent); color:#fff; border:none; padding:9px 18px; border-radius:var(--radius); font-size:12px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:5px;"
+            onclick="document.getElementById('file-input').click()">
+            <i class="ti ti-upload"></i> Choose file
+          </button>
+        </div>
+      </div>
+
+      <!-- PASTE TEXT -->
+      <div id="panel-paste" class="upload-panel">
+        <textarea id="paste-input"
+          placeholder="Paste the full contract or terms of service text here..."
+          oninput="document.getElementById('char-count').textContent = this.value.length.toLocaleString()"></textarea>
+        <div class="char-count"><span id="char-count">0</span> characters</div>
+      </div>
+
+      <!-- PHOTO (iOS only) -->
+      <div id="panel-photo" class="upload-panel">
+        <div class="drop-zone">
+          <div class="drop-icon"><i class="ti ti-brand-apple"></i></div>
+          <div class="drop-title">Available on iOS</div>
+          <div class="drop-sub">Download the FinePrintFix iOS app to photograph documents with your iPhone camera</div>
+          <button style="margin-top:14px; background:var(--accent); color:#fff; border:none; padding:9px 18px; border-radius:var(--radius); font-size:12px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:5px;">
+            <i class="ti ti-brand-apple"></i> Get the iOS app
+          </button>
+        </div>
+      </div>
+
+      <div id="upload-error" class="error-box">
+        Please add a PDF or paste some document text before continuing.
+      </div>
+
+      <button class="btn-full" style="margin-top:1.25rem;" onclick="validateAndContinue()">
+        Continue <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: SIGN UP -->
+  <div id="screen-signup" class="screen">
+    <div class="topbar">
+      <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+      <div class="step-pill">Step 2 of 3 — Create account</div>
+    </div>
+    <div class="screen-body">
+      <div class="screen-title">Create your free account</div>
+      <div class="screen-sub">Your analysis will be saved so you can reference it anytime. We never share or sell your documents.</div>
+
+      <div class="form-field">
+        <label class="form-label" for="name">Full name</label>
+        <input type="text" id="name" placeholder="Jane Smith" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="email">Email address</label>
+        <input type="email" id="email" placeholder="jane@example.com" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" placeholder="At least 8 characters" />
+      </div>
+
+      <div class="agree-row">
+        <input type="checkbox" id="agree" />
+        <label for="agree">I agree to the Terms of Service and Privacy Policy. We never share your documents with anyone.</label>
+      </div>
+
+      <button class="btn-full" onclick="goToAnalyzing()">
+        <i class="ti ti-shield-check"></i> Create account & analyze
+      </button>
+      <div class="divider-row">already have an account?</div>
+      <button class="btn-full secondary" onclick="goToAnalyzing()">
+        <i class="ti ti-login"></i> Sign in instead
+      </button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: ANALYZING -->
+  <div id="screen-analyzing" class="screen">
+    <div class="topbar">
+      <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+      <div class="step-pill">Step 3 of 3 — Analyzing</div>
+    </div>
+    <div class="screen-body">
+      <div class="analyzing-wrap">
+        <div class="pulse-ring"><i class="ti ti-scan"></i></div>
+        <div class="analyzing-title">Reading your document...</div>
+        <div class="analyzing-sub">This usually takes under 90 seconds</div>
+        <div class="progress-steps">
+          <div class="prog-step">
+            <div class="prog-dot done" id="dot1"><i class="ti ti-check" style="font-size:10px"></i></div>
+            <span>Document received</span>
+          </div>
+          <div class="prog-step">
+            <div class="prog-dot done" id="dot2"><i class="ti ti-check" style="font-size:10px"></i></div>
+            <span>Parsing structure & sections</span>
+          </div>
+          <div class="prog-step">
+            <div class="prog-dot active" id="dot3"><i class="ti ti-brain" style="font-size:10px"></i></div>
+            <span>Identifying flags & risks</span>
+          </div>
+          <div class="prog-step">
+            <div class="prog-dot pending" id="dot4"><i class="ti ti-dots" style="font-size:10px"></i></div>
+            <span>Generating plain-English summary</span>
+          </div>
+          <div class="prog-step">
+            <div class="prog-dot pending" id="dot5"><i class="ti ti-dots" style="font-size:10px"></i></div>
+            <span>Building your questions list</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: RESULTS -->
+  <div id="screen-results" class="screen">
+    <div class="topbar">
+      <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+      <div class="top-actions">
+        <button class="icon-btn" onclick="window.print()"><i class="ti ti-download"></i> Save</button>
+        <button class="icon-btn" onclick="navigator.share && navigator.share({title:'FinePrintFix Analysis', url: window.location.href})"><i class="ti ti-share"></i> Share</button>
+      </div>
+    </div>
+    <div class="screen-body">
+
+      <div class="results-meta">
+        <i class="ti ti-file-text"></i>
+        <div>
+          <div class="rdb-name" id="result-doc-name">Your document</div>
+          <div class="rdb-sub">Analyzed just now</div>
+        </div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-card">
+          <div class="score-num" style="color:var(--accent);" id="count-red">–</div>
+          <div class="score-label">Red flags</div>
+        </div>
+        <div class="score-card">
+          <div class="score-num" style="color:#BA7517;" id="count-amber">–</div>
+          <div class="score-label">Worth asking</div>
+        </div>
+        <div class="score-card">
+          <div class="score-num" style="color:#3B6D11;" id="count-green">–</div>
+          <div class="score-label">Looks fine</div>
+        </div>
+      </div>
+
+      <div class="result-tabs">
+        <button class="rtab active" id="rtab-flags" onclick="switchResultTab('flags')">
+          <i class="ti ti-flag"></i> Flags
+        </button>
+        <button class="rtab" id="rtab-sections" onclick="switchResultTab('sections')">
+          <i class="ti ti-layout-list"></i> By section
+        </button>
+        <button class="rtab" id="rtab-questions" onclick="switchResultTab('questions')">
+          <i class="ti ti-message-question"></i> Questions to ask
+        </button>
+      </div>
+
+      <div id="panel-flags" class="rtab-panel active">
+        <div id="flags-content" class="ai-response loading">Analyzing your document...</div>
+      </div>
+
+      <div id="panel-sections" class="rtab-panel">
+        <div id="sections-content" class="ai-response loading">Building section breakdown...</div>
+      </div>
+
+      <div id="panel-questions" class="rtab-panel">
+        <div id="questions-content" class="ai-response loading">Preparing your questions list...</div>
+      </div>
+
+      <button class="new-doc-btn" onclick="resetFlow()">
+        <i class="ti ti-plus"></i> Analyze another document
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ─── STATE ───────────────────────────────────────────────────
+  let documentText = '';
+  let uploadedFileName = 'Your document';
+  let currentUploadTab = 'pdf';
+  let analysisResult = null;
+
+  // ─── UPLOAD TAB SWITCH ────────────────────────────────────────
+  function switchUploadTab(tab) {
+    currentUploadTab = tab;
+    ['pdf','paste','photo'].forEach(t => {
+      document.getElementById('utab-'+t).classList.toggle('active', t===tab);
+      document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+    });
+  }
+
+  // ─── FILE HANDLING ────────────────────────────────────────────
+  function handleDrop(e) {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  }
+
+  function handleFile(file) {
+    if (!file || file.type !== 'application/pdf') {
+      alert('Please upload a PDF file.');
+      return;
+    }
+    uploadedFileName = file.name;
+    document.getElementById('drop-title').textContent = file.name;
+    document.getElementById('drop-sub').textContent = (file.size / 1024 / 1024).toFixed(1) + ' MB · ready to analyze';
+    document.getElementById('drop-zone').style.borderColor = '#3B6D11';
+
+    // Read PDF text using FileReader (base64 for Claude API)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Store base64 PDF data for Claude API
+      window.pdfBase64 = e.target.result.split(',')[1];
+      window.pdfMediaType = 'application/pdf';
+      documentText = '[PDF: ' + file.name + ']';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ─── VALIDATE & CONTINUE ─────────────────────────────────────
+  function validateAndContinue() {
+    const errBox = document.getElementById('upload-error');
+    if (currentUploadTab === 'paste') {
+      documentText = document.getElementById('paste-input').value.trim();
+    }
+    if (!documentText && !window.pdfBase64) {
+      errBox.style.display = 'block';
+      return;
+    }
+    errBox.style.display = 'none';
+    showScreen('screen-signup');
+  }
+
+  // ─── ANALYZING FLOW ───────────────────────────────────────────
+  function goToAnalyzing() {
+    showScreen('screen-analyzing');
+    document.getElementById('result-doc-name').textContent = uploadedFileName;
+    animateProgress().then(() => {
+      showScreen('screen-results');
+      runAnalysis();
+    });
+  }
+
+  async function animateProgress() {
+    const steps = [
+      { dot: 'dot3', next: 'dot4', delay: 1000 },
+      { dot: 'dot4', next: 'dot5', delay: 1200 },
+      { dot: 'dot5', next: null,   delay: 1400 },
+    ];
+    for (const s of steps) {
+      await wait(s.delay);
+      markDone(s.dot);
+      if (s.next) markActive(s.next);
+    }
+    await wait(800);
+  }
+
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function markDone(id) {
+    const el = document.getElementById(id);
+    el.className = 'prog-dot done';
+    el.innerHTML = '<i class="ti ti-check" style="font-size:10px"></i>';
+  }
+
+  function markActive(id) {
+    const el = document.getElementById(id);
+    el.className = 'prog-dot active';
+    el.innerHTML = '<i class="ti ti-brain" style="font-size:10px"></i>';
+  }
+
+  // ─── CLAUDE API ANALYSIS ─────────────────────────────────────
+  async function runAnalysis() {
+    const docContent = buildDocContent();
+
+    // Run all three analyses in parallel
+    const [flags, sections, questions] = await Promise.all([
+      analyzeWithClaude(flagsPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green'),
+      analyzeWithClaude(sectionsPrompt(docContent), 'sections-content'),
+      analyzeWithClaude(questionsPrompt(docContent), 'questions-content'),
+    ]);
+  }
+
+  function buildDocContent() {
+    if (window.pdfBase64) {
+      return {
+        type: 'document',
+        source: { type: 'base64', media_type: 'application/pdf', data: window.pdfBase64 }
+      };
+    }
+    return { type: 'text', text: documentText };
+  }
+
+  function flagsPrompt(docContent) {
+    const systemPrompt = `You are FinePrintFix, a tool that helps everyday people understand legal documents.
+Analyze the document and return ONLY a JSON object (no markdown, no preamble) with this structure:
+{
+  "red": [{"text": "plain English explanation", "clause": "Section X — Name"}],
+  "amber": [{"text": "plain English explanation", "clause": "Section X — Name"}],
+  "green": [{"text": "plain English explanation", "clause": "Section X — Name"}]
+}
+Rules:
+- "red": serious issues the person must know about (unfair non-competes, IP grabs, forced arbitration, data selling, auto-renew traps)
+- "amber": unusual or negotiable clauses worth asking about
+- "green": clauses that are standard and fair — reassure the reader
+- Use plain, direct language. No legal jargon. Write as if explaining to a friend.
+- Be specific and actionable. Max 5 items per category.`;
+
+    return { systemPrompt, content: docContent };
+  }
+
+  function sectionsPrompt(docContent) {
+    const systemPrompt = `You are FinePrintFix. Analyze this legal document and return ONLY a JSON array (no markdown) of the main sections:
+[
+  {
+    "title": "Section name",
+    "status": "warn" or "ok",
+    "issueCount": number,
+    "summary": "2-3 sentence plain English explanation of this section and any issues"
+  }
+]
+Focus on: compensation, termination, IP/ownership, non-compete, privacy/data, arbitration, benefits, auto-renewal.
+Write for someone with zero legal background. Be direct and specific.`;
+
+    return { systemPrompt, content: docContent };
+  }
+
+  function questionsPrompt(docContent) {
+    const systemPrompt = `You are FinePrintFix. Based on this legal document, return ONLY a JSON array of questions the person should ask before signing (no markdown, no preamble):
+["Question 1?", "Question 2?", ...]
+Rules:
+- 5-7 specific, actionable questions
+- Phrase as if the person is asking the other party directly
+- Focus on red flags, negotiable terms, and anything unclear
+- Plain English, no legal jargon`;
+
+    return { systemPrompt, content: docContent };
+  }
+
+  async function analyzeWithClaude(promptObj, outputId, redId, amberId, greenId) {
+    const el = document.getElementById(outputId);
+
+    try {
+      const messages = [];
+      if (promptObj.content.type === 'document') {
+        messages.push({
+          role: 'user',
+          content: [promptObj.content, { type: 'text', text: 'Analyze this document.' }]
+        });
+      } else {
+        messages.push({
+          role: 'user',
+          content: 'Analyze this document:\n\n' + promptObj.content.text
+        });
+      }
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: promptObj.systemPrompt,
+          messages
+        })
+      });
+
+      if (!response.ok) throw new Error('API error: ' + response.status);
+
+      const data = await response.json();
+      const raw = data.content.map(b => b.text || '').join('');
+      const clean = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+
+      // Render based on which tab this is
+      if (outputId === 'flags-content') {
+        renderFlags(parsed, el, redId, amberId, greenId);
+      } else if (outputId === 'sections-content') {
+        renderSections(parsed, el);
+      } else if (outputId === 'questions-content') {
+        renderQuestions(parsed, el);
+      }
+
+    } catch (err) {
+      el.className = 'error-box';
+      el.style.display = 'block';
+      el.textContent = 'Could not analyze this document. Please check your API key is configured, or try again.';
+      console.error(err);
+    }
+  }
+
+  function renderFlags(data, el, redId, amberId, greenId) {
+    el.className = '';
+    el.style.background = 'transparent';
+    el.style.border = 'none';
+    el.style.padding = '0';
+
+    let html = '';
+    const all = [
+      ...(data.red || []).map(f => ({...f, type:'red', label:'Red flag'})),
+      ...(data.amber || []).map(f => ({...f, type:'amber', label:'Ask about'})),
+      ...(data.green || []).map(f => ({...f, type:'green', label:'Looks fine'})),
+    ];
+
+    all.forEach(f => {
+      html += `<div class="flag-item ${f.type}">
+        <span class="flag-badge ${f.type}">${f.label}</span>
+        <div>
+          <div class="flag-text">${f.text}</div>
+          ${f.clause ? `<div class="flag-clause">${f.clause}</div>` : ''}
+        </div>
+      </div>`;
+    });
+
+    el.innerHTML = html || '<p style="font-size:13px;color:var(--text2);padding:1rem 0">No significant issues found in this document.</p>';
+
+    if (redId) document.getElementById(redId).textContent = (data.red || []).length;
+    if (amberId) document.getElementById(amberId).textContent = (data.amber || []).length;
+    if (greenId) document.getElementById(greenId).textContent = (data.green || []).length;
+  }
+
+  function renderSections(data, el) {
+    el.className = '';
+    el.style.background = 'transparent';
+    el.style.border = 'none';
+    el.style.padding = '0';
+
+    let html = '';
+    data.forEach((s, i) => {
+      const icon = s.status === 'warn'
+        ? '<i class="ti ti-alert-triangle" style="color:var(--accent);font-size:14px"></i>'
+        : '<i class="ti ti-check" style="color:#3B6D11;font-size:14px"></i>';
+      const badge = s.status === 'warn'
+        ? `<span class="sh-badge warn">${s.issueCount} issue${s.issueCount !== 1 ? 's' : ''}</span>`
+        : '<span class="sh-badge ok">Standard</span>';
+      html += `<div class="section-block">
+        <div class="section-header" onclick="toggleSection(${i})">
+          <div class="sh-title">${icon} ${s.title} ${badge}</div>
+          <i class="ti ti-chevron-down" id="chevron-${i}" style="font-size:14px;color:var(--text2)"></i>
+        </div>
+        <div class="section-body" id="sbody-${i}" style="display:none">${s.summary}</div>
+      </div>`;
+    });
+
+    el.innerHTML = html;
+  }
+
+  function toggleSection(i) {
+    const body = document.getElementById('sbody-'+i);
+    const chevron = document.getElementById('chevron-'+i);
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+
+  function renderQuestions(data, el) {
+    el.className = '';
+    el.style.background = 'transparent';
+    el.style.border = 'none';
+    el.style.padding = '0';
+
+    let html = '<div class="summary-box">Bring these to your negotiation or review with an attorney. You don\'t have to accept everything as written.</div>';
+    data.forEach((q, i) => {
+      html += `<div class="question-item">
+        <div class="q-num">${i+1}</div>
+        <div>"${q}"</div>
+      </div>`;
+    });
+
+    el.innerHTML = html;
+  }
+
+  // ─── UI HELPERS ───────────────────────────────────────────────
+  function switchResultTab(tab) {
+    ['flags','sections','questions'].forEach(t => {
+      document.getElementById('rtab-'+t).classList.toggle('active', t===tab);
+      document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+    });
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function resetFlow() {
+    documentText = '';
+    window.pdfBase64 = null;
+    uploadedFileName = 'Your document';
+    document.getElementById('paste-input').value = '';
+    document.getElementById('char-count').textContent = '0';
+    document.getElementById('drop-title').textContent = 'Drag & drop your PDF here';
+    document.getElementById('drop-sub').textContent = 'Contracts, NDAs, leases, terms of service — up to 20MB';
+    document.getElementById('drop-zone').style.borderColor = '';
+    ['flags-content','sections-content','questions-content'].forEach(id => {
+      const el = document.getElementById(id);
+      el.className = 'ai-response loading';
+      el.textContent = 'Analyzing your document...';
+    });
+    // Reset progress dots
+    ['dot3','dot4','dot5'].forEach(id => {
+      const el = document.getElementById(id);
+      el.className = 'prog-dot pending';
+      el.innerHTML = '<i class="ti ti-dots" style="font-size:10px"></i>';
+    });
+    showScreen('screen-upload');
+    switchUploadTab('pdf');
+  }
+</script>
+</body>
+</html>
