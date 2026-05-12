@@ -654,17 +654,49 @@
   async function runAnalysis() {
     const docContent = buildDocContent();
 
-    // Run all four analyses in parallel, collect results
+    // Run all four analyses in parallel
     const [flagsData, sectionsData, questionsData, summaryData] = await Promise.all([
       analyzeWithClaude(flagsPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green'),
       analyzeWithClaude(sectionsPrompt(docContent), 'sections-content'),
       analyzeWithClaude(questionsPrompt(docContent), 'questions-content'),
-      analyzeWithClaude(summaryPrompt(docContent), 'summary-content'),
+      fetchSummary(docContent),
     ]);
 
-    // Save to Supabase once all four are done
-    if (flagsData && sectionsData && questionsData && summaryData) {
-      saveAnalysis(flagsData, sectionsData, questionsData, summaryData);
+    // Render summary now that results screen is visible
+    if (summaryData) {
+      const el = document.getElementById('summary-content');
+      if (el) renderSummary(summaryData, el);
+    }
+
+    // Save everything to Supabase
+    if (flagsData && sectionsData && questionsData) {
+      saveAnalysis(flagsData, sectionsData, questionsData, summaryData || {});
+    }
+  }
+
+  // Fetch summary without needing a DOM element
+  async function fetchSummary(docContent) {
+    try {
+      const promptObj = summaryPrompt(docContent);
+      const messages = [];
+      if (docContent.type === 'document') {
+        messages.push({ role: 'user', content: [docContent, { type: 'text', text: 'Analyze this document.' }] });
+      } else {
+        messages.push({ role: 'user', content: 'Analyze this document:\n\n' + docContent.text });
+      }
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages })
+      });
+      if (!response.ok) throw new Error('API error: ' + response.status);
+      const data = await response.json();
+      const raw = data.content.map(b => b.text || '').join('');
+      const clean = raw.replace(/```json|```/g, '').trim();
+      return JSON.parse(clean);
+    } catch (err) {
+      console.error('Summary fetch error:', err);
+      return {};
     }
   }
 
@@ -749,6 +781,30 @@ Rules:
 
   async function analyzeWithClaude(promptObj, outputId, redId, amberId, greenId) {
     const el = document.getElementById(outputId);
+    if (!el) {
+      // Element not in DOM yet — just fetch and return the data
+      try {
+        const messages = [];
+        if (promptObj.content.type === 'document') {
+          messages.push({ role: 'user', content: [promptObj.content, { type: 'text', text: 'Analyze this document.' }] });
+        } else {
+          messages.push({ role: 'user', content: 'Analyze this document:\n\n' + promptObj.content.text });
+        }
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ system: promptObj.systemPrompt, messages })
+        });
+        if (!response.ok) throw new Error('API error: ' + response.status);
+        const data = await response.json();
+        const raw = data.content.map(b => b.text || '').join('');
+        const clean = raw.replace(/```json|```/g, '').trim();
+        return JSON.parse(clean);
+      } catch (err) {
+        console.error('Analysis error (no element):', err);
+        return null;
+      }
+    }
 
     try {
       const messages = [];
