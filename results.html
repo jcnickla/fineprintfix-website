@@ -214,18 +214,24 @@
       </div>
 
       <div class="result-tabs">
-        <button class="rtab active" id="rtab-flags" onclick="switchTab('flags')">
+        <button class="rtab active" id="rtab-summary" onclick="switchTab('summary')">
+          <i class="ti ti-file-description"></i> Summary
+        </button>
+        <button class="rtab" id="rtab-flags" onclick="switchTab('flags')">
           <i class="ti ti-flag"></i> Flags
         </button>
         <button class="rtab" id="rtab-sections" onclick="switchTab('sections')">
           <i class="ti ti-layout-list"></i> By section
         </button>
         <button class="rtab" id="rtab-questions" onclick="switchTab('questions')">
-          <i class="ti ti-message-question"></i> Questions to ask
+          <i class="ti ti-message-question"></i> Questions
         </button>
       </div>
 
-      <div id="panel-flags" class="rtab-panel active">
+      <div id="panel-summary" class="rtab-panel active">
+        ${renderSummary(data.summary)}
+      </div>
+      <div id="panel-flags" class="rtab-panel">
         ${renderFlags(data.flags)}
       </div>
       <div id="panel-sections" class="rtab-panel">
@@ -235,6 +241,38 @@
         ${renderQuestions(data.questions)}
       </div>
     `;
+  }
+
+  function renderSummary(data) {
+    if (!data || !data.overview) return '<p style="font-size:13px;color:var(--text2);padding:1rem 0">No summary available for this analysis.</p>';
+    const riskColor = data.overallRisk === 'high' ? '#993C1D' : data.overallRisk === 'medium' ? '#633806' : '#27500A';
+    const riskBg = data.overallRisk === 'high' ? '#FAECE7' : data.overallRisk === 'medium' ? '#FAEEDA' : '#EAF3DE';
+    const riskIcon = data.overallRisk === 'high' ? 'ti-alert-triangle' : data.overallRisk === 'medium' ? 'ti-info-circle' : 'ti-check';
+
+    let html = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+        <span style="font-size:11px;font-weight:500;background:var(--bg2);color:var(--text2);padding:3px 10px;border-radius:20px;border:0.5px solid var(--border)">${escHtml(data.docType || 'Legal Document')}</span>
+        <span style="font-size:11px;font-weight:500;background:${riskBg};color:${riskColor};padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">
+          <i class="ti ${riskIcon}" style="font-size:10px"></i>
+          ${data.overallRisk ? data.overallRisk.charAt(0).toUpperCase() + data.overallRisk.slice(1) + ' risk' : 'Unknown risk'}
+        </span>
+      </div>
+      <div style="font-size:13px;line-height:1.7;margin-bottom:1.25rem;color:var(--text)">${escHtml(data.overview)}</div>
+      ${data.riskReason ? `<div style="font-size:11px;color:${riskColor};background:${riskBg};padding:8px 12px;border-radius:var(--radius);margin-bottom:1.25rem;">${escHtml(data.riskReason)}</div>` : ''}
+    `;
+
+    if (data.keyFacts && data.keyFacts.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;">Key facts</div>`;
+      html += `<div style="display:flex;flex-direction:column;gap:6px;">`;
+      data.keyFacts.forEach(f => {
+        html += `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 12px;background:var(--bg2);border-radius:var(--radius);border:0.5px solid var(--border);">
+          <span style="font-size:11px;font-weight:500;color:var(--text2);min-width:100px;flex-shrink:0">${escHtml(f.label)}</span>
+          <span style="font-size:12px;color:var(--text)">${escHtml(f.value)}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+    return html;
   }
 
   function renderFlags(flags) {
@@ -289,7 +327,7 @@
 
   // ─── HELPERS ───────────────────────────────────────────────────
   function switchTab(tab) {
-    ['flags','sections','questions'].forEach(t => {
+    ['summary','flags','sections','questions'].forEach(t => {
       document.getElementById('rtab-'+t).classList.toggle('active', t===tab);
       document.getElementById('panel-'+t).classList.toggle('active', t===tab);
     });
