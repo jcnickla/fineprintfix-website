@@ -689,13 +689,22 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ system: promptObj.systemPrompt, messages })
       });
-      if (!response.ok) throw new Error('API error: ' + response.status);
+      if (!response.ok) {
+        console.error('Summary API error:', response.status);
+        return {};
+      }
       const data = await response.json();
+      if (!data.content) {
+        console.error('Summary: no content in response', data);
+        return {};
+      }
       const raw = data.content.map(b => b.text || '').join('');
       const clean = raw.replace(/```json|```/g, '').trim();
-      return JSON.parse(clean);
+      const parsed = JSON.parse(clean);
+      console.log('Summary fetched successfully:', parsed.docType);
+      return parsed;
     } catch (err) {
-      console.error('Summary fetch error:', err);
+      console.error('Summary fetch error:', err.message);
       return {};
     }
   }
@@ -1049,3 +1058,4 @@ Rules:
 </script>
 </body>
 </html>
+
