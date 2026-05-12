@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -524,6 +525,23 @@
 </div>
 
 <script>
+  // ─── SUPABASE INIT ────────────────────────────────────────────
+  // Replace these with your actual Supabase project values
+  const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let currentUser = null;
+
+  // Check auth on load — redirect to sign in if not logged in
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (!session) {
+      window.location.href = 'auth.html';
+    } else {
+      currentUser = session.user;
+    }
+  });
+
   // ─── STATE ───────────────────────────────────────────────────
   let documentText = '';
   let uploadedFileName = 'Your document';
@@ -578,7 +596,9 @@
       return;
     }
     errBox.style.display = 'none';
-    showScreen('screen-signup');
+    // Redirect to auth — user will come back after signing in
+    sessionStorage.setItem('fpf_pending', '1');
+    window.location.href = 'auth.html';
   }
 
   // ─── ANALYZING FLOW ───────────────────────────────────────────
@@ -623,12 +643,17 @@
   async function runAnalysis() {
     const docContent = buildDocContent();
 
-    // Run all three analyses in parallel
-    const [flags, sections, questions] = await Promise.all([
+    // Run all three analyses in parallel, collect results
+    const [flagsData, sectionsData, questionsData] = await Promise.all([
       analyzeWithClaude(flagsPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green'),
       analyzeWithClaude(sectionsPrompt(docContent), 'sections-content'),
       analyzeWithClaude(questionsPrompt(docContent), 'questions-content'),
     ]);
+
+    // Save to Supabase once all three are done
+    if (flagsData && sectionsData && questionsData && currentUser) {
+      saveAnalysis(flagsData, sectionsData, questionsData);
+    }
   }
 
   function buildDocContent() {
@@ -729,6 +754,8 @@ Rules:
         renderQuestions(parsed, el);
       }
 
+      return parsed; // return for saveAnalysis
+
     } catch (err) {
       el.className = 'error-box';
       el.style.display = 'block';
@@ -816,6 +843,39 @@ Rules:
     });
 
     el.innerHTML = html;
+  }
+
+  // ─── SAVE TO SUPABASE ─────────────────────────────────────────
+  async function saveAnalysis(flags, sections, questions) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+
+      await fetch('/api/save-analysis', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        },
+        body: JSON.stringify({
+          doc_name: uploadedFileName,
+          flags: flags,
+          sections: sections,
+          questions: questions,
+          red_count: (flags.red || []).length,
+          amber_count: (flags.amber || []).length,
+          green_count: (flags.green || []).length,
+        })
+      });
+      // Silently saved — user sees a "Saved" indicator
+      const saveNote = document.createElement('div');
+      saveNote.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#EAF3DE;color:#27500A;border:0.5px solid #C0DD97;padding:8px 14px;border-radius:8px;font-size:12px;font-family:DM Sans,sans-serif;display:flex;align-items:center;gap:6px;z-index:999;';
+      saveNote.innerHTML = '<i class="ti ti-check" style="font-size:13px"></i> Analysis saved to your account';
+      document.body.appendChild(saveNote);
+      setTimeout(() => saveNote.remove(), 3500);
+    } catch (err) {
+      console.error('Save failed:', err);
+    }
   }
 
   // ─── UI HELPERS ───────────────────────────────────────────────
