@@ -1,6 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   const { data: { user }, error: authError } = await sb.auth.getUser(token);
   if (authError || !user) return res.status(401).json({ error: 'Invalid token' });
 
-  const { doc_name, flags, sections, questions, red_count, amber_count, green_count } = req.body;
+  const { doc_name, flags, sections, questions, summary, red_count, amber_count, green_count } = req.body;
 
   const { data, error } = await sb
     .from('analyses')
@@ -33,6 +33,7 @@ export default async function handler(req, res) {
       flags: flags || [],
       sections: sections || [],
       questions: questions || [],
+      summary: summary || {},
       red_count: red_count || 0,
       amber_count: amber_count || 0,
       green_count: green_count || 0,
@@ -47,3 +48,4 @@ export default async function handler(req, res) {
 
   return res.status(200).json({ id: data.id });
 }
+
