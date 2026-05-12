@@ -596,9 +596,12 @@
       return;
     }
     errBox.style.display = 'none';
-    // Redirect to auth — user will come back after signing in
-    sessionStorage.setItem('fpf_pending', '1');
-    window.location.href = 'auth.html';
+    showScreen('screen-analyzing');
+    document.getElementById('result-doc-name').textContent = uploadedFileName;
+    animateProgress().then(() => {
+      showScreen('screen-results');
+      runAnalysis();
+    });
   }
 
   // ─── ANALYZING FLOW ───────────────────────────────────────────
