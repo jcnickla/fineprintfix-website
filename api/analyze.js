@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -29,12 +29,12 @@ export default async function handler(req, res) {
       }),
     });
 
-    const data = await response.json();
-    return res.status(response.status).json(data);
+    const text = await response.text();
+    console.log('Anthropic response:', response.status, text);
+    return res.status(response.status).json(JSON.parse(text));
 
   } catch (err) {
-    console.error('Proxy error:', err);
+    console.error('Proxy error:', err.message);
     return res.status(500).json({ error: err.message });
   }
-}
 }
