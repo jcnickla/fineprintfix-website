@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinePrintFix — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f7f5f2; --text: #1a1a18; --text2: #6b6b67;
+      --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+      --accent: #D85A30; --accent-light: #FAECE7;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif; background: var(--bg2);
+      color: var(--text); min-height: 100vh;
+      display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .card {
+      background: var(--bg); border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border); width: 100%; max-width: 420px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 1.75rem 1.75rem 0;
+      border-bottom: 0.5px solid var(--border);
+      padding-bottom: 1.25rem;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif; font-size: 18px;
+      font-weight: 700; text-decoration: none; color: var(--text);
+      display: block; margin-bottom: 1.25rem;
+    }
+    .logo span { color: var(--accent); }
+    .tab-row { display: flex; gap: 0; }
+    .tab {
+      flex: 1; padding: 9px; font-size: 13px; font-weight: 500;
+      text-align: center; cursor: pointer; color: var(--text2);
+      background: transparent; border: none; border-bottom: 2px solid transparent;
+      font-family: 'DM Sans', sans-serif; transition: color 0.12s;
+      margin-bottom: -0.5px;
+    }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .card-body { padding: 1.5rem 1.75rem 1.75rem; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .form-field { margin-bottom: 1rem; }
+    .form-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; display: block; }
+    input[type=text], input[type=email], input[type=password] {
+      width: 100%; padding: 10px 12px;
+      border: 0.5px solid var(--border2); border-radius: var(--radius);
+      font-size: 13px; font-family: 'DM Sans', sans-serif;
+      color: var(--text); background: var(--bg); outline: none;
+      transition: border-color 0.12s;
+    }
+    input:focus { border-color: var(--accent); }
+    .btn {
+      width: 100%; padding: 11px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: opacity 0.15s; border: none;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-google {
+      background: var(--bg); color: var(--text);
+      border: 0.5px solid var(--border2); margin-bottom: 1rem;
+    }
+    .btn-google:hover { background: var(--bg2); }
+    .divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 1rem 0; font-size: 11px; color: var(--text2);
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 0.5px; background: var(--border);
+    }
+    .error-box {
+      background: #FAECE7; border: 0.5px solid #F5C4B3;
+      border-radius: var(--radius); padding: 10px 12px;
+      font-size: 12px; color: #712B13; margin-bottom: 1rem; display: none;
+    }
+    .success-box {
+      background: #EAF3DE; border: 0.5px solid #C0DD97;
+      border-radius: var(--radius); padding: 10px 12px;
+      font-size: 12px; color: #27500A; margin-bottom: 1rem; display: none;
+    }
+    .footer-note {
+      font-size: 11px; color: var(--text2); text-align: center;
+      margin-top: 1rem; line-height: 1.5;
+    }
+    .footer-note a { color: var(--accent); text-decoration: none; }
+    .forgot { font-size: 11px; color: var(--accent); text-decoration: none; float: right; }
+    .google-icon { width: 16px; height: 16px; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">
+    <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+    <div class="tab-row">
+      <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign in</button>
+      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create account</button>
+    </div>
+  </div>
+
+  <div class="card-body">
+
+    <!-- SIGN IN -->
+    <div id="panel-signin" class="panel active">
+      <button class="btn btn-google" onclick="signInWithGoogle()">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
+      <div class="divider">or sign in with email</div>
+      <div id="signin-error" class="error-box"></div>
+      <div id="signin-success" class="success-box"></div>
+      <div class="form-field">
+        <label class="form-label" for="signin-email">Email address</label>
+        <input type="email" id="signin-email" placeholder="jane@example.com" />
+      </div>
+      <div class="form-field">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+          <label class="form-label" for="signin-password" style="margin-bottom:0">Password</label>
+          <a href="#" class="forgot" onclick="forgotPassword()">Forgot password?</a>
+        </div>
+        <input type="password" id="signin-password" placeholder="Your password"
+          onkeydown="if(event.key==='Enter') signIn()" />
+      </div>
+      <button class="btn btn-primary" id="signin-btn" onclick="signIn()">
+        <i class="ti ti-login"></i> Sign in
+      </button>
+      <div class="footer-note">Don't have an account? <a href="#" onclick="switchTab('signup')">Create one free</a></div>
+    </div>
+
+    <!-- SIGN UP -->
+    <div id="panel-signup" class="panel">
+      <button class="btn btn-google" onclick="signInWithGoogle()">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign up with Google
+      </button>
+      <div class="divider">or sign up with email</div>
+      <div id="signup-error" class="error-box"></div>
+      <div id="signup-success" class="success-box"></div>
+      <div class="form-field">
+        <label class="form-label" for="signup-name">Full name</label>
+        <input type="text" id="signup-name" placeholder="Jane Smith" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="signup-email">Email address</label>
+        <input type="email" id="signup-email" placeholder="jane@example.com" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="signup-password">Password</label>
+        <input type="password" id="signup-password" placeholder="At least 8 characters"
+          onkeydown="if(event.key==='Enter') signUp()" />
+      </div>
+      <div style="font-size:11px; color:var(--text2); margin-bottom:1rem; line-height:1.5;">
+        By creating an account you agree to our <a href="#" style="color:var(--accent);">Terms</a> and <a href="#" style="color:var(--accent);">Privacy Policy</a>. We never share your documents.
+      </div>
+      <button class="btn btn-primary" id="signup-btn" onclick="signUp()">
+        <i class="ti ti-user-plus"></i> Create free account
+      </button>
+      <div class="footer-note">Already have an account? <a href="#" onclick="switchTab('signin')">Sign in</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ─── SUPABASE INIT ─────────────────────────────────────────────
+  // Replace these with your actual Supabase project values
+  const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co/rest/v1/';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Redirect if already logged in
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) window.location.href = 'dashboard.html';
+  });
+
+  // ─── TAB SWITCH ────────────────────────────────────────────────
+  function switchTab(tab) {
+    ['signin','signup'].forEach(t => {
+      document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+      document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+    });
+  }
+
+  // ─── GOOGLE SIGN IN ────────────────────────────────────────────
+  async function signInWithGoogle() {
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/dashboard.html' }
+    });
+    if (error) showError('signin', error.message);
+  }
+
+  // ─── EMAIL SIGN IN ─────────────────────────────────────────────
+  async function signIn() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+    const btn = document.getElementById('signin-btn');
+
+    if (!email || !password) { showError('signin', 'Please enter your email and password.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Signing in...';
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      showError('signin', 'Incorrect email or password. Please try again.');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-login"></i> Sign in';
+    } else {
+      window.location.href = 'dashboard.html';
+    }
+  }
+
+  // ─── EMAIL SIGN UP ─────────────────────────────────────────────
+  async function signUp() {
+    const name = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const btn = document.getElementById('signup-btn');
+
+    if (!name) { showError('signup', 'Please enter your name.'); return; }
+    if (!email) { showError('signup', 'Please enter your email.'); return; }
+    if (password.length < 8) { showError('signup', 'Password must be at least 8 characters.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Creating account...';
+
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { data: { full_name: name } }
+    });
+
+    if (error) {
+      showError('signup', error.message);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-user-plus"></i> Create free account';
+    } else {
+      showSuccess('signup', 'Account created! Check your email to confirm, then sign in.');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ti ti-user-plus"></i> Create free account';
+    }
+  }
+
+  // ─── FORGOT PASSWORD ───────────────────────────────────────────
+  async function forgotPassword() {
+    const email = document.getElementById('signin-email').value.trim();
+    if (!email) { showError('signin', 'Enter your email address above first.'); return; }
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/auth.html'
+    });
+    if (error) showError('signin', error.message);
+    else showSuccess('signin', 'Password reset email sent — check your inbox.');
+  }
+
+  // ─── HELPERS ───────────────────────────────────────────────────
+  function showError(panel, msg) {
+    const el = document.getElementById(panel+'-error');
+    el.textContent = msg; el.style.display = 'block';
+    document.getElementById(panel+'-success').style.display = 'none';
+  }
+  function showSuccess(panel, msg) {
+    const el = document.getElementById(panel+'-success');
+    el.textContent = msg; el.style.display = 'block';
+    document.getElementById(panel+'-error').style.display = 'none';
+  }
+</script>
+<style>
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
