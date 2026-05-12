@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinePrintFix — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f7f5f2; --text: #1a1a18; --text2: #6b6b67;
+      --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+      --accent: #D85A30; --accent-light: #FAECE7;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
+    nav {
+      background: var(--bg); border-bottom: 0.5px solid var(--border);
+      padding: 0 2rem; display: flex; align-items: center;
+      justify-content: space-between; height: 56px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; text-decoration: none; color: var(--text); }
+    .logo span { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .user-pill {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--text2);
+      background: var(--bg2); padding: 5px 10px;
+      border-radius: 20px; border: 0.5px solid var(--border);
+    }
+    .avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent-light); color: var(--accent);
+      font-size: 11px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-signout {
+      background: transparent; border: 0.5px solid var(--border2);
+      padding: 5px 12px; border-radius: var(--radius);
+      font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      color: var(--text2); display: flex; align-items: center; gap: 5px;
+    }
+    .btn-signout:hover { background: var(--bg2); }
+    .main { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .welcome { margin-bottom: 2rem; }
+    .welcome h1 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .welcome p { font-size: 13px; color: var(--text2); }
+    .upload-card {
+      background: var(--accent); border-radius: var(--radius-lg);
+      padding: 1.5rem; display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 2rem; cursor: pointer;
+      transition: opacity 0.15s; text-decoration: none;
+    }
+    .upload-card:hover { opacity: 0.92; }
+    .uc-left { display: flex; align-items: center; gap: 14px; }
+    .uc-icon {
+      width: 44px; height: 44px; border-radius: var(--radius);
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: #fff;
+    }
+    .uc-title { font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 2px; }
+    .uc-sub { font-size: 12px; color: rgba(255,255,255,0.75); }
+    .uc-arrow { font-size: 20px; color: rgba(255,255,255,0.8); }
+    .section-title {
+      font-size: 12px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text2); margin-bottom: 1rem;
+    }
+    .analyses-list { display: flex; flex-direction: column; gap: 8px; }
+    .analysis-card {
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer; transition: border-color 0.12s; text-decoration: none;
+    }
+    .analysis-card:hover { border-color: var(--border2); }
+    .ac-icon {
+      width: 38px; height: 38px; border-radius: var(--radius);
+      background: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--accent); flex-shrink: 0;
+    }
+    .ac-info { flex: 1; min-width: 0; }
+    .ac-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ac-meta { font-size: 11px; color: var(--text2); display: flex; align-items: center; gap: 8px; }
+    .ac-flags { display: flex; align-items: center; gap: 6px; }
+    .flag-dot {
+      display: flex; align-items: center; gap: 3px;
+      font-size: 11px; font-weight: 500; padding: 2px 7px;
+      border-radius: 10px;
+    }
+    .flag-dot.red { background: #FAECE7; color: #993C1D; }
+    .flag-dot.amber { background: #FAEEDA; color: #633806; }
+    .flag-dot.green { background: #EAF3DE; color: #27500A; }
+    .ac-arrow { font-size: 16px; color: var(--text2); flex-shrink: 0; }
+    .empty-state {
+      text-align: center; padding: 3rem 1rem;
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+    .empty-icon { font-size: 32px; color: var(--text2); margin-bottom: 10px; }
+    .empty-title { font-size: 14px; font-weight: 500; margin-bottom: 5px; }
+    .empty-sub { font-size: 12px; color: var(--text2); }
+    .loading-row {
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .skeleton {
+      background: var(--bg2); border-radius: 4px;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    @media (max-width: 480px) {
+      .main { padding: 1.25rem 1rem; }
+      nav { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+  <div class="nav-right">
+    <div class="user-pill">
+      <div class="avatar" id="user-avatar">?</div>
+      <span id="user-name">Loading...</span>
+    </div>
+    <button class="btn-signout" onclick="signOut()">
+      <i class="ti ti-logout"></i> Sign out
+    </button>
+  </div>
+</nav>
+
+<div class="main">
+
+  <div class="welcome">
+    <h1 id="welcome-heading">Welcome back</h1>
+    <p>Your document analyses are saved here.</p>
+  </div>
+
+  <a href="app.html" class="upload-card">
+    <div class="uc-left">
+      <div class="uc-icon"><i class="ti ti-upload"></i></div>
+      <div>
+        <div class="uc-title">Analyze a new document</div>
+        <div class="uc-sub">Upload a PDF or paste text — results in under 90 seconds</div>
+      </div>
+    </div>
+    <i class="ti ti-arrow-right uc-arrow"></i>
+  </a>
+
+  <div class="section-title">Your past analyses</div>
+  <div class="analyses-list" id="analyses-list">
+    <div class="loading-row">
+      <div class="skeleton" style="width:38px;height:38px;border-radius:var(--radius);flex-shrink:0"></div>
+      <div style="flex:1">
+        <div class="skeleton" style="height:13px;width:60%;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:11px;width:40%"></div>
+      </div>
+    </div>
+    <div class="loading-row">
+      <div class="skeleton" style="width:38px;height:38px;border-radius:var(--radius);flex-shrink:0"></div>
+      <div style="flex:1">
+        <div class="skeleton" style="height:13px;width:45%;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:11px;width:35%"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co/rest/v1/';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let currentUser = null;
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'auth.html'; return; }
+
+    currentUser = session.user;
+    const name = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+    const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+
+    document.getElementById('user-avatar').textContent = initials;
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('welcome-heading').textContent = 'Welcome back, ' + name.split(' ')[0];
+
+    loadAnalyses();
+  }
+
+  async function loadAnalyses() {
+    const { data, error } = await sb
+      .from('analyses')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    const list = document.getElementById('analyses-list');
+
+    if (error || !data || data.length === 0) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon"><i class="ti ti-file-off"></i></div>
+          <div class="empty-title">No analyses yet</div>
+          <div class="empty-sub">Upload your first document above to get started</div>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = data.map(a => {
+      const date = new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      return `
+        <a class="analysis-card" href="results.html?id=${a.id}">
+          <div class="ac-icon"><i class="ti ti-file-text"></i></div>
+          <div class="ac-info">
+            <div class="ac-name">${escHtml(a.doc_name)}</div>
+            <div class="ac-meta">
+              <span>${date}</span>
+              <div class="ac-flags">
+                <span class="flag-dot red"><i class="ti ti-flag" style="font-size:9px"></i> ${a.red_count || 0}</span>
+                <span class="flag-dot amber"><i class="ti ti-info-circle" style="font-size:9px"></i> ${a.amber_count || 0}</span>
+                <span class="flag-dot green"><i class="ti ti-check" style="font-size:9px"></i> ${a.green_count || 0}</span>
+              </div>
+            </div>
+          </div>
+          <i class="ti ti-chevron-right ac-arrow"></i>
+        </a>`;
+    }).join('');
+  }
+
+  async function signOut() {
+    await sb.auth.signOut();
+    window.location.href = 'auth.html';
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  init();
+</script>
+</body>
+</html>
