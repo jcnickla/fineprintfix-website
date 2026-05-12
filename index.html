@@ -9,6 +9,22 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Replace with your actual Supabase values
+    const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Update nav based on auth state
+    sb.auth.getSession().then(({ data: { session } }) => {
+      const loginLink = document.getElementById('nav-login');
+      if (session) {
+        loginLink.textContent = 'Dashboard';
+        loginLink.href = 'dashboard.html';
+      }
+    });
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -474,7 +490,8 @@
       <li><a href="#how">How it works</a></li>
       <li><a href="#flags">What we flag</a></li>
       <li><a href="#cta">Pricing</a></li>
-      <li><a href="app.html" class="btn-primary"><i class="ti ti-upload"></i> Try for free</a></li>
+      <li><a href="auth.html" id="nav-login">Log in</a></li>
+      <li><a href="auth.html" class="btn-primary"><i class="ti ti-upload"></i> Try for free</a></li>
     </ul>
   </nav>
 
@@ -484,7 +501,7 @@
       <h1>Legal docs decoded for <em>real people</em></h1>
       <p class="hero-sub">Upload any contract or terms of service. FinePrintFix highlights the tricky parts — what to watch out for, what to push back on, and what actually matters.</p>
       <div class="cta-row">
-        <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload a document</a>
+        <a href="auth.html" class="btn-lg"><i class="ti ti-upload"></i> Upload a document</a>
         <a href="#how" class="btn-ghost"><i class="ti ti-player-play"></i> See how it works</a>
       </div>
       <div class="platform-row">
@@ -630,8 +647,8 @@
     <h2>Stop signing things you don't understand</h2>
     <p class="cta-sub">Upload your first document free. No account needed to try it.</p>
     <div class="cta-btns">
-      <a href="#" class="btn-lg"><i class="ti ti-brand-apple"></i> Download on iOS</a>
-      <a href="app.html" class="btn-ghost"><i class="ti ti-world"></i> Use on web</a>
+      <a href="auth.html" class="btn-lg"><i class="ti ti-brand-apple"></i> Download on iOS</a>
+      <a href="auth.html" class="btn-ghost"><i class="ti ti-world"></i> Use on web</a>
     </div>
   </section>
 
@@ -643,3 +660,5 @@
 
 </body>
 </html>
+
+
