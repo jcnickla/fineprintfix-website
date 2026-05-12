@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinePrintFix — Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f7f5f2; --text: #1a1a18; --text2: #6b6b67;
+      --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+      --accent: #D85A30; --accent-light: #FAECE7;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
+    nav {
+      background: var(--bg); border-bottom: 0.5px solid var(--border);
+      padding: 0 2rem; display: flex; align-items: center;
+      justify-content: space-between; height: 56px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; text-decoration: none; color: var(--text); }
+    .logo span { color: var(--accent); }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text2); text-decoration: none;
+      padding: 6px 12px; border-radius: var(--radius);
+      border: 0.5px solid var(--border2);
+      background: transparent; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .back-btn:hover { background: var(--bg2); }
+    .top-actions { display: flex; gap: 6px; align-items: center; }
+    .icon-btn {
+      background: transparent; border: 0.5px solid var(--border);
+      padding: 5px 10px; border-radius: var(--radius);
+      font-size: 11px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; gap: 4px; color: var(--text2);
+    }
+    .icon-btn:hover { background: var(--bg2); }
+    .main { max-width: 600px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .results-meta {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; background: var(--bg);
+      border-radius: var(--radius); margin-bottom: 1.25rem;
+      border: 0.5px solid var(--border);
+    }
+    .results-meta i { color: var(--accent); font-size: 20px; }
+    .rdb-name { font-size: 13px; font-weight: 500; }
+    .rdb-sub { font-size: 11px; color: var(--text2); }
+    .score-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1.25rem; }
+    .score-card { background: var(--bg); border-radius: var(--radius); padding: 10px; text-align: center; border: 0.5px solid var(--border); }
+    .score-num { font-size: 24px; font-weight: 500; line-height: 1; margin-bottom: 3px; }
+    .score-label { font-size: 10px; color: var(--text2); }
+    .result-tabs { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 1rem; }
+    .rtab {
+      padding: 8px 14px; font-size: 12px; font-weight: 500; cursor: pointer;
+      color: var(--text2); border: none; background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      border-bottom: 2px solid transparent; margin-bottom: -0.5px;
+      display: flex; align-items: center; gap: 5px; transition: color 0.12s;
+    }
+    .rtab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .rtab-panel { display: none; }
+    .rtab-panel.active { display: block; }
+    .flag-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 12px; border-radius: var(--radius);
+      margin-bottom: 8px; border: 0.5px solid transparent;
+    }
+    .flag-item.red { background: #FAECE7; border-color: #F5C4B3; }
+    .flag-item.amber { background: #FAEEDA; border-color: #FAC775; }
+    .flag-item.green { background: #EAF3DE; border-color: #C0DD97; }
+    .flag-badge {
+      font-size: 10px; font-weight: 500; padding: 2px 8px;
+      border-radius: 10px; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+    }
+    .flag-badge.red { background: #F5C4B3; color: #712B13; }
+    .flag-badge.amber { background: #FAC775; color: #633806; }
+    .flag-badge.green { background: #C0DD97; color: #27500A; }
+    .flag-text { font-size: 12px; line-height: 1.55; }
+    .flag-clause { font-size: 10px; color: var(--text2); margin-top: 3px; }
+    .section-block { margin-bottom: 8px; }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: var(--bg2);
+      border-radius: var(--radius); cursor: pointer;
+      border: 0.5px solid var(--border);
+    }
+    .section-header.open { border-radius: var(--radius) var(--radius) 0 0; }
+    .sh-title { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 7px; }
+    .sh-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; }
+    .sh-badge.warn { background: var(--accent-light); color: #993C1D; }
+    .sh-badge.ok { background: #EAF3DE; color: #3B6D11; }
+    .section-body {
+      padding: 12px; font-size: 12px; line-height: 1.65; color: var(--text2);
+      border: 0.5px solid var(--border); border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+    .question-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 10px 12px; margin-bottom: 6px;
+      border: 0.5px solid var(--border); border-radius: var(--radius);
+      font-size: 12px; line-height: 1.55; background: var(--bg);
+    }
+    .q-num {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent-light); color: var(--accent);
+      font-size: 10px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .summary-box {
+      background: var(--bg2); border-radius: var(--radius-lg);
+      padding: 12px 14px; margin-bottom: 1rem;
+      border: 0.5px solid var(--border); font-size: 12px; line-height: 1.65; color: var(--text2);
+    }
+    .loading-wrap { text-align: center; padding: 4rem 1rem; color: var(--text2); font-size: 13px; }
+    .error-wrap { text-align: center; padding: 4rem 1rem; }
+    .error-wrap h2 { font-size: 16px; margin-bottom: 8px; }
+    .error-wrap p { font-size: 13px; color: var(--text2); }
+    @media (max-width: 480px) {
+      .main { padding: 1.25rem 1rem; }
+      nav { padding: 0 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+  <div class="top-actions">
+    <a href="dashboard.html" class="back-btn">
+      <i class="ti ti-arrow-left"></i> Dashboard
+    </a>
+    <button class="icon-btn" onclick="window.print()">
+      <i class="ti ti-download"></i> Save PDF
+    </button>
+  </div>
+</nav>
+
+<div class="main" id="main-content">
+  <div class="loading-wrap">
+    <i class="ti ti-loader" style="font-size:24px;animation:spin 1s linear infinite;display:block;margin-bottom:10px"></i>
+    Loading your analysis...
+  </div>
+</div>
+
+<script>
+  // ─── SUPABASE INIT ─────────────────────────────────────────────
+  const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ─── INIT ──────────────────────────────────────────────────────
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'auth.html'; return; }
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) { showError('No analysis ID found.'); return; }
+
+    const { data, error } = await sb
+      .from('analyses')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', session.user.id)
+      .single();
+
+    if (error || !data) {
+      showError('Analysis not found or you don\'t have access to it.');
+      return;
+    }
+
+    renderResults(data);
+  }
+
+  // ─── RENDER ────────────────────────────────────────────────────
+  function renderResults(data) {
+    const date = new Date(data.created_at).toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric'
+    });
+
+    document.title = `FinePrintFix — ${data.doc_name}`;
+
+    document.getElementById('main-content').innerHTML = `
+      <div class="results-meta">
+        <i class="ti ti-file-text"></i>
+        <div>
+          <div class="rdb-name">${escHtml(data.doc_name)}</div>
+          <div class="rdb-sub">Analyzed on ${date}</div>
+        </div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-card">
+          <div class="score-num" style="color:var(--accent)">${data.red_count || 0}</div>
+          <div class="score-label">Red flags</div>
+        </div>
+        <div class="score-card">
+          <div class="score-num" style="color:#BA7517">${data.amber_count || 0}</div>
+          <div class="score-label">Worth asking</div>
+        </div>
+        <div class="score-card">
+          <div class="score-num" style="color:#3B6D11">${data.green_count || 0}</div>
+          <div class="score-label">Looks fine</div>
+        </div>
+      </div>
+
+      <div class="result-tabs">
+        <button class="rtab active" id="rtab-flags" onclick="switchTab('flags')">
+          <i class="ti ti-flag"></i> Flags
+        </button>
+        <button class="rtab" id="rtab-sections" onclick="switchTab('sections')">
+          <i class="ti ti-layout-list"></i> By section
+        </button>
+        <button class="rtab" id="rtab-questions" onclick="switchTab('questions')">
+          <i class="ti ti-message-question"></i> Questions to ask
+        </button>
+      </div>
+
+      <div id="panel-flags" class="rtab-panel active">
+        ${renderFlags(data.flags)}
+      </div>
+      <div id="panel-sections" class="rtab-panel">
+        ${renderSections(data.sections)}
+      </div>
+      <div id="panel-questions" class="rtab-panel">
+        ${renderQuestions(data.questions)}
+      </div>
+    `;
+  }
+
+  function renderFlags(flags) {
+    if (!flags) return '<p style="font-size:13px;color:var(--text2);padding:1rem 0">No flags data found.</p>';
+    const all = [
+      ...(flags.red || []).map(f => ({...f, type:'red', label:'Red flag'})),
+      ...(flags.amber || []).map(f => ({...f, type:'amber', label:'Ask about'})),
+      ...(flags.green || []).map(f => ({...f, type:'green', label:'Looks fine'})),
+    ];
+    if (!all.length) return '<p style="font-size:13px;color:var(--text2);padding:1rem 0">No significant issues found.</p>';
+    return all.map(f => `
+      <div class="flag-item ${f.type}">
+        <span class="flag-badge ${f.type}">${f.label}</span>
+        <div>
+          <div class="flag-text">${escHtml(f.text)}</div>
+          ${f.clause ? `<div class="flag-clause">${escHtml(f.clause)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderSections(sections) {
+    if (!sections || !sections.length) return '<p style="font-size:13px;color:var(--text2);padding:1rem 0">No section data found.</p>';
+    return sections.map((s, i) => {
+      const icon = s.status === 'warn'
+        ? '<i class="ti ti-alert-triangle" style="color:var(--accent);font-size:14px"></i>'
+        : '<i class="ti ti-check" style="color:#3B6D11;font-size:14px"></i>';
+      const badge = s.status === 'warn'
+        ? `<span class="sh-badge warn">${s.issueCount} issue${s.issueCount !== 1 ? 's' : ''}</span>`
+        : '<span class="sh-badge ok">Standard</span>';
+      return `
+        <div class="section-block">
+          <div class="section-header" onclick="toggleSection(${i})">
+            <div class="sh-title">${icon} ${escHtml(s.title)} ${badge}</div>
+            <i class="ti ti-chevron-down" id="chevron-${i}" style="font-size:14px;color:var(--text2)"></i>
+          </div>
+          <div class="section-body" id="sbody-${i}" style="display:none">${escHtml(s.summary)}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderQuestions(questions) {
+    if (!questions || !questions.length) return '<p style="font-size:13px;color:var(--text2);padding:1rem 0">No questions found.</p>';
+    return `<div class="summary-box">Bring these to your negotiation or review with an attorney. You don't have to accept everything as written.</div>` +
+      questions.map((q, i) => `
+        <div class="question-item">
+          <div class="q-num">${i+1}</div>
+          <div>"${escHtml(q)}"</div>
+        </div>
+      `).join('');
+  }
+
+  // ─── HELPERS ───────────────────────────────────────────────────
+  function switchTab(tab) {
+    ['flags','sections','questions'].forEach(t => {
+      document.getElementById('rtab-'+t).classList.toggle('active', t===tab);
+      document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+    });
+  }
+
+  function toggleSection(i) {
+    const body = document.getElementById('sbody-'+i);
+    const chevron = document.getElementById('chevron-'+i);
+    const isOpen = body.style.display !== 'none';
+    body.style.display = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+
+  function showError(msg) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-wrap">
+        <h2>Something went wrong</h2>
+        <p>${msg}</p>
+        <a href="dashboard.html" style="display:inline-block;margin-top:1rem;color:var(--accent);font-size:13px;">← Back to dashboard</a>
+      </div>`;
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  init();
+</script>
+<style>
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
