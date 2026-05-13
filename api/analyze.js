@@ -1,8 +1,10 @@
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
+  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // CORS headers — update this to your actual domain in production
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,7 +12,7 @@ module.exports = async function handler(req, res) {
   const { system, messages } = req.body;
 
   if (!system || !messages) {
-    return res.status(400).json({ error: 'Missing system or messages' });
+    return res.status(400).json({ error: 'Missing system or messages in request body' });
   }
 
   try {
@@ -23,18 +25,23 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1000,
+        max_tokens: 4000,
         system,
         messages,
       }),
     });
 
-    const text = await response.text();
-    console.log('Anthropic response:', response.status, text);
-    return res.status(response.status).json(JSON.parse(text));
+    if (!response.ok) {
+      const errorData = await response.json();
+      return res.status(response.status).json({ error: errorData });
+    }
+
+    const data = await response.json();
+    return res.status(200).json(data);
 
   } catch (err) {
-    console.error('Proxy error:', err.message);
-    return res.status(500).json({ error: err.message });
+    console.error('Proxy error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
