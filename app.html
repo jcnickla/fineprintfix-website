@@ -307,12 +307,15 @@
 
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,0.5); z-index: 200;
+      background: rgba(247,245,242,0.97); z-index: 200;
       align-items: flex-end; justify-content: center;
+      padding: 0;
     }
     .modal-sheet {
       background: var(--bg); border-radius: 16px 16px 0 0;
-      padding: 1.5rem; width: 100%; max-width: 560px;
+      padding: 1.75rem 1.5rem 2.5rem; width: 100%; max-width: 560px;
+      border-top: 0.5px solid var(--border);
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
     }
     .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 1.25rem; }
     .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
@@ -619,14 +622,18 @@
 <div id="email-capture-modal" class="modal-overlay">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-title">Your results are ready 🎉</div>
-    <div class="modal-sub">Enter your email to save your analysis and be notified when pricing launches. No account needed.</div>
+    <div style="font-size:28px;margin-bottom:10px">🔍</div>
+    <div class="modal-title">Your analysis is ready</div>
+    <div class="modal-sub">Enter your email to unlock your results. No account or password needed — just your email.</div>
     <input type="email" id="capture-email-input" class="modal-input" placeholder="your@email.com" onkeydown="if(event.key==='Enter') submitEmailCapture()" />
     <div id="capture-email-error" class="modal-error"></div>
-    <button id="capture-email-btn" onclick="submitEmailCapture()" style="background:var(--accent);color:#fff;border:none;padding:12px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:0;">
-      Save my results →
+    <button id="capture-email-btn" onclick="submitEmailCapture()" style="background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+      Unlock my results →
     </button>
-    <button class="modal-skip" onclick="skipEmailCapture()">No thanks, just show me the results</button>
+    <div style="text-align:center;margin-top:12px;">
+      <a href="auth.html" style="font-size:12px;color:var(--accent);text-decoration:none;">Already have an account? Sign in →</a>
+    </div>
+    <p style="font-size:11px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;">We'll notify you when pricing launches. We never spam or share your email.</p>
   </div>
 </div>
 
@@ -767,7 +774,8 @@
   }
 
   function showEmailCapture() {
-    document.getElementById('email-capture-modal').style.display = 'flex';
+    const modal = document.getElementById('email-capture-modal');
+    modal.style.display = 'flex';
   }
 
   async function submitEmailCapture() {
@@ -786,30 +794,24 @@
     btn.disabled = true;
 
     try {
-      // Record email in database
       await fetch('/api/free-tier', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, action: 'record' })
       });
 
-      // Set cookies
       setCookie(FREE_TIER_COOKIE, '1', 365);
       setCookie(FREE_TIER_EMAIL_COOKIE, email, 365);
 
-      // Hide modal
-      document.getElementById('email-capture-modal').style.display = 'none';
+      btn.textContent = '✓ Unlocked!';
+      btn.style.background = '#3B6D11';
+      setTimeout(() => {
+        document.getElementById('email-capture-modal').style.display = 'none';
+      }, 800);
     } catch (err) {
-      // If it fails just set the cookie and move on — don't block the user
       setCookie(FREE_TIER_COOKIE, '1', 365);
       document.getElementById('email-capture-modal').style.display = 'none';
     }
-  }
-
-  function skipEmailCapture() {
-    // They skipped — still set cookie so they don't get another free analysis
-    setCookie(FREE_TIER_COOKIE, '1', 365);
-    document.getElementById('email-capture-modal').style.display = 'none';
   }
 
   // ─── VALIDATE & CONTINUE ─────────────────────────────────────
@@ -833,8 +835,8 @@
     animateProgress().then(() => {
       showScreen('screen-results');
       runAnalysis();
-      // Show email capture for anonymous users after results load
-      setTimeout(() => handlePostAnalysis(), 4000);
+      // For anonymous users, show email gate immediately before they can see results
+      handlePostAnalysis();
     });
   }
 
@@ -1482,6 +1484,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
