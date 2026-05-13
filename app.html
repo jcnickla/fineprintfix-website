@@ -461,14 +461,14 @@
       <!-- FOR ANONYMOUS USERS WHO GAVE EMAIL -->
       <div id="upgrade-anon-paid" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
         <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;">
-          <i class="ti ti-user-plus"></i> Create a free account
+          <i class="ti ti-user-plus"></i> Create an account
         </a>
-        <div style="font-size:12px;color:var(--text2);text-align:center;">Free account = more analyses + dashboard + comparison tool</div>
+        <div style="font-size:12px;color:var(--text2);text-align:center;line-height:1.5;">Creating an account lets you pay per document, access your saved analyses, and use the comparison tool.</div>
         <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--text2);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;text-decoration:none;">
           <i class="ti ti-login"></i> Already have an account? Sign in
         </a>
         <div style="border-top:0.5px solid var(--border);margin:4px 0;"></div>
-        <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:2px;">Or pay for just this document</div>
+        <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:2px;">Or pay for just this document — no account needed</div>
         <button onclick="handleUpgrade('payperDoc')" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
           Analyze this document — $1.99
         </button>
@@ -785,9 +785,8 @@
       document.getElementById('upgrade-sub').textContent = "Upgrade to analyze more documents, access your dashboard, and compare contracts side by side.";
       plans.style.display = 'flex';
     } else if (type === 'anonymous-email') {
-      // They gave their email but aren't logged in
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
-      document.getElementById('upgrade-sub').textContent = "Create a free account to keep analyzing — your existing analysis will be saved to your dashboard.";
+      document.getElementById('upgrade-sub').textContent = "To analyze more documents, create an account and pay per doc — or go Pro for unlimited access.";
       anonPaid.style.display = 'flex';
     } else {
       // Fully anonymous, no email on record
@@ -1517,6 +1516,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
