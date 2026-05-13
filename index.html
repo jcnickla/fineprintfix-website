@@ -17,11 +17,14 @@
       const { createClient } = supabase;
       const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       sb.auth.getSession().then(({ data: { session } }) => {
-        const loginLink = document.getElementById('nav-login');
-        if (loginLink && session) {
-          loginLink.textContent = 'Dashboard';
-          loginLink.href = 'dashboard.html';
+        if (session) {
+          // Signed in — hide Log in, change CTA to Dashboard
+          document.getElementById('nav-login-li').style.display = 'none';
+          const cta = document.getElementById('nav-cta');
+          cta.href = 'dashboard.html';
+          cta.innerHTML = '<i class="ti ti-layout-dashboard"></i> Dashboard';
         }
+        // Signed out — default state already shows Log in + Try for free
       });
     });
   </script>
@@ -217,11 +220,10 @@
   </button>
   <ul class="nav-links">
     <li><a href="#analysis">Analysis</a></li>
-    <li><a href="#dashboard">Dashboard</a></li>
     <li><a href="#flags">What we flag</a></li>
     <li><a href="#pricing">Pricing</a></li>
-    <li><a href="auth.html" id="nav-login">Log in</a></li>
-    <li><a href="auth.html" class="btn-nav"><i class="ti ti-upload"></i> Try for free</a></li>
+    <li id="nav-login-li"><a href="auth.html" id="nav-login">Log in</a></li>
+    <li id="nav-cta-li"><a href="auth.html" class="btn-nav" id="nav-cta"><i class="ti ti-upload"></i> Try for free</a></li>
   </ul>
 </nav>
 
@@ -548,6 +550,7 @@
 </script>
 </body>
 </html>
+
 
 
 
