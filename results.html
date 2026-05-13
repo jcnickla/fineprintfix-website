@@ -226,6 +226,9 @@
         <button class="rtab" id="rtab-questions" onclick="switchTab('questions')">
           <i class="ti ti-message-question"></i> Questions
         </button>
+        <button class="rtab" id="rtab-money" onclick="switchTab('money')">
+          <i class="ti ti-coin"></i> Money
+        </button>
       </div>
 
       <div id="panel-summary" class="rtab-panel active">
@@ -239,6 +242,9 @@
       </div>
       <div id="panel-questions" class="rtab-panel">
         ${renderQuestions(data.questions)}
+      </div>
+      <div id="panel-money" class="rtab-panel">
+        ${renderMoney(data.money)}
       </div>
     `;
   }
@@ -327,10 +333,111 @@
 
   // ─── HELPERS ───────────────────────────────────────────────────
   function switchTab(tab) {
-    ['summary','flags','sections','questions'].forEach(t => {
+    ['summary','flags','sections','questions','money'].forEach(t => {
       document.getElementById('rtab-'+t).classList.toggle('active', t===tab);
       document.getElementById('panel-'+t).classList.toggle('active', t===tab);
     });
+  }
+
+  function renderMoney(data) {
+    if (!data || !data.hasFinancials) return `<div style="text-align:center;padding:2rem 1rem;color:var(--text2);font-size:13px;">
+      <i class="ti ti-coin-off" style="font-size:24px;display:block;margin-bottom:8px"></i>
+      No significant financial terms found in this document.
+    </div>`;
+
+    let html = '';
+
+    if (data.totalValue) {
+      html += `<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;">
+        <i class="ti ti-currency-dollar" style="color:var(--accent);font-size:20px;flex-shrink:0"></i>
+        <div>
+          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:2px;">Total contract value</div>
+          <div style="font-size:13px;font-weight:500">${escHtml(data.totalValue)}</div>
+        </div>
+      </div>`;
+    }
+
+    if (data.costs && data.costs.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;">Costs & financial risks</div>`;
+      data.costs.forEach(c => {
+        const bg = c.severity==='high'?'#FAECE7':c.severity==='medium'?'#FAEEDA':'#EAF3DE';
+        const color = c.severity==='high'?'#993C1D':c.severity==='medium'?'#633806':'#27500A';
+        const icon = c.severity==='high'?'ti-alert-triangle':c.severity==='medium'?'ti-info-circle':'ti-check';
+        html += `<div style="background:${bg};border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:${color};">
+              <i class="ti ${icon}" style="font-size:13px"></i> ${escHtml(c.label)}
+            </div>
+            ${c.amount?`<span style="font-size:12px;font-weight:500;color:${color}">${escHtml(c.amount)}</span>`:''}
+          </div>
+          <div style="font-size:12px;line-height:1.55;color:var(--text)">${escHtml(c.description)}</div>
+          ${c.negotiable?`<div style="font-size:10px;margin-top:5px;color:${color};font-weight:500;display:flex;align-items:center;gap:4px;"><i class="ti ti-pencil" style="font-size:10px"></i> Negotiable</div>`:''}
+        </div>`;
+      });
+    }
+
+    if (data.marketComparison && data.marketComparison.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin:1.25rem 0 8px;">Market comparison</div>`;
+      data.marketComparison.forEach(m => {
+        const color = m.assessment==='below_market'?'#993C1D':m.assessment==='above_market'?'#27500A':'#633806';
+        const bg = m.assessment==='below_market'?'#FAECE7':m.assessment==='above_market'?'#EAF3DE':'#FAEEDA';
+        const label = m.assessment==='below_market'?'Below market':m.assessment==='above_market'?'Above market':'At market';
+        const icon = m.assessment==='below_market'?'ti-trending-down':m.assessment==='above_market'?'ti-trending-up':'ti-minus';
+        html += `<div style="border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;background:var(--bg);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:12px;font-weight:500">${escHtml(m.item)}</div>
+            <span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;background:${bg};color:${color};display:inline-flex;align-items:center;gap:3px;">
+              <i class="ti ${icon}" style="font-size:10px"></i> ${label}
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:var(--bg2);border-radius:var(--radius);padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text2);margin-bottom:2px;">This contract</div>
+              <div style="font-size:12px;font-weight:500">${escHtml(m.contractValue)}</div>
+            </div>
+            <div style="background:var(--bg2);border-radius:var(--radius);padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text2);margin-bottom:2px;">Market rate</div>
+              <div style="font-size:12px;font-weight:500">${escHtml(m.marketRate)}</div>
+            </div>
+          </div>
+          ${m.gap?`<div style="font-size:11px;color:${color};margin-top:6px">${escHtml(m.gap)}</div>`:''}
+        </div>`;
+      });
+    }
+
+    if (data.negotiationScripts && data.negotiationScripts.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin:1.25rem 0 8px;">Negotiation scripts</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Use these word-for-word. Copy and paste into an email or say them directly.</div>`;
+      data.negotiationScripts.forEach(s => {
+        html += `<div style="border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:var(--bg);">
+          <div style="padding:8px 12px;background:var(--bg2);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:12px;font-weight:500">${escHtml(s.clause)}</div>
+            ${s.potentialSaving?`<span style="font-size:10px;font-weight:500;color:#27500A;background:#EAF3DE;padding:2px 8px;border-radius:10px;">${escHtml(s.potentialSaving)}</span>`:''}
+          </div>
+          <div style="padding:10px 12px;">
+            <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);margin-bottom:4px;">Current</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5">${escHtml(s.currentLanguage)}</div>
+            <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:4px;">What to say / write</div>
+            <div style="font-size:12px;line-height:1.6;background:var(--accent-light);padding:10px 12px;border-radius:var(--radius);color:#712B13;font-style:italic">"${escHtml(s.suggestedLanguage)}"</div>
+          </div>
+        </div>`;
+      });
+    }
+
+    if (data.restructuringSuggestions && data.restructuringSuggestions.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin:1.25rem 0 8px;">Restructuring suggestions</div>`;
+      data.restructuringSuggestions.forEach(r => {
+        html += `<div style="border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;background:var(--bg);">
+          <div style="font-size:12px;font-weight:500;margin-bottom:5px">${escHtml(r.clause)}</div>
+          <div style="font-size:11px;color:#993C1D;background:#FAECE7;padding:6px 10px;border-radius:var(--radius);margin-bottom:8px;line-height:1.5">${escHtml(r.issue)}</div>
+          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);margin-bottom:4px;">Suggested restructure</div>
+          <div style="font-size:12px;line-height:1.55;margin-bottom:6px">${escHtml(r.suggestion)}</div>
+          ${r.impact?`<div style="font-size:11px;color:#27500A;background:#EAF3DE;padding:6px 10px;border-radius:var(--radius);line-height:1.5"><strong>Impact:</strong> ${escHtml(r.impact)}</div>`:''}
+        </div>`;
+      });
+    }
+
+    return html || '<p style="font-size:13px;color:var(--text2);padding:1rem 0">No financial analysis available.</p>';
   }
 
   function toggleSection(i) {
@@ -362,3 +469,4 @@
 </style>
 </body>
 </html>
+
