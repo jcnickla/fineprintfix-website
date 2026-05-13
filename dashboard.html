@@ -116,9 +116,153 @@
       animation: shimmer 1.5s ease-in-out infinite;
     }
     @keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    /* FILTERS */
+    .filters-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .search-box {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--bg); border: 0.5px solid var(--border2);
+      border-radius: var(--radius); padding: 7px 12px;
+      flex: 1; min-width: 180px;
+    }
+    .search-box i { color: var(--text2); font-size: 14px; flex-shrink: 0; }
+    .search-box input {
+      border: none; outline: none; font-size: 13px;
+      font-family: 'DM Sans', sans-serif; color: var(--text);
+      background: transparent; width: 100%;
+    }
+    .search-box input::placeholder { color: var(--text2); }
+    .filter-select {
+      background: var(--bg); border: 0.5px solid var(--border2);
+      border-radius: var(--radius); padding: 7px 10px;
+      font-size: 12px; font-family: 'DM Sans', sans-serif;
+      color: var(--text2); cursor: pointer; outline: none;
+    }
+    .filter-select.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .sort-btn {
+      background: var(--bg); border: 0.5px solid var(--border2);
+      border-radius: var(--radius); padding: 7px 10px;
+      font-size: 12px; font-family: 'DM Sans', sans-serif;
+      color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 5px;
+      white-space: nowrap;
+    }
+    .sort-btn:hover { background: var(--bg2); }
+    .results-count {
+      font-size: 11px; color: var(--text2); margin-bottom: 0.75rem;
+    }
+    .doc-type-badge {
+      font-size: 10px; font-weight: 500; padding: 2px 7px;
+      border-radius: 10px; background: var(--bg2);
+      color: var(--text2); border: 0.5px solid var(--border);
+    }
+    .risk-badge {
+      font-size: 10px; font-weight: 500; padding: 2px 7px;
+      border-radius: 10px; display: inline-flex; align-items: center; gap: 3px;
+    }
+    .risk-badge.high { background: #FAECE7; color: #993C1D; }
+    .risk-badge.medium { background: #FAEEDA; color: #633806; }
+    .risk-badge.low { background: #EAF3DE; color: #27500A; }
+    .no-results {
+      text-align: center; padding: 2rem 1rem;
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); font-size: 13px; color: var(--text2);
+    }
+    .delete-btn {
+      width: 28px; height: 28px; border-radius: var(--radius);
+      background: transparent; border: 0.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text2); font-size: 14px;
+      flex-shrink: 0; transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .delete-btn:hover { background: #FAECE7; color: #993C1D; border-color: #F5C4B3; }
+    .confirm-delete {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 1rem;
+    }
+    .confirm-box {
+      background: var(--bg); border-radius: var(--radius-lg);
+      padding: 1.5rem; max-width: 320px; width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .confirm-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; }
+    .confirm-sub { font-size: 12px; color: var(--text2); margin-bottom: 1.25rem; line-height: 1.5; }
+    .confirm-btns { display: flex; gap: 8px; }
+    .confirm-btns button {
+      flex: 1; padding: 9px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; border: none;
+    }
+    .btn-cancel { background: var(--bg2); color: var(--text); border: 0.5px solid var(--border2) !important; }
+    .btn-delete { background: #D85A30; color: #fff; }
+
+    /* COMPARE MODE */
+    .compare-bar {
+      display: none; align-items: center; justify-content: space-between;
+      background: var(--text); color: #fff;
+      padding: 10px 16px; border-radius: var(--radius-lg);
+      margin-bottom: 1rem; gap: 12px; flex-wrap: wrap;
+    }
+    .compare-bar.active { display: flex; }
+    .compare-bar-left { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .compare-count {
+      background: var(--accent); color: #fff;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 500; flex-shrink: 0;
+    }
+    .compare-names { font-size: 11px; color: rgba(255,255,255,0.65); }
+    .compare-bar-right { display: flex; gap: 8px; align-items: center; }
+    .btn-compare {
+      background: var(--accent); color: #fff; border: none;
+      padding: 7px 16px; border-radius: var(--radius);
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; gap: 5px;
+      opacity: 0.5; pointer-events: none; transition: opacity 0.15s;
+    }
+    .btn-compare.ready { opacity: 1; pointer-events: all; }
+    .btn-cancel-compare {
+      background: transparent; color: rgba(255,255,255,0.7);
+      border: 0.5px solid rgba(255,255,255,0.2);
+      padding: 7px 12px; border-radius: var(--radius);
+      font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    }
+    .compare-hint {
+      font-size: 11px; color: var(--text2); margin-bottom: 10px;
+      display: none; align-items: center; gap: 5px;
+    }
+    .compare-hint.active { display: flex; }
+    .analysis-card-wrap { position: relative; }
+    .compare-checkbox {
+      position: absolute; left: -32px; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent);
+      display: none;
+    }
+    .compare-mode .analysis-card-wrap { margin-left: 32px; }
+    .compare-mode .compare-checkbox { display: block; }
+    .compare-mode .analysis-card { transition: border-color 0.12s, box-shadow 0.12s; }
+    .compare-mode .analysis-card.selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+    .section-title-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .btn-start-compare {
+      background: transparent; border: 0.5px solid var(--border2);
+      padding: 6px 12px; border-radius: var(--radius);
+      font-size: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      color: var(--text2); display: flex; align-items: center; gap: 5px;
+    }
+    .btn-start-compare:hover { background: var(--bg2); }
+
     @media (max-width: 480px) {
       .main { padding: 1.25rem 1rem; }
       nav { padding: 0 1rem; }
+      .filters-bar { gap: 6px; }
+      .search-box { min-width: 100%; }
     }
   </style>
 </head>
@@ -155,7 +299,61 @@
     <i class="ti ti-arrow-right uc-arrow"></i>
   </a>
 
-  <div class="section-title">Your past analyses</div>
+  <div class="section-title-row">
+    <div class="section-title" style="margin-bottom:0">Your past analyses</div>
+    <button class="btn-start-compare" id="btn-start-compare" onclick="startCompareMode()">
+      <i class="ti ti-layout-columns"></i> Compare
+    </button>
+  </div>
+
+  <div class="compare-bar" id="compare-bar">
+    <div class="compare-bar-left">
+      <div class="compare-count" id="compare-count">0</div>
+      <div>
+        <div style="font-size:12px;font-weight:500">Comparing documents</div>
+        <div class="compare-names" id="compare-names">Select 2 or 3 documents below</div>
+      </div>
+    </div>
+    <div class="compare-bar-right">
+      <button class="btn-cancel-compare" onclick="cancelCompareMode()">Cancel</button>
+      <button class="btn-compare" id="btn-compare" onclick="goToCompare()">
+        <i class="ti ti-layout-columns"></i> Compare now
+      </button>
+    </div>
+  </div>
+
+  <div class="compare-hint active" id="compare-hint" style="display:none">
+    <i class="ti ti-info-circle" style="font-size:13px"></i>
+    Select 2 or 3 documents to compare — works best with similar contract types
+  </div>
+
+  <div class="filters-bar">
+    <div class="search-box">
+      <i class="ti ti-search"></i>
+      <input type="text" id="search-input" placeholder="Search documents..." oninput="applyFilters()" />
+    </div>
+    <select class="filter-select" id="filter-type" onchange="applyFilters()">
+      <option value="">All types</option>
+    </select>
+    <select class="filter-select" id="filter-risk" onchange="applyFilters()">
+      <option value="">All risk levels</option>
+      <option value="high">High risk</option>
+      <option value="medium">Medium risk</option>
+      <option value="low">Low risk</option>
+    </select>
+    <select class="filter-select" id="filter-date" onchange="applyFilters()">
+      <option value="">Any date</option>
+      <option value="7">Last 7 days</option>
+      <option value="30">Last 30 days</option>
+      <option value="90">Last 3 months</option>
+      <option value="365">Last year</option>
+    </select>
+    <button class="sort-btn" id="sort-btn" onclick="toggleSort()">
+      <i class="ti ti-arrows-sort"></i> <span id="sort-label">Newest first</span>
+    </button>
+  </div>
+
+  <div class="results-count" id="results-count"></div>
   <div class="analyses-list" id="analyses-list">
     <div class="loading-row">
       <div class="skeleton" style="width:38px;height:38px;border-radius:var(--radius);flex-shrink:0"></div>
@@ -182,6 +380,8 @@
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let currentUser = null;
+  let allAnalyses = [];
+  let sortAscending = false;
 
   async function init() {
     const { data: { session } } = await sb.auth.getSession();
@@ -199,13 +399,28 @@
   }
 
   async function loadAnalyses() {
+    const list = document.getElementById('analyses-list');
+    list.innerHTML = `
+      <div class="loading-row">
+        <div class="skeleton" style="width:38px;height:38px;border-radius:var(--radius);flex-shrink:0"></div>
+        <div style="flex:1">
+          <div class="skeleton" style="height:13px;width:60%;margin-bottom:8px"></div>
+          <div class="skeleton" style="height:11px;width:40%"></div>
+        </div>
+      </div>
+      <div class="loading-row">
+        <div class="skeleton" style="width:38px;height:38px;border-radius:var(--radius);flex-shrink:0"></div>
+        <div style="flex:1">
+          <div class="skeleton" style="height:13px;width:45%;margin-bottom:8px"></div>
+          <div class="skeleton" style="height:11px;width:35%"></div>
+        </div>
+      </div>`;
+
     const { data, error } = await sb
       .from('analyses')
       .select('*')
       .eq('user_id', currentUser.id)
       .order('created_at', { ascending: false });
-
-    const list = document.getElementById('analyses-list');
 
     if (error || !data || data.length === 0) {
       list.innerHTML = `
@@ -214,28 +429,266 @@
           <div class="empty-title">No analyses yet</div>
           <div class="empty-sub">Upload your first document above to get started</div>
         </div>`;
+      document.getElementById('results-count').textContent = '';
+      return;
+    }
+
+    allAnalyses = data;
+    populateTypeFilter(data);
+    applyFilters();
+  }
+
+  function populateTypeFilter(data) {
+    const types = [...new Set(data
+      .map(a => a.summary?.docType)
+      .filter(Boolean)
+    )].sort();
+
+    const select = document.getElementById('filter-type');
+    types.forEach(type => {
+      const opt = document.createElement('option');
+      opt.value = type;
+      opt.textContent = type;
+      select.appendChild(opt);
+    });
+  }
+
+  function applyFilters() {
+    const search = document.getElementById('search-input').value.toLowerCase().trim();
+    const typeFilter = document.getElementById('filter-type').value;
+    const riskFilter = document.getElementById('filter-risk').value;
+    const dateFilter = parseInt(document.getElementById('filter-date').value);
+
+    // Update active state on selects
+    ['filter-type','filter-risk','filter-date'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.toggle('active', el.value !== '');
+    });
+
+    let filtered = [...allAnalyses];
+
+    // Search
+    if (search) {
+      filtered = filtered.filter(a =>
+        a.doc_name.toLowerCase().includes(search) ||
+        (a.summary?.docType || '').toLowerCase().includes(search)
+      );
+    }
+
+    // Doc type
+    if (typeFilter) {
+      filtered = filtered.filter(a => a.summary?.docType === typeFilter);
+    }
+
+    // Risk level
+    if (riskFilter) {
+      filtered = filtered.filter(a => a.summary?.overallRisk === riskFilter);
+    }
+
+    // Date range
+    if (dateFilter) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - dateFilter);
+      filtered = filtered.filter(a => new Date(a.created_at) >= cutoff);
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      const diff = new Date(b.created_at) - new Date(a.created_at);
+      return sortAscending ? -diff : diff;
+    });
+
+    renderList(filtered);
+  }
+
+  function toggleSort() {
+    sortAscending = !sortAscending;
+    document.getElementById('sort-label').textContent = sortAscending ? 'Oldest first' : 'Newest first';
+    applyFilters();
+  }
+
+  function renderList(data) {
+    const list = document.getElementById('analyses-list');
+    const count = document.getElementById('results-count');
+
+    const total = allAnalyses.length;
+    const showing = data.length;
+    count.textContent = showing === total
+      ? `${total} document${total !== 1 ? 's' : ''}`
+      : `Showing ${showing} of ${total} documents`;
+
+    if (data.length === 0) {
+      list.innerHTML = `<div class="no-results"><i class="ti ti-filter-off" style="font-size:20px;display:block;margin-bottom:8px"></i>No documents match your filters</div>`;
       return;
     }
 
     list.innerHTML = data.map(a => {
       const date = new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const docType = a.summary?.docType || '';
+      const risk = a.summary?.overallRisk || '';
+      const riskLabel = risk ? risk.charAt(0).toUpperCase() + risk.slice(1) + ' risk' : '';
+      const riskIcon = risk === 'high' ? 'ti-alert-triangle' : risk === 'medium' ? 'ti-info-circle' : 'ti-check';
+      const isSelected = selectedIds.has(a.id);
+
       return `
-        <a class="analysis-card" href="results.html?id=${a.id}">
-          <div class="ac-icon"><i class="ti ti-file-text"></i></div>
-          <div class="ac-info">
-            <div class="ac-name">${escHtml(a.doc_name)}</div>
-            <div class="ac-meta">
-              <span>${date}</span>
-              <div class="ac-flags">
-                <span class="flag-dot red"><i class="ti ti-flag" style="font-size:9px"></i> ${a.red_count || 0}</span>
-                <span class="flag-dot amber"><i class="ti ti-info-circle" style="font-size:9px"></i> ${a.amber_count || 0}</span>
-                <span class="flag-dot green"><i class="ti ti-check" style="font-size:9px"></i> ${a.green_count || 0}</span>
+        <div class="analysis-card-wrap" id="wrap-${a.id}">
+          <input type="checkbox" class="compare-checkbox" id="chk-${a.id}"
+            ${isSelected ? 'checked' : ''}
+            onchange="toggleSelect('${a.id}', '${escHtml(a.doc_name).replace(/'/g,"\\'")}', this)" />
+          <div style="display:flex;align-items:center;gap:8px;">
+            <a class="analysis-card ${isSelected ? 'selected' : ''}" id="card-${a.id}" href="results.html?id=${a.id}" style="flex:1"
+              onclick="return handleCardClick(event, '${a.id}', '${escHtml(a.doc_name).replace(/'/g,"\\'")}')">
+              <div class="ac-icon"><i class="ti ti-file-text"></i></div>
+              <div class="ac-info">
+                <div class="ac-name">${escHtml(a.doc_name)}</div>
+                <div class="ac-meta" style="flex-wrap:wrap;gap:5px;">
+                  <span>${date}</span>
+                  ${docType ? `<span class="doc-type-badge">${escHtml(docType)}</span>` : ''}
+                  ${risk ? `<span class="risk-badge ${risk}"><i class="ti ${riskIcon}" style="font-size:9px"></i> ${riskLabel}</span>` : ''}
+                  <div class="ac-flags">
+                    <span class="flag-dot red"><i class="ti ti-flag" style="font-size:9px"></i> ${a.red_count || 0}</span>
+                    <span class="flag-dot amber"><i class="ti ti-info-circle" style="font-size:9px"></i> ${a.amber_count || 0}</span>
+                    <span class="flag-dot green"><i class="ti ti-check" style="font-size:9px"></i> ${a.green_count || 0}</span>
+                  </div>
+                </div>
               </div>
-            </div>
+              <i class="ti ti-chevron-right ac-arrow"></i>
+            </a>
+            <button class="delete-btn" onclick="confirmDelete('${a.id}', '${escHtml(a.doc_name).replace(/'/g,"\\'")}')">
+              <i class="ti ti-trash"></i>
+            </button>
           </div>
-          <i class="ti ti-chevron-right ac-arrow"></i>
-        </a>`;
+        </div>`;
     }).join('');
+  }
+
+  // ─── COMPARE MODE ─────────────────────────────────────────────
+  let compareMode = false;
+  let selectedIds = new Set();
+  let selectedNames = new Map();
+
+  function startCompareMode() {
+    compareMode = true;
+    selectedIds.clear();
+    selectedNames.clear();
+    document.getElementById('analyses-list').classList.add('compare-mode');
+    document.getElementById('compare-bar').classList.add('active');
+    document.getElementById('compare-hint').style.display = 'flex';
+    document.getElementById('btn-start-compare').style.display = 'none';
+    updateCompareBar();
+    applyFilters();
+  }
+
+  function cancelCompareMode() {
+    compareMode = false;
+    selectedIds.clear();
+    selectedNames.clear();
+    document.getElementById('analyses-list').classList.remove('compare-mode');
+    document.getElementById('compare-bar').classList.remove('active');
+    document.getElementById('compare-hint').style.display = 'none';
+    document.getElementById('btn-start-compare').style.display = 'flex';
+    applyFilters();
+  }
+
+  function toggleSelect(id, name, checkbox) {
+    if (checkbox.checked) {
+      if (selectedIds.size >= 3) {
+        checkbox.checked = false;
+        showToast('You can compare up to 3 documents at once', '#633806');
+        return;
+      }
+      selectedIds.add(id);
+      selectedNames.set(id, name);
+    } else {
+      selectedIds.delete(id);
+      selectedNames.delete(id);
+    }
+    // Update card selected state
+    const card = document.getElementById('card-'+id);
+    if (card) card.classList.toggle('selected', checkbox.checked);
+    updateCompareBar();
+  }
+
+  function handleCardClick(e, id, name) {
+    if (!compareMode) return true; // normal navigation
+    e.preventDefault();
+    const chk = document.getElementById('chk-'+id);
+    chk.checked = !chk.checked;
+    toggleSelect(id, name, chk);
+    return false;
+  }
+
+  function updateCompareBar() {
+    const count = selectedIds.size;
+    document.getElementById('compare-count').textContent = count;
+    const names = [...selectedNames.values()];
+    document.getElementById('compare-names').textContent = count === 0
+      ? 'Select 2 or 3 documents below'
+      : names.map(n => n.length > 20 ? n.slice(0,20)+'…' : n).join(' vs ');
+    const btn = document.getElementById('btn-compare');
+    btn.classList.toggle('ready', count >= 2);
+  }
+
+  function goToCompare() {
+    if (selectedIds.size < 2) return;
+    const ids = [...selectedIds].join(',');
+    window.location.href = `compare.html?ids=${ids}`;
+  }
+
+  function showToast(msg, color = '#1a1a18') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `position:fixed;bottom:20px;right:20px;background:${color};color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-family:DM Sans,sans-serif;z-index:999;display:flex;align-items:center;gap:6px;`;
+    toast.innerHTML = `<i class="ti ti-info-circle" style="font-size:13px"></i> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+
+  function confirmDelete(id, name) {
+    // Remove any existing dialog
+    const existing = document.getElementById('confirm-dialog');
+    if (existing) existing.remove();
+
+    const dialog = document.createElement('div');
+    dialog.id = 'confirm-dialog';
+    dialog.className = 'confirm-delete';
+    dialog.innerHTML = `
+      <div class="confirm-box">
+        <div class="confirm-title">Delete this analysis?</div>
+        <div class="confirm-sub">"${name}" will be permanently deleted. This can't be undone.</div>
+        <div class="confirm-btns">
+          <button class="btn-cancel" onclick="document.getElementById('confirm-dialog').remove()">Cancel</button>
+          <button class="btn-delete" onclick="deleteAnalysis('${id}')">Delete</button>
+        </div>
+      </div>`;
+    document.body.appendChild(dialog);
+
+    // Close on backdrop click
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) dialog.remove();
+    });
+  }
+
+  async function deleteAnalysis(id) {
+    const dialog = document.getElementById('confirm-dialog');
+    if (dialog) dialog.remove();
+
+    const { error } = await sb
+      .from('analyses')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', currentUser.id);
+
+    if (error) {
+      console.error('Delete error:', error);
+      return;
+    }
+
+    // Remove from local array and re-render
+    allAnalyses = allAnalyses.filter(a => a.id !== id);
+    selectedIds.delete(id);
+    selectedNames.delete(id);
+    applyFilters();
+    showToast('Analysis deleted');
   }
 
   async function signOut() {
@@ -244,10 +697,12 @@
   }
 
   function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   init();
 </script>
 </body>
 </html>
+
