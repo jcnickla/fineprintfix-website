@@ -123,9 +123,27 @@
     .error-wrap { text-align: center; padding: 4rem 1rem; }
     .error-wrap h2 { font-size: 16px; margin-bottom: 8px; }
     .error-wrap p { font-size: 13px; color: var(--text2); }
+    .disclaimer-banner {
+      background: #FAEEDA; border-bottom: 0.5px solid #FAC775;
+      padding: 8px 2rem; display: flex; align-items: center;
+      justify-content: center; gap: 7px;
+      font-size: 11px; color: #633806; text-align: center; flex-wrap: wrap;
+    }
+    .disclaimer-banner a { color: #633806; font-weight: 500; }
+    .disclaimer-banner a:hover { text-decoration: underline; }
+    .results-footer {
+      border-top: 0.5px solid var(--border); padding: 1.25rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; color: var(--text2); flex-wrap: wrap; gap: 8px;
+      margin-top: 1rem;
+    }
+    .results-footer a { color: var(--text2); text-decoration: none; }
+    .results-footer a:hover { color: var(--text); }
     @media (max-width: 480px) {
       .main { padding: 1.25rem 1rem; }
       nav { padding: 0 1rem; }
+      .disclaimer-banner { padding: 8px 1rem; }
+      .results-footer { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -142,6 +160,11 @@
     </button>
   </div>
 </nav>
+
+<div class="disclaimer-banner">
+  <i class="ti ti-info-circle" style="font-size:13px;flex-shrink:0"></i>
+  FinePrintFix is an AI-powered tool for informational purposes only — not a substitute for legal advice. <a href="legal.html">Learn more</a>
+</div>
 
 <div class="main" id="main-content">
   <div class="loading-wrap">
@@ -467,6 +490,13 @@
 <style>
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
+
+<footer class="results-footer">
+  <a href="index.html" style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--text);text-decoration:none">Fine<span style="color:var(--accent)">Print</span>Fix</a>
+  <span>AI-powered analysis for informational purposes only — not legal advice.</span>
+  <span><a href="legal.html">Terms & Disclaimer</a> · <a href="legal.html#privacy">Privacy</a></span>
+</footer>
 </body>
 </html>
+
 
