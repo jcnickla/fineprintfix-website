@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinePrintFix — Compare Documents</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f7f5f2; --text: #1a1a18; --text2: #6b6b67;
+      --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+      --accent: #D85A30; --accent-light: #FAECE7;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
+
+    nav {
+      background: var(--bg); border-bottom: 0.5px solid var(--border);
+      padding: 0 2rem; display: flex; align-items: center;
+      justify-content: space-between; height: 56px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .logo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; text-decoration: none; color: var(--text); }
+    .logo span { color: var(--accent); }
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text2); text-decoration: none;
+      padding: 6px 12px; border-radius: var(--radius);
+      border: 0.5px solid var(--border2); background: transparent;
+    }
+    .back-btn:hover { background: var(--bg2); }
+
+    .main { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .page-header { margin-bottom: 1.5rem; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .page-header p { font-size: 13px; color: var(--text2); }
+
+    /* LOADING */
+    .loading-wrap { text-align: center; padding: 4rem 1rem; }
+    .pulse-ring {
+      width: 52px; height: 52px; border-radius: 50%;
+      border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem; font-size: 22px; color: var(--accent);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+    /* RECOMMENDATION BANNER */
+    .recommendation {
+      background: var(--text); color: #fff;
+      border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 14px;
+    }
+    .rec-icon {
+      width: 40px; height: 40px; border-radius: var(--radius);
+      background: var(--accent); display: flex; align-items: center;
+      justify-content: center; font-size: 20px; flex-shrink: 0;
+    }
+    .rec-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+    .rec-winner { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+    .rec-reason { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.55; }
+    .rec-tied { background: #3a3a38; }
+
+    /* SECTION HEADER */
+    .section-label {
+      font-size: 11px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text2); margin-bottom: 10px;
+      margin-top: 1.5rem;
+    }
+
+    /* DOC HEADERS */
+    .doc-headers {
+      display: grid; gap: 8px; margin-bottom: 1rem;
+    }
+    .doc-header-card {
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .doc-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 500; flex-shrink: 0; color: #fff;
+    }
+    .doc-header-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+    .doc-header-meta { font-size: 11px; color: var(--text2); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+    /* COMPARISON GRID */
+    .compare-grid { display: grid; gap: 8px; }
+    .compare-row {
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .compare-row-header {
+      padding: 8px 14px; background: var(--bg2);
+      border-bottom: 0.5px solid var(--border);
+      font-size: 11px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text2);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .compare-cells { display: grid; }
+    .compare-cell {
+      padding: 10px 14px; font-size: 12px; line-height: 1.55;
+      border-right: 0.5px solid var(--border);
+      position: relative;
+    }
+    .compare-cell:last-child { border-right: none; }
+    .cell-doc-label {
+      font-size: 10px; font-weight: 500; margin-bottom: 4px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .cell-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .winner-badge {
+      position: absolute; top: 8px; right: 8px;
+      font-size: 9px; font-weight: 500; padding: 2px 6px;
+      border-radius: 10px; background: #EAF3DE; color: #27500A;
+      display: flex; align-items: center; gap: 3px;
+    }
+
+    /* PROS CONS */
+    .pros-cons-grid { display: grid; gap: 8px; }
+    .pros-cons-card {
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+    }
+    .pros-cons-header {
+      padding: 10px 14px; background: var(--bg2);
+      border-bottom: 0.5px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pros-cons-doc-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .pros-cons-title { font-size: 13px; font-weight: 500; }
+    .pros-cons-body { display: grid; grid-template-columns: 1fr 1fr; }
+    .pros-col { padding: 12px 14px; border-right: 0.5px solid var(--border); }
+    .cons-col { padding: 12px 14px; }
+    .pc-label {
+      font-size: 10px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .pc-label.pro { color: #27500A; }
+    .pc-label.con { color: #993C1D; }
+    .pc-item {
+      display: flex; align-items: flex-start; gap: 6px;
+      font-size: 11px; line-height: 1.5; margin-bottom: 6px; color: var(--text);
+    }
+    .pc-item i { flex-shrink: 0; margin-top: 1px; font-size: 12px; }
+    .pc-item.pro i { color: #3B6D11; }
+    .pc-item.con i { color: #993C1D; }
+
+    /* CATEGORY WINNERS */
+    .winners-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+    .winner-card {
+      background: var(--bg); border: 0.5px solid var(--border);
+      border-radius: var(--radius-lg); padding: 10px 12px;
+    }
+    .winner-category { font-size: 10px; color: var(--text2); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .winner-name { font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+    .winner-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .winner-reason { font-size: 11px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+    .tied-label { font-size: 12px; color: var(--text2); font-style: italic; }
+
+    /* COLORS per doc */
+    .doc-color-0 { background: #4F6AF5; }
+    .doc-color-1 { background: #D85A30; }
+    .doc-color-2 { background: #27A17E; }
+    .doc-text-0 { color: #4F6AF5; }
+    .doc-text-1 { color: #D85A30; }
+    .doc-text-2 { color: #27A17E; }
+    .doc-bg-0 { background: #EEF1FE; }
+    .doc-bg-1 { background: #FAECE7; }
+    .doc-bg-2 { background: #E3F5EF; }
+
+    @media (max-width: 600px) {
+      .main { padding: 1.25rem 1rem; }
+      nav { padding: 0 1rem; }
+      .pros-cons-body { grid-template-columns: 1fr; }
+      .pros-col { border-right: none; border-bottom: 0.5px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+  <a href="dashboard.html" class="back-btn">
+    <i class="ti ti-arrow-left"></i> Dashboard
+  </a>
+</nav>
+
+<div class="main">
+  <div class="page-header">
+    <h1>Document comparison</h1>
+    <p>Side-by-side analysis with pros, cons, and a recommendation</p>
+  </div>
+
+  <div id="compare-content">
+    <div class="loading-wrap">
+      <div class="pulse-ring"><i class="ti ti-layout-columns"></i></div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:6px">Comparing your documents...</div>
+      <div style="font-size:12px;color:var(--text2)">This takes about 30 seconds</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── SUPABASE ──────────────────────────────────────────────────
+  const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const DOC_COLORS = ['#4F6AF5', '#D85A30', '#27A17E'];
+  const DOC_BG = ['#EEF1FE', '#FAECE7', '#E3F5EF'];
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'auth.html'; return; }
+
+    const params = new URLSearchParams(window.location.search);
+    const ids = params.get('ids');
+    if (!ids) { showError('No documents selected.'); return; }
+
+    const idList = ids.split(',').slice(0, 3);
+    if (idList.length < 2) { showError('Please select at least 2 documents to compare.'); return; }
+
+    // Fetch all analyses
+    const { data, error } = await sb
+      .from('analyses')
+      .select('*')
+      .in('id', idList)
+      .eq('user_id', session.user.id);
+
+    if (error || !data || data.length < 2) {
+      showError('Could not load documents. Please go back and try again.');
+      return;
+    }
+
+    // Sort to match original selection order
+    const sorted = idList.map(id => data.find(d => d.id === id)).filter(Boolean);
+
+    // Run AI comparison
+    const comparison = await runComparison(sorted);
+    renderComparison(sorted, comparison);
+  }
+
+  // ─── AI COMPARISON ─────────────────────────────────────────────
+  async function runComparison(docs) {
+    try {
+      const docSummaries = docs.map((d, i) => ({
+        index: i + 1,
+        name: d.doc_name,
+        docType: d.summary?.docType || 'Unknown',
+        overview: d.summary?.overview || '',
+        keyFacts: d.summary?.keyFacts || [],
+        overallRisk: d.summary?.overallRisk || 'unknown',
+        redCount: d.red_count || 0,
+        amberCount: d.amber_count || 0,
+        greenCount: d.green_count || 0,
+        flags: d.flags || {},
+        money: d.money || {},
+      }));
+
+      const systemPrompt = `You are FinePrintFix, a legal document comparison tool for everyday people.
+You will be given ${docs.length} analyzed legal documents. Compare them and return ONLY a JSON object (no markdown, no preamble):
+{
+  "recommendation": {
+    "winner": 1, 2, ${docs.length > 2 ? '3,' : ''} or null if tied,
+    "winnerName": "Name of the winning document or null",
+    "confidence": "high", "medium", or "low",
+    "summary": "2-3 sentence plain English explanation of why this document is the best choice overall, or why they're tied",
+    "caveat": "One sentence about the main thing to watch out for even in the winner, or null"
+  },
+  "categoryWinners": [
+    {
+      "category": "e.g. Compensation, Job Security, Flexibility, Risk Level, Benefits",
+      "winner": 1, 2, ${docs.length > 2 ? '3,' : ''} or null if tied,
+      "winnerName": "Name or 'Tied'",
+      "reason": "One plain English sentence explaining why"
+    }
+  ],
+  "prosAndCons": [
+    {
+      "docIndex": 1,
+      "pros": ["Specific pro 1", "Specific pro 2", "Specific pro 3"],
+      "cons": ["Specific con 1", "Specific con 2", "Specific con 3"]
+    }
+  ],
+  "sideBySide": [
+    {
+      "category": "Category name e.g. Compensation",
+      "values": [
+        {"docIndex": 1, "value": "What document 1 says", "isWinner": true or false},
+        {"docIndex": 2, "value": "What document 2 says", "isWinner": true or false}
+      ]
+    }
+  ]
+}
+Rules:
+- Be specific — reference actual values from the documents (salaries, dates, terms)
+- Pros and cons should be 3-5 items each, specific not generic
+- Side by side should cover 4-6 key categories that are most important for this type of document
+- Category winners: 4-6 categories, pick the most relevant for these document types
+- Write everything in plain English for someone with no legal background
+- If documents are very different types, note this in the recommendation summary`;
+
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system: systemPrompt,
+          messages: [{
+            role: 'user',
+            content: `Compare these ${docs.length} documents:\n\n${JSON.stringify(docSummaries, null, 2)}`
+          }]
+        })
+      });
+
+      if (!response.ok) throw new Error('API error');
+      const result = await response.json();
+      const raw = result.content.map(b => b.text || '').join('');
+      const clean = raw.replace(/```json|```/g, '').trim();
+      return JSON.parse(clean);
+    } catch (err) {
+      console.error('Comparison error:', err);
+      return null;
+    }
+  }
+
+  // ─── RENDER ────────────────────────────────────────────────────
+  function renderComparison(docs, comparison) {
+    const content = document.getElementById('compare-content');
+
+    if (!comparison) {
+      content.innerHTML = `<div style="text-align:center;padding:3rem 1rem;">
+        <div style="font-size:14px;font-weight:500;margin-bottom:8px">Comparison unavailable</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:1rem">Could not generate comparison. Please try again.</div>
+        <a href="dashboard.html" style="color:var(--accent);font-size:13px">← Back to dashboard</a>
+      </div>`;
+      return;
+    }
+
+    let html = '';
+
+    // RECOMMENDATION BANNER
+    const rec = comparison.recommendation;
+    const winnerDoc = rec.winner ? docs[rec.winner - 1] : null;
+    const winnerColor = rec.winner ? DOC_COLORS[rec.winner - 1] : '#3a3a38';
+    html += `<div class="recommendation ${!rec.winner ? 'rec-tied' : ''}">
+      <div class="rec-icon" style="background:${winnerColor}">
+        <i class="ti ${rec.winner ? 'ti-trophy' : 'ti-scale'}" style="font-size:18px"></i>
+      </div>
+      <div>
+        <div class="rec-label">${rec.confidence} confidence · overall recommendation</div>
+        <div class="rec-winner">${winnerDoc ? `Go with: ${escHtml(winnerDoc.doc_name)}` : "It's a close call"}</div>
+        <div class="rec-reason">${escHtml(rec.summary)}</div>
+        ${rec.caveat ? `<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:6px;font-style:italic">⚠ ${escHtml(rec.caveat)}</div>` : ''}
+      </div>
+    </div>`;
+
+    // DOC HEADERS
+    html += `<div class="section-label">Documents being compared</div>`;
+    html += `<div class="doc-headers" style="grid-template-columns:repeat(${docs.length},1fr)">`;
+    docs.forEach((d, i) => {
+      const risk = d.summary?.overallRisk || '';
+      html += `<div class="doc-header-card">
+        <div class="doc-num" style="background:${DOC_COLORS[i]}">${i+1}</div>
+        <div>
+          <div class="doc-header-name">${escHtml(d.doc_name)}</div>
+          <div class="doc-header-meta">
+            ${d.summary?.docType ? `<span>${escHtml(d.summary.docType)}</span>` : ''}
+            ${risk ? `<span style="color:${risk==='high'?'#993C1D':risk==='medium'?'#633806':'#27500A'}">${risk} risk</span>` : ''}
+            <span style="color:#993C1D">${d.red_count||0} flags</span>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+
+    // CATEGORY WINNERS
+    if (comparison.categoryWinners && comparison.categoryWinners.length) {
+      html += `<div class="section-label">Category winners</div>`;
+      html += `<div class="winners-grid">`;
+      comparison.categoryWinners.forEach(cw => {
+        const color = cw.winner ? DOC_COLORS[cw.winner - 1] : '#6b6b67';
+        const bg = cw.winner ? DOC_BG[cw.winner - 1] : 'var(--bg2)';
+        html += `<div class="winner-card" style="border-color:${color}20">
+          <div class="winner-category">${escHtml(cw.category)}</div>
+          <div class="winner-name">
+            <div class="winner-dot" style="background:${color}"></div>
+            ${cw.winner ? escHtml(cw.winnerName) : '<span class="tied-label">Tied</span>'}
+          </div>
+          <div class="winner-reason">${escHtml(cw.reason)}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // SIDE BY SIDE
+    if (comparison.sideByside || comparison.sideByside === undefined) {
+      const sbs = comparison.sideByside || comparison.sideBySort || comparison['side-by-side'] || comparison.sideByside || comparison.sideBySide;
+      if (sbs && sbs.length) {
+        html += `<div class="section-label">Side by side</div>`;
+        html += `<div class="compare-grid">`;
+        sbs.forEach(row => {
+          html += `<div class="compare-row">
+            <div class="compare-row-header">
+              <i class="ti ti-columns" style="font-size:12px"></i> ${escHtml(row.category)}
+            </div>
+            <div class="compare-cells" style="grid-template-columns:repeat(${row.values.length},1fr)">`;
+          row.values.forEach(v => {
+            const di = v.docIndex - 1;
+            html += `<div class="compare-cell">
+              ${v.isWinner ? `<div class="winner-badge"><i class="ti ti-check" style="font-size:9px"></i> Better</div>` : ''}
+              <div class="cell-doc-label">
+                <div class="cell-dot" style="background:${DOC_COLORS[di]}"></div>
+                <span style="color:${DOC_COLORS[di]}">${escHtml(docs[di]?.doc_name || 'Doc '+(di+1))}</span>
+              </div>
+              <div>${escHtml(v.value)}</div>
+            </div>`;
+          });
+          html += `</div></div>`;
+        });
+        html += `</div>`;
+      }
+    }
+
+    // Handle different key names for sideByside
+    const sbsKey = ['sideByide', 'sideBySort', 'side-by-side', 'sideByide', 'sideByide', 'sideBySide', 'sideByide'].find(k => comparison[k]);
+    const sbs = comparison.sideBySide || comparison['sideByide'] || comparison['side-by-side'];
+    if (sbs && sbs.length && !html.includes('compare-grid')) {
+      html += `<div class="section-label">Side by side</div><div class="compare-grid">`;
+      sbs.forEach(row => {
+        html += `<div class="compare-row"><div class="compare-row-header"><i class="ti ti-columns" style="font-size:12px"></i> ${escHtml(row.category)}</div><div class="compare-cells" style="grid-template-columns:repeat(${row.values.length},1fr)">`;
+        row.values.forEach(v => {
+          const di = v.docIndex - 1;
+          html += `<div class="compare-cell">${v.isWinner?`<div class="winner-badge"><i class="ti ti-check" style="font-size:9px"></i> Better</div>`:''}<div class="cell-doc-label"><div class="cell-dot" style="background:${DOC_COLORS[di]}"></div><span style="color:${DOC_COLORS[di]}">${escHtml(docs[di]?.doc_name||'Doc '+(di+1))}</span></div><div>${escHtml(v.value)}</div></div>`;
+        });
+        html += `</div></div>`;
+      });
+      html += `</div>`;
+    }
+
+    // PROS AND CONS
+    if (comparison.prosAndCons && comparison.prosAndCons.length) {
+      html += `<div class="section-label">Pros & cons</div>`;
+      html += `<div class="pros-cons-grid">`;
+      comparison.prosAndCons.forEach(pc => {
+        const di = pc.docIndex - 1;
+        const doc = docs[di];
+        html += `<div class="pros-cons-card">
+          <div class="pros-cons-header">
+            <div class="pros-cons-doc-dot" style="background:${DOC_COLORS[di]}"></div>
+            <div class="pros-cons-title">${escHtml(doc?.doc_name || 'Document '+(di+1))}</div>
+          </div>
+          <div class="pros-cons-body">
+            <div class="pros-col">
+              <div class="pc-label pro"><i class="ti ti-thumb-up" style="font-size:11px"></i> Pros</div>
+              ${(pc.pros || []).map(p => `<div class="pc-item pro"><i class="ti ti-check"></i><span>${escHtml(p)}</span></div>`).join('')}
+            </div>
+            <div class="cons-col">
+              <div class="pc-label con"><i class="ti ti-thumb-down" style="font-size:11px"></i> Cons</div>
+              ${(pc.cons || []).map(c => `<div class="pc-item con"><i class="ti ti-x"></i><span>${escHtml(c)}</span></div>`).join('')}
+            </div>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // BACK LINK
+    html += `<div style="text-align:center;padding:1.5rem 0;">
+      <a href="dashboard.html" style="color:var(--text2);font-size:12px;text-decoration:none;display:inline-flex;align-items:center;gap:5px;">
+        <i class="ti ti-arrow-left" style="font-size:12px"></i> Back to dashboard
+      </a>
+    </div>`;
+
+    content.innerHTML = html;
+  }
+
+  function showError(msg) {
+    document.getElementById('compare-content').innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;">
+        <div style="font-size:14px;font-weight:500;margin-bottom:8px">Something went wrong</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:1rem">${msg}</div>
+        <a href="dashboard.html" style="color:var(--accent);font-size:13px">← Back to dashboard</a>
+      </div>`;
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  init();
+</script>
+</body>
+</html>
