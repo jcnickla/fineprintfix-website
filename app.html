@@ -506,6 +506,9 @@
         <button class="rtab" id="rtab-questions" onclick="switchResultTab('questions')">
           <i class="ti ti-message-question"></i> Questions
         </button>
+        <button class="rtab" id="rtab-money" onclick="switchResultTab('money')">
+          <i class="ti ti-coin"></i> Money
+        </button>
       </div>
 
       <div id="panel-summary" class="rtab-panel active">
@@ -522,6 +525,10 @@
 
       <div id="panel-questions" class="rtab-panel">
         <div id="questions-content" class="ai-response loading">Preparing your questions list...</div>
+      </div>
+
+      <div id="panel-money" class="rtab-panel">
+        <div id="money-content" class="ai-response loading">Analyzing financial terms...</div>
       </div>
 
       <button class="new-doc-btn" onclick="resetFlow()">
@@ -654,23 +661,30 @@
   async function runAnalysis() {
     const docContent = buildDocContent();
 
-    // Run all four analyses in parallel
-    const [flagsData, sectionsData, questionsData, summaryData] = await Promise.all([
+    // Run all five analyses in parallel
+    const [flagsData, sectionsData, questionsData, summaryData, moneyData] = await Promise.all([
       analyzeWithClaude(flagsPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green'),
       analyzeWithClaude(sectionsPrompt(docContent), 'sections-content'),
       analyzeWithClaude(questionsPrompt(docContent), 'questions-content'),
       fetchSummary(docContent),
+      fetchMoney(docContent),
     ]);
 
-    // Render summary now that results screen is visible
+    // Render summary
     if (summaryData) {
       const el = document.getElementById('summary-content');
       if (el) renderSummary(summaryData, el);
     }
 
+    // Render money
+    if (moneyData) {
+      const el = document.getElementById('money-content');
+      if (el) renderMoney(moneyData, el);
+    }
+
     // Save everything to Supabase
     if (flagsData && sectionsData && questionsData) {
-      saveAnalysis(flagsData, sectionsData, questionsData, summaryData || {});
+      saveAnalysis(flagsData, sectionsData, questionsData, summaryData || {}, moneyData || {});
     }
   }
 
@@ -705,6 +719,34 @@
       return parsed;
     } catch (err) {
       console.error('Summary fetch error:', err.message);
+      return {};
+    }
+  }
+
+  async function fetchMoney(docContent) {
+    try {
+      const promptObj = moneyPrompt(docContent);
+      const messages = [];
+      if (docContent.type === 'document') {
+        messages.push({ role: 'user', content: [docContent, { type: 'text', text: 'Analyze this document.' }] });
+      } else {
+        messages.push({ role: 'user', content: 'Analyze this document:\n\n' + docContent.text });
+      }
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages })
+      });
+      if (!response.ok) { console.error('Money API error:', response.status); return {}; }
+      const data = await response.json();
+      if (!data.content) { console.error('Money: no content', data); return {}; }
+      const raw = data.content.map(b => b.text || '').join('');
+      const clean = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      console.log('Money fetched successfully, hasFinancials:', parsed.hasFinancials);
+      return parsed;
+    } catch (err) {
+      console.error('Money fetch error:', err.message);
       return {};
     }
   }
@@ -788,6 +830,57 @@ Rules:
     return { systemPrompt, content: docContent };
   }
 
+  function moneyPrompt(docContent) {
+    const systemPrompt = `You are FinePrintFix, a financial and legal analysis tool for everyday people. Analyze this document for ALL financial implications and return ONLY a JSON object (no markdown, no preamble) with this structure:
+{
+  "hasFinancials": true or false,
+  "totalValue": "e.g. $120,000/year base + potential $20,000 bonus" or null if not applicable,
+  "costs": [
+    {
+      "label": "Short name of the cost or clause",
+      "amount": "Dollar amount or range if known, or null",
+      "description": "Plain English explanation of what this costs and when it would be triggered",
+      "severity": "high", "medium", or "low",
+      "negotiable": true or false
+    }
+  ],
+  "marketComparison": [
+    {
+      "item": "What is being compared e.g. Base salary",
+      "contractValue": "What the contract says",
+      "marketRate": "What is typical/standard in the market",
+      "gap": "How much above or below market, or null if unknown",
+      "assessment": "below_market", "at_market", or "above_market"
+    }
+  ],
+  "negotiationScripts": [
+    {
+      "clause": "Name of the clause to negotiate",
+      "currentLanguage": "Brief description of what it currently says",
+      "suggestedLanguage": "Exact replacement language or script the person can use verbatim",
+      "potentialSaving": "Estimated financial impact of this change, e.g. $10,000 or null"
+    }
+  ],
+  "restructuringSuggestions": [
+    {
+      "clause": "Name of the clause",
+      "issue": "What is wrong with it financially",
+      "suggestion": "How to restructure it — be specific and actionable",
+      "impact": "What this change would mean financially"
+    }
+  ]
+}
+Rules:
+- If the document has no monetary terms at all, set hasFinancials to false and leave other arrays empty
+- Be specific with dollar amounts where mentioned in the document
+- For market comparisons, use current real-world market data where possible
+- Negotiation scripts should be word-for-word language the person can actually say or write
+- Flag any hidden costs, penalties, or financial risks that are easy to miss
+- All amounts in USD unless document specifies otherwise`;
+
+    return { systemPrompt, content: docContent };
+  }
+
   async function analyzeWithClaude(promptObj, outputId, redId, amberId, greenId) {
     const el = document.getElementById(outputId);
     if (!el) {
@@ -864,6 +957,120 @@ Rules:
       el.textContent = 'Could not analyze this document. Please check your API key is configured, or try again.';
       console.error(err);
     }
+  }
+
+  function renderMoney(data, el) {
+    el.className = '';
+    el.style.background = 'transparent';
+    el.style.border = 'none';
+    el.style.padding = '0';
+
+    if (!data || !data.hasFinancials) {
+      el.innerHTML = `<div style="text-align:center;padding:2rem 1rem;color:var(--text2);font-size:13px;">
+        <i class="ti ti-coin-off" style="font-size:24px;display:block;margin-bottom:8px"></i>
+        No significant financial terms found in this document.
+      </div>`;
+      return;
+    }
+
+    let html = '';
+
+    // Total value banner
+    if (data.totalValue) {
+      html += `<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;">
+        <i class="ti ti-currency-dollar" style="color:var(--accent);font-size:20px;flex-shrink:0"></i>
+        <div>
+          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:2px;">Total contract value</div>
+          <div style="font-size:13px;font-weight:500">${data.totalValue}</div>
+        </div>
+      </div>`;
+    }
+
+    // Costs & risks
+    if (data.costs && data.costs.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;">Costs & financial risks</div>`;
+      data.costs.forEach(c => {
+        const bg = c.severity === 'high' ? '#FAECE7' : c.severity === 'medium' ? '#FAEEDA' : '#EAF3DE';
+        const color = c.severity === 'high' ? '#993C1D' : c.severity === 'medium' ? '#633806' : '#27500A';
+        const icon = c.severity === 'high' ? 'ti-alert-triangle' : c.severity === 'medium' ? 'ti-info-circle' : 'ti-check';
+        html += `<div style="background:${bg};border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:${color};">
+              <i class="ti ${icon}" style="font-size:13px"></i> ${c.label}
+            </div>
+            ${c.amount ? `<span style="font-size:12px;font-weight:500;color:${color}">${c.amount}</span>` : ''}
+          </div>
+          <div style="font-size:12px;line-height:1.55;color:var(--text)">${c.description}</div>
+          ${c.negotiable ? `<div style="font-size:10px;margin-top:5px;color:${color};font-weight:500;display:flex;align-items:center;gap:4px;"><i class="ti ti-pencil" style="font-size:10px"></i> Negotiable</div>` : ''}
+        </div>`;
+      });
+    }
+
+    // Market comparison
+    if (data.marketComparison && data.marketComparison.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin:1.25rem 0 8px;">Market comparison</div>`;
+      data.marketComparison.forEach(m => {
+        const color = m.assessment === 'below_market' ? '#993C1D' : m.assessment === 'above_market' ? '#27500A' : '#633806';
+        const bg = m.assessment === 'below_market' ? '#FAECE7' : m.assessment === 'above_market' ? '#EAF3DE' : '#FAEEDA';
+        const label = m.assessment === 'below_market' ? 'Below market' : m.assessment === 'above_market' ? 'Above market' : 'At market';
+        const icon = m.assessment === 'below_market' ? 'ti-trending-down' : m.assessment === 'above_market' ? 'ti-trending-up' : 'ti-minus';
+        html += `<div style="border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;background:var(--bg);">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div style="font-size:12px;font-weight:500">${m.item}</div>
+            <span style="font-size:10px;font-weight:500;padding:2px 8px;border-radius:10px;background:${bg};color:${color};display:inline-flex;align-items:center;gap:3px;">
+              <i class="ti ${icon}" style="font-size:10px"></i> ${label}
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:var(--bg2);border-radius:var(--radius);padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text2);margin-bottom:2px;">This contract</div>
+              <div style="font-size:12px;font-weight:500">${m.contractValue}</div>
+            </div>
+            <div style="background:var(--bg2);border-radius:var(--radius);padding:8px 10px;">
+              <div style="font-size:10px;color:var(--text2);margin-bottom:2px;">Market rate</div>
+              <div style="font-size:12px;font-weight:500">${m.marketRate}</div>
+            </div>
+          </div>
+          ${m.gap ? `<div style="font-size:11px;color:${color};margin-top:6px">${m.gap}</div>` : ''}
+        </div>`;
+      });
+    }
+
+    // Negotiation scripts
+    if (data.negotiationScripts && data.negotiationScripts.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin:1.25rem 0 8px;">Negotiation scripts</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.5;">Use these word-for-word when negotiating. Copy and paste into an email or say them directly.</div>`;
+      data.negotiationScripts.forEach((s, i) => {
+        html += `<div style="border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:var(--bg);">
+          <div style="padding:8px 12px;background:var(--bg2);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:12px;font-weight:500">${s.clause}</div>
+            ${s.potentialSaving ? `<span style="font-size:10px;font-weight:500;color:#27500A;background:#EAF3DE;padding:2px 8px;border-radius:10px;">${s.potentialSaving}</span>` : ''}
+          </div>
+          <div style="padding:10px 12px;">
+            <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);margin-bottom:4px;">Current</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.5">${s.currentLanguage}</div>
+            <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent);margin-bottom:4px;">What to say / write</div>
+            <div style="font-size:12px;line-height:1.6;background:var(--accent-light);padding:10px 12px;border-radius:var(--radius);color:#712B13;font-style:italic">"${s.suggestedLanguage}"</div>
+          </div>
+        </div>`;
+      });
+    }
+
+    // Restructuring suggestions
+    if (data.restructuringSuggestions && data.restructuringSuggestions.length) {
+      html += `<div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin:1.25rem 0 8px;">Restructuring suggestions</div>`;
+      data.restructuringSuggestions.forEach(r => {
+        html += `<div style="border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;background:var(--bg);">
+          <div style="font-size:12px;font-weight:500;margin-bottom:5px">${r.clause}</div>
+          <div style="font-size:11px;color:#993C1D;background:#FAECE7;padding:6px 10px;border-radius:var(--radius);margin-bottom:8px;line-height:1.5">${r.issue}</div>
+          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--text2);margin-bottom:4px;">Suggested restructure</div>
+          <div style="font-size:12px;line-height:1.55;margin-bottom:6px">${r.suggestion}</div>
+          ${r.impact ? `<div style="font-size:11px;color:#27500A;background:#EAF3DE;padding:6px 10px;border-radius:var(--radius);line-height:1.5"><strong>Impact:</strong> ${r.impact}</div>` : ''}
+        </div>`;
+      });
+    }
+
+    el.innerHTML = html;
   }
 
   function renderSummary(data, el) {
@@ -985,7 +1192,7 @@ Rules:
   }
 
   // ─── SAVE TO SUPABASE ─────────────────────────────────────────
-  async function saveAnalysis(flags, sections, questions, summary) {
+  async function saveAnalysis(flags, sections, questions, summary, money) {
     try {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) return;
@@ -1002,6 +1209,7 @@ Rules:
           sections,
           questions,
           summary: summary || {},
+          money: money || {},
           red_count: (flags.red || []).length,
           amber_count: (flags.amber || []).length,
           green_count: (flags.green || []).length,
@@ -1020,7 +1228,7 @@ Rules:
 
   // ─── UI HELPERS ───────────────────────────────────────────────
   function switchResultTab(tab) {
-    ['summary','flags','sections','questions'].forEach(t => {
+    ['summary','flags','sections','questions','money'].forEach(t => {
       document.getElementById('rtab-'+t).classList.toggle('active', t===tab);
       document.getElementById('panel-'+t).classList.toggle('active', t===tab);
     });
@@ -1058,4 +1266,5 @@ Rules:
 </script>
 </body>
 </html>
+
 
