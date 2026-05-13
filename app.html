@@ -458,33 +458,48 @@
         <p id="upgrade-sub" style="font-size:13px;color:var(--text2);line-height:1.65;max-width:360px;margin:0 auto 1.5rem"></p>
       </div>
 
-      <!-- FOR ANONYMOUS USERS — create account CTA -->
-      <div id="upgrade-create-account" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
-        <a href="auth.html" class="btn-full" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;">
+      <!-- FOR ANONYMOUS USERS WHO GAVE EMAIL -->
+      <div id="upgrade-anon-paid" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
+        <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;">
           <i class="ti ti-user-plus"></i> Create a free account
         </a>
+        <div style="font-size:12px;color:var(--text2);text-align:center;">Free account = more analyses + dashboard + comparison tool</div>
         <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--text2);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;text-decoration:none;">
           <i class="ti ti-login"></i> Already have an account? Sign in
         </a>
+        <div style="border-top:0.5px solid var(--border);margin:4px 0;"></div>
+        <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:2px;">Or pay for just this document</div>
+        <button onclick="handleUpgrade('payperDoc')" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+          Analyze this document — $1.99
+        </button>
+      </div>
+        <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;">
+          <i class="ti ti-user-plus"></i> Create a free account
+        </a>
+        <div style="font-size:12px;color:var(--text2);text-align:center;margin:4px 0;">Free account includes 1 analysis + saved dashboard + comparison tool</div>
+        <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--text2);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;text-decoration:none;">
+          <i class="ti ti-login"></i> Already have an account? Sign in
+        </a>
+        <div style="border-top:0.5px solid var(--border);margin:6px 0;"></div>
+        <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:4px;">Or pay for just this document</div>
+        <button onclick="handleUpgrade('payperDoc')" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+          Analyze this document — $1.99
+        </button>
       </div>
 
-      <!-- FOR LOGGED-IN USERS — pricing plans -->
-      <div id="upgrade-plans" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
-
-        <!-- PAY PER DOC -->
+      <!-- FOR LOGGED-IN USERS -->
+      <div id="upgrade-plans" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
         <div style="border:2px solid var(--accent);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;position:relative;">
           <div style="position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Most flexible</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
             <div style="font-size:14px;font-weight:500">Pay per document</div>
             <div style="font-size:20px;font-weight:700;color:var(--accent)">$1.99</div>
           </div>
-          <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">One-off payment. No account needed. All 5 analysis tabs included.</div>
-          <button onclick="handleUpgrade('payperDoc')" class="btn-full" style="background:var(--accent);color:#fff;border:none;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">One-off payment. Saves to your dashboard. All 5 analysis tabs included.</div>
+          <button onclick="handleUpgrade('payperDoc')" style="background:var(--accent);color:#fff;border:none;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
             Analyze this document — $1.99
           </button>
         </div>
-
-        <!-- PRO -->
         <div style="border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
             <div style="font-size:14px;font-weight:500">Pro — unlimited</div>
@@ -495,7 +510,6 @@
             Start Pro — $9.99/month
           </button>
         </div>
-
       </div>
 
       <div style="text-align:center;">
@@ -731,7 +745,9 @@
     } else {
       // Anonymous user — check cookie first (fast)
       if (getCookie(FREE_TIER_COOKIE)) {
-        showUpgradeWall('anonymous');
+        // Check if they gave us their email
+        const hasEmail = !!getCookie(FREE_TIER_EMAIL_COOKIE);
+        showUpgradeWall(hasEmail ? 'anonymous-email' : 'anonymous');
         return false;
       }
       // Also check stored email against database
@@ -744,8 +760,8 @@
         });
         const data = await res.json();
         if (data.used) {
-          setCookie(FREE_TIER_COOKIE, '1', 365); // set cookie too
-          showUpgradeWall('anonymous');
+          setCookie(FREE_TIER_COOKIE, '1', 365);
+          showUpgradeWall('anonymous-email');
           return false;
         }
       }
@@ -755,16 +771,29 @@
 
   function showUpgradeWall(type) {
     showScreen('screen-upgrade');
+    const anon = document.getElementById('upgrade-anonymous');
+    const plans = document.getElementById('upgrade-plans');
+    const anonPaid = document.getElementById('upgrade-anon-paid');
+
+    // Hide all first
+    anon.style.display = 'none';
+    plans.style.display = 'none';
+    anonPaid.style.display = 'none';
+
     if (type === 'loggedin') {
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
       document.getElementById('upgrade-sub').textContent = "Upgrade to analyze more documents, access your dashboard, and compare contracts side by side.";
-      document.getElementById('upgrade-create-account').style.display = 'none';
-      document.getElementById('upgrade-plans').style.display = 'flex';
-    } else {
+      plans.style.display = 'flex';
+    } else if (type === 'anonymous-email') {
+      // They gave their email but aren't logged in
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
-      document.getElementById('upgrade-sub').textContent = "Create a free account to get more analyses, or upgrade for one-off access.";
-      document.getElementById('upgrade-create-account').style.display = 'flex';
-      document.getElementById('upgrade-plans').style.display = 'flex';
+      document.getElementById('upgrade-sub').textContent = "Create a free account to keep analyzing — your existing analysis will be saved to your dashboard.";
+      anonPaid.style.display = 'flex';
+    } else {
+      // Fully anonymous, no email on record
+      document.getElementById('upgrade-title').textContent = "You've used your free analysis";
+      document.getElementById('upgrade-sub').textContent = "Create a free account to get more analyses and save your documents — or pay just $1.99 for this one.";
+      anon.style.display = 'flex';
     }
   }
 
@@ -1474,10 +1503,10 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
       if (el) { el.className = 'prog-dot pending'; el.innerHTML = '<i class="ti ti-dots" style="font-size:10px"></i>'; }
     });
     // Reset upgrade screen state
-    const createAcct = document.getElementById('upgrade-create-account');
-    const plans = document.getElementById('upgrade-plans');
-    if (createAcct) createAcct.style.display = 'none';
-    if (plans) plans.style.display = 'flex';
+    ['upgrade-anonymous', 'upgrade-plans', 'upgrade-anon-paid'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
     showScreen('screen-upload');
     switchUploadTab('pdf');
   }
@@ -1488,6 +1517,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
