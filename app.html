@@ -473,15 +473,18 @@
           Analyze this document — $1.99
         </button>
       </div>
+
+      <!-- FOR ANONYMOUS USERS WITH NO EMAIL -->
+      <div id="upgrade-anonymous" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
         <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;">
-          <i class="ti ti-user-plus"></i> Create a free account
+          <i class="ti ti-user-plus"></i> Create an account
         </a>
-        <div style="font-size:12px;color:var(--text2);text-align:center;margin:4px 0;">Free account includes 1 analysis + saved dashboard + comparison tool</div>
+        <div style="font-size:12px;color:var(--text2);text-align:center;line-height:1.5;">Account includes saved dashboard + comparison tool. Additional analyses available via pay per doc or Pro.</div>
         <a href="auth.html" style="display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--text2);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;text-decoration:none;">
           <i class="ti ti-login"></i> Already have an account? Sign in
         </a>
         <div style="border-top:0.5px solid var(--border);margin:6px 0;"></div>
-        <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:4px;">Or pay for just this document</div>
+        <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:4px;">Or pay for just this document — no account needed</div>
         <button onclick="handleUpgrade('payperDoc')" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
           Analyze this document — $1.99
         </button>
@@ -1516,6 +1519,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
