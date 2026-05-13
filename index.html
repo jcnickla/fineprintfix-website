@@ -4,661 +4,550 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FinePrintFix — Legal Docs Decoded for Real People</title>
-  <meta name="description" content="Upload any contract or terms of service. FinePrintFix highlights the tricky parts — what to watch out for, what to push back on, and what actually matters." />
+  <meta name="description" content="Upload any contract or terms of service. FinePrintFix flags what's risky, explains what it means, compares your options, and gives you the exact words to negotiate with — in plain English." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Replace with your actual Supabase values
     const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
-    const { createClient } = supabase;
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    // Update nav based on auth state
-    sb.auth.getSession().then(({ data: { session } }) => {
-      const loginLink = document.getElementById('nav-login');
-      if (session) {
-        loginLink.textContent = 'Dashboard';
-        loginLink.href = 'dashboard.html';
-      }
+    window.addEventListener('DOMContentLoaded', () => {
+      const { createClient } = supabase;
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      sb.auth.getSession().then(({ data: { session } }) => {
+        const loginLink = document.getElementById('nav-login');
+        if (loginLink && session) {
+          loginLink.textContent = 'Dashboard';
+          loginLink.href = 'dashboard.html';
+        }
+      });
     });
   </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --color-bg: #ffffff;
-      --color-bg-secondary: #f7f5f2;
-      --color-text-primary: #1a1a18;
-      --color-text-secondary: #6b6b67;
-      --color-border: rgba(0,0,0,0.1);
-      --color-border-md: rgba(0,0,0,0.18);
-      --accent: #D85A30;
-      --accent-light: #FAECE7;
-      --accent-mid: #F0997B;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --bg: #ffffff; --bg2: #f7f5f2; --bg3: #f0ede9;
+      --text: #1a1a18; --text2: #6b6b67;
+      --border: rgba(0,0,0,0.09); --border2: rgba(0,0,0,0.16);
+      --accent: #D85A30; --accent-light: #FAECE7; --accent-mid: #F0997B;
+      --green: #3B6D11; --green-bg: #EAF3DE;
+      --amber: #633806; --amber-bg: #FAEEDA;
+      --red: #993C1D; --red-bg: #FAECE7;
+      --radius: 8px; --radius-lg: 14px;
     }
-
     html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); overflow-x: hidden; }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      color: var(--color-text-primary);
-      background: var(--color-bg);
-      overflow-x: hidden;
-    }
-
-    /* NAV */
     nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem 2rem;
-      border-bottom: 0.5px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(8px);
-      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 2rem; border-bottom: 0.5px solid var(--border);
+      position: sticky; top: 0; background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(10px); z-index: 100;
     }
-
-    .logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      text-decoration: none;
-      color: var(--color-text-primary);
-    }
+    .logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; letter-spacing: -0.3px; text-decoration: none; color: var(--text); }
     .logo span { color: var(--accent); }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      font-size: 13px;
-      color: var(--color-text-secondary);
-      list-style: none;
-    }
-    .nav-links a { color: var(--color-text-secondary); text-decoration: none; }
-    .nav-links a:hover { color: var(--color-text-primary); }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 9px 20px;
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: opacity 0.15s;
-    }
-    .btn-primary:hover { opacity: 0.88; }
-
-    .btn-lg {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      padding: 13px 26px;
-      border-radius: var(--radius-md);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      transition: opacity 0.15s;
-    }
+    .nav-links { display: flex; align-items: center; gap: 22px; font-size: 13px; list-style: none; }
+    .nav-links a { color: var(--text2); text-decoration: none; transition: color 0.12s; }
+    .nav-links a:hover { color: var(--text); }
+    .btn-nav { background: var(--accent); color: #fff; border: none; padding: 8px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: opacity 0.15s; }
+    .btn-nav:hover { opacity: 0.88; }
+    .btn-lg { background: var(--accent); color: #fff; border: none; padding: 13px 26px; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 7px; text-decoration: none; transition: opacity 0.15s; }
     .btn-lg:hover { opacity: 0.88; }
+    .btn-ghost { background: transparent; color: var(--text); border: 0.5px solid var(--border2); padding: 13px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 400; cursor: pointer; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; transition: background 0.15s; }
+    .btn-ghost:hover { background: var(--bg2); }
 
-    .btn-ghost {
-      background: transparent;
-      color: var(--color-text-primary);
-      border: 0.5px solid var(--color-border-md);
-      padding: 13px 22px;
-      border-radius: var(--radius-md);
-      font-size: 14px;
-      font-weight: 400;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-      transition: background 0.15s;
-    }
-    .btn-ghost:hover { background: var(--color-bg-secondary); }
+    .eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); background: var(--accent-light); padding: 5px 11px; border-radius: 20px; margin-bottom: 1.25rem; }
 
-    /* HERO */
-    .hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      padding: 4rem 2rem 3rem;
-      align-items: center;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: var(--accent-light);
-      padding: 5px 10px;
-      border-radius: 20px;
-      margin-bottom: 1.25rem;
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 42px;
-      line-height: 1.12;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 1rem;
-    }
+    .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding: 4rem 2rem 3rem; align-items: center; max-width: 1000px; margin: 0 auto; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 44px; line-height: 1.1; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 1rem; }
     h1 em { font-style: italic; color: var(--accent); }
+    .hero-sub { font-size: 15px; line-height: 1.7; color: var(--text2); margin-bottom: 2rem; font-weight: 300; }
+    .cta-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .platform-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .platform-badge { display: flex; align-items: center; gap: 6px; padding: 7px 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-size: 12px; font-weight: 500; color: var(--text2); }
 
-    .hero-sub {
-      font-size: 15px;
-      line-height: 1.65;
-      color: var(--color-text-secondary);
-      margin-bottom: 2rem;
-      font-weight: 300;
-    }
+    .hero-mockup { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; position: relative; }
+    .scan-badge { position: absolute; top: -10px; right: 14px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 500; padding: 4px 10px; border-radius: 10px; display: flex; align-items: center; gap: 4px; }
+    .mock-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 0.5px solid var(--border); }
+    .mock-icon { width: 28px; height: 28px; background: var(--accent-light); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 14px; }
+    .mock-tabs { display: flex; border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem; }
+    .mock-tab { flex: 1; padding: 6px 4px; font-size: 10px; font-weight: 500; text-align: center; color: var(--text2); background: var(--bg2); border-right: 0.5px solid var(--border); }
+    .mock-tab:last-child { border-right: none; }
+    .mock-tab.active { background: var(--bg); color: var(--accent); }
+    .mock-line { height: 6px; border-radius: 3px; margin-bottom: 6px; background: rgba(0,0,0,0.07); }
+    .mock-flag { display: flex; align-items: flex-start; gap: 7px; padding: 7px 10px; border-radius: var(--radius); margin-bottom: 6px; font-size: 11px; line-height: 1.45; }
+    .mock-flag.red { background: var(--red-bg); color: var(--red); }
+    .mock-flag.amber { background: var(--amber-bg); color: var(--amber); }
+    .mock-flag.green { background: var(--green-bg); color: var(--green); }
+    .mock-badge { font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; margin-top: 1px; }
+    .mock-badge.red { background: #F5C4B3; color: var(--red); }
+    .mock-badge.amber { background: #FAC775; color: var(--amber); }
+    .mock-badge.green { background: #C0DD97; color: var(--green); }
 
-    .cta-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-    }
-
-    .platform-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .platform-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border: 0.5px solid var(--color-border-md);
-      border-radius: var(--radius-md);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--color-text-secondary);
-    }
-
-    /* DOC PREVIEW */
-    .doc-preview {
-      background: var(--color-bg-secondary);
-      border: 0.5px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem;
-      position: relative;
-    }
-
-    .scan-badge {
-      position: absolute;
-      top: -10px;
-      right: 12px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 10px;
-      font-weight: 500;
-      padding: 4px 9px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .doc-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 0.5px solid var(--color-border);
-    }
-
-    .doc-icon {
-      width: 28px;
-      height: 28px;
-      background: var(--accent-light);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-      font-size: 14px;
-    }
-
-    .doc-title { font-size: 12px; font-weight: 500; }
-    .doc-sub { font-size: 11px; color: var(--color-text-secondary); }
-
-    .doc-line {
-      height: 6px;
-      border-radius: 3px;
-      margin-bottom: 7px;
-      background: rgba(0,0,0,0.08);
-    }
-
-    .highlight-red {
-      background: var(--accent-light);
-      border-radius: 3px;
-      padding: 2px 4px;
-      font-size: 11px;
-      font-weight: 500;
-      color: #993C1D;
-      display: inline-block;
-      margin: 8px 0 6px;
-    }
-
-    .highlight-yellow {
-      background: #FAEEDA;
-      border-radius: 3px;
-      padding: 2px 4px;
-      font-size: 11px;
-      font-weight: 500;
-      color: #633806;
-      display: inline-block;
-      margin: 8px 0 6px;
-    }
-
-    .flag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 10px;
-      font-weight: 500;
-      padding: 3px 8px;
-      border-radius: 10px;
-      margin-left: 6px;
-    }
-    .flag-red { background: #F5C4B3; color: #993C1D; }
-    .flag-yellow { background: #FAC775; color: #633806; }
-
-    .findings { margin-top: 1rem; display: flex; flex-direction: column; gap: 6px; }
-
-    .finding {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: var(--radius-md);
-      font-size: 11px;
-      line-height: 1.5;
-    }
-    .finding i { margin-top: 1px; flex-shrink: 0; }
-    .finding-warn { background: var(--accent-light); color: #993C1D; }
-    .finding-caution { background: #FAEEDA; color: #633806; }
-    .finding-ok { background: #EAF3DE; color: #3B6D11; }
-
-    /* DIVIDER */
-    hr { border: none; border-top: 0.5px solid var(--color-border); margin: 0 2rem; }
-
-    /* STATS */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .stat { padding: 1rem 1.5rem; border-right: 0.5px solid var(--color-border); }
+    hr { border: none; border-top: 0.5px solid var(--border); margin: 0 2rem; }
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    .stat { padding: 1rem 1.5rem; border-right: 0.5px solid var(--border); }
     .stat:last-child { border-right: none; }
-    .stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--accent);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .stat-label { font-size: 12px; color: var(--color-text-secondary); line-height: 1.4; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 12px; color: var(--text2); line-height: 1.4; }
 
-    /* HOW IT WORKS */
-    .section {
-      padding: 3rem 2rem;
-      max-width: 960px;
-      margin: 0 auto;
-    }
+    .section { padding: 3.5rem 2rem; max-width: 1000px; margin: 0 auto; }
+    .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2); margin-bottom: 0.5rem; }
+    h2 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; margin-bottom: 2rem; line-height: 1.2; }
 
-    .section-label {
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--color-text-secondary);
-      margin-bottom: 0.5rem;
-    }
+    .tabs-showcase { border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .tabs-showcase-header { display: flex; border-bottom: 0.5px solid var(--border); overflow-x: auto; background: var(--bg2); }
+    .showcase-tab { padding: 10px 16px; font-size: 12px; font-weight: 500; cursor: pointer; color: var(--text2); white-space: nowrap; border-bottom: 2px solid transparent; background: transparent; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 5px; transition: color 0.12s; }
+    .showcase-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--bg); }
+    .showcase-panel { display: none; padding: 1.25rem; background: var(--bg2); }
+    .showcase-panel.active { display: block; }
+    .summary-fact { display: flex; align-items: flex-start; gap: 10px; padding: 8px 12px; background: var(--bg); border-radius: var(--radius); border: 0.5px solid var(--border); font-size: 12px; margin-bottom: 5px; }
+    .summary-fact-label { font-weight: 500; color: var(--text2); min-width: 100px; flex-shrink: 0; font-size: 11px; }
+    .script-box { background: var(--accent-light); padding: 10px 12px; border-radius: var(--radius); font-size: 12px; font-style: italic; color: #712B13; line-height: 1.6; margin-top: 6px; }
+    .section-block { border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 7px; }
+    .section-block-header { padding: 9px 12px; background: var(--bg); display: flex; align-items: center; gap: 6px; border-bottom: 0.5px solid var(--border); font-size: 12px; font-weight: 500; }
+    .section-block-body { padding: 10px 12px; font-size: 12px; line-height: 1.65; color: var(--text2); }
+    .question-item { display: flex; align-items: flex-start; gap: 8px; padding: 9px 12px; border: 0.5px solid var(--border); border-radius: var(--radius); font-size: 12px; line-height: 1.55; background: var(--bg); margin-bottom: 6px; }
+    .q-num { width: 20px; height: 20px; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-size: 10px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-    h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 2rem;
-      line-height: 1.2;
-    }
+    .alt-bg { background: var(--bg2); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); }
+    .alt-inner { padding: 3.5rem 2rem; max-width: 1000px; margin: 0 auto; }
 
-    .how-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
+    .compare-showcase { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .compare-doc { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .compare-doc-header { padding: 10px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--border); }
+    .compare-doc-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #fff; flex-shrink: 0; }
+    .winner-banner { background: var(--text); color: #fff; border-radius: var(--radius-lg); padding: 12px 16px; margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 12px; }
+    .trophy { width: 36px; height: 36px; background: var(--accent); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .pro-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; line-height: 1.5; margin-bottom: 5px; color: var(--green); }
+    .con-item { display: flex; align-items: flex-start; gap: 6px; font-size: 11px; line-height: 1.5; margin-bottom: 5px; color: var(--red); }
 
-    .step {
-      padding: 1.25rem;
-      border: 0.5px solid var(--color-border);
-      border-radius: var(--radius-lg);
-    }
+    .dashboard-mockup { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-top: 1.5rem; }
+    .dash-nav-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 0.5px solid var(--border); }
+    .dash-filters { display: flex; gap: 6px; padding: 10px 14px; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; }
+    .dash-filter { font-size: 11px; color: var(--text2); background: var(--bg2); border: 0.5px solid var(--border); padding: 4px 10px; border-radius: 20px; }
+    .dash-filter.active { color: var(--accent); background: var(--accent-light); border-color: var(--accent); }
+    .dash-doc-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 0.5px solid var(--border); }
+    .dash-doc-row:last-of-type { border-bottom: none; }
+    .dash-doc-icon { width: 32px; height: 32px; background: var(--accent-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 15px; flex-shrink: 0; }
+    .dash-doc-name { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
+    .dash-doc-meta { font-size: 10px; color: var(--text2); display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .risk-badge { font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 8px; }
+    .risk-badge.high { background: var(--red-bg); color: var(--red); }
+    .risk-badge.medium { background: var(--amber-bg); color: var(--amber); }
+    .risk-badge.low { background: var(--green-bg); color: var(--green); }
+    .type-badge { font-size: 10px; background: var(--bg2); color: var(--text2); padding: 2px 7px; border-radius: 8px; border: 0.5px solid var(--border); }
+    .flag-counts { display: flex; gap: 5px; }
+    .fc { font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 8px; }
+    .fc.r { background: var(--red-bg); color: var(--red); }
+    .fc.a { background: var(--amber-bg); color: var(--amber); }
+    .fc.g { background: var(--green-bg); color: var(--green); }
+    .dash-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-top: 0.5px solid var(--border); }
 
-    .step-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent-mid);
-      line-height: 1;
-      margin-bottom: 0.75rem;
-    }
-
-    .step-title { font-size: 14px; font-weight: 500; margin-bottom: 0.5rem; }
-    .step-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
-
-    /* FLAGS SECTION */
-    .flags-section {
-      background: var(--color-bg-secondary);
-      border-top: 0.5px solid var(--color-border);
-      border-bottom: 0.5px solid var(--color-border);
-    }
-
-    .flags-inner {
-      padding: 3rem 2rem;
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    .flags-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.75rem;
-    }
-
-    .flag-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 1rem 1.25rem;
-      border-radius: var(--radius-lg);
-      background: var(--color-bg);
-      border: 0.5px solid var(--color-border);
-    }
-
-    .flag-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-size: 16px;
-    }
-    .flag-icon.red { background: var(--accent-light); color: var(--accent); }
-    .flag-icon.amber { background: #FAEEDA; color: #BA7517; }
+    .flags-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
+    .flag-card { display: flex; align-items: flex-start; gap: 12px; padding: 1rem 1.25rem; border-radius: var(--radius-lg); background: var(--bg); border: 0.5px solid var(--border); }
+    .flag-icon { width: 32px; height: 32px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+    .flag-icon.red { background: var(--red-bg); color: var(--accent); }
+    .flag-icon.amber { background: var(--amber-bg); color: #BA7517; }
     .flag-icon.blue { background: #E6F1FB; color: #185FA5; }
-    .flag-icon.green { background: #EAF3DE; color: #3B6D11; }
-
+    .flag-icon.green { background: var(--green-bg); color: var(--green); }
     .flag-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
-    .flag-desc { font-size: 11px; color: var(--color-text-secondary); line-height: 1.5; }
+    .flag-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
 
-    /* CTA */
-    .cta-section {
-      text-align: center;
-      padding: 3.5rem 2rem;
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .step { padding: 1.25rem; border: 0.5px solid var(--border); border-radius: var(--radius-lg); }
+    .step-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--accent-mid); line-height: 1; margin-bottom: 0.75rem; }
+    .step-title { font-size: 14px; font-weight: 500; margin-bottom: 0.5rem; }
+    .step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
 
-    .cta-section h2 { margin-bottom: 0.75rem; }
-    .cta-sub { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1.5rem; line-height: 1.65; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.5rem; }
+    .price-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; position: relative; }
+    .price-card.featured { border: 2px solid var(--accent); }
+    .coming-soon-badge { position: absolute; top: -10px; left: 14px; font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+    .coming-soon-badge.accent { background: var(--accent); color: #fff; }
+    .coming-soon-badge.neutral { background: var(--bg2); color: var(--text2); border: 0.5px solid var(--border); }
+    .price-tier { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); margin-bottom: 8px; }
+    .price-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .price-sub { font-size: 12px; color: var(--text2); margin-bottom: 1rem; }
+    .price-feature { display: flex; align-items: center; gap: 7px; font-size: 12px; margin-bottom: 6px; }
+    .notify-bar { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .notify-input { padding: 9px 12px; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; min-width: 200px; outline: none; }
+    .notify-btn { background: var(--accent); color: #fff; border: none; padding: 9px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 
+    .cta-section { text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto; }
+    .cta-sub { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.7; }
     .cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-    /* FOOTER */
-    footer {
-      border-top: 0.5px solid var(--color-border);
-      padding: 1.5rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+    footer { border-top: 0.5px solid var(--border); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text2); flex-wrap: wrap; gap: 8px; }
+    footer a { color: var(--text2); text-decoration: none; }
+    footer a:hover { color: var(--text); }
 
-    footer a { color: var(--color-text-secondary); text-decoration: none; }
-    footer a:hover { color: var(--color-text-primary); }
-
-    /* RESPONSIVE */
-    @media (max-width: 700px) {
+    @media (max-width: 720px) {
       .hero { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem; }
-      h1 { font-size: 30px; }
+      h1 { font-size: 32px; }
       .how-grid { grid-template-columns: 1fr; }
       .flags-grid { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: 1fr; }
-      .stat { border-right: none; border-bottom: 0.5px solid var(--color-border); }
-      .stat:last-child { border-bottom: none; }
-      nav { padding: 1rem 1.25rem; }
-      .nav-links li:not(:last-child) { display: none; }
-      .section { padding: 2rem 1.25rem; }
-      .flags-inner { padding: 2rem 1.25rem; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .stat:nth-child(2) { border-right: none; }
+      .stat:nth-child(3) { border-top: 0.5px solid var(--border); }
+      .compare-showcase { grid-template-columns: 1fr; }
+      nav { padding: 1rem 1.25rem; flex-wrap: wrap; gap: 10px; }
+      .nav-links { display: none; width: 100%; flex-direction: column; gap: 0; border-top: 0.5px solid var(--border); padding-top: 10px; }
+      .nav-links.open { display: flex; }
+      .nav-links li { padding: 8px 0; border-bottom: 0.5px solid var(--border); }
+      .nav-links li:last-child { border-bottom: none; padding-top: 10px; }
+      .hamburger { display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; background: none; border: none; }
+      .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text); border-radius: 2px; }
+      .section, .alt-inner { padding: 2.5rem 1.25rem; }
       footer { flex-direction: column; align-items: flex-start; }
     }
+    .hamburger { display: none; }
+    @media (min-width: 721px) { .hamburger { display: none !important; } }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="/" class="logo">Fine<span>Print</span>Fix</a>
-    <ul class="nav-links">
-      <li><a href="#how">How it works</a></li>
-      <li><a href="#flags">What we flag</a></li>
-      <li><a href="#cta">Pricing</a></li>
-      <li><a href="auth.html" id="nav-login">Log in</a></li>
-      <li><a href="auth.html" class="btn-primary"><i class="ti ti-upload"></i> Try for free</a></li>
-    </ul>
-  </nav>
+<nav>
+  <a href="/" class="logo">Fine<span>Print</span>Fix</a>
+  <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="#analysis">Analysis</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#flags">What we flag</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="auth.html" id="nav-login">Log in</a></li>
+    <li><a href="auth.html" class="btn-nav"><i class="ti ti-upload"></i> Try for free</a></li>
+  </ul>
+</nav>
 
-  <section class="hero">
-    <div>
-      <div class="eyebrow"><i class="ti ti-shield-check"></i> Plain-english legal analysis</div>
-      <h1>Legal docs decoded for <em>real people</em></h1>
-      <p class="hero-sub">Upload any contract or terms of service. FinePrintFix highlights the tricky parts — what to watch out for, what to push back on, and what actually matters.</p>
-      <div class="cta-row">
-        <a href="auth.html" class="btn-lg"><i class="ti ti-upload"></i> Upload a document</a>
-        <a href="#how" class="btn-ghost"><i class="ti ti-player-play"></i> See how it works</a>
-      </div>
-      <div class="platform-row">
-        <div class="platform-badge"><i class="ti ti-world"></i> Web</div>
-        <div class="platform-badge"><i class="ti ti-brand-apple"></i> iOS</div>
-        <span style="font-size: 11px; color: var(--color-text-secondary);">fineprintfix.com</span>
+<section class="hero">
+  <div>
+    <div class="eyebrow"><i class="ti ti-shield-check"></i> Plain-English legal analysis</div>
+    <h1>Legal docs decoded for <em>real people</em></h1>
+    <p class="hero-sub">Upload any contract or terms of service. FinePrintFix flags what's risky, explains what it means, compares your options, and gives you the exact words to negotiate with.</p>
+    <div class="cta-row">
+      <a href="auth.html" class="btn-lg"><i class="ti ti-upload"></i> Upload a document</a>
+      <a href="#analysis" class="btn-ghost"><i class="ti ti-player-play"></i> See how it works</a>
+    </div>
+    <div class="platform-row">
+      <div class="platform-badge"><i class="ti ti-world"></i> Web</div>
+      <div class="platform-badge"><i class="ti ti-brand-apple"></i> iOS</div>
+      <span style="font-size:11px;color:var(--text2)">fineprintfix.com</span>
+    </div>
+  </div>
+  <div class="hero-mockup">
+    <div class="scan-badge"><i class="ti ti-scan" style="font-size:11px"></i> Analyzing...</div>
+    <div class="mock-header">
+      <div class="mock-icon"><i class="ti ti-file-text"></i></div>
+      <div>
+        <div style="font-size:12px;font-weight:500">Employment Agreement.pdf</div>
+        <div style="font-size:11px;color:var(--text2)">12 pages · uploaded just now</div>
       </div>
     </div>
+    <div class="mock-tabs">
+      <div class="mock-tab active"><i class="ti ti-file-description" style="font-size:10px"></i> Summary</div>
+      <div class="mock-tab"><i class="ti ti-flag" style="font-size:10px"></i> Flags</div>
+      <div class="mock-tab"><i class="ti ti-coin" style="font-size:10px"></i> Money</div>
+      <div class="mock-tab"><i class="ti ti-message-question" style="font-size:10px"></i> Questions</div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+      <span style="background:var(--red-bg);color:var(--red);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;display:inline-flex;align-items:center;gap:3px;"><i class="ti ti-alert-triangle" style="font-size:9px"></i> High risk</span>
+      <span style="font-size:11px;color:var(--text2)">Acme Technologies Inc.</span>
+    </div>
+    <div class="mock-line" style="width:100%"></div>
+    <div class="mock-line" style="width:78%"></div>
+    <div class="mock-flag red"><span class="mock-badge red">Red flag</span> Non-compete: 24 months worldwide — far broader than standard.</div>
+    <div class="mock-flag amber"><span class="mock-badge amber">Ask about</span> Discretionary bonus — no obligation to pay, no defined targets.</div>
+    <div class="mock-flag green"><span class="mock-badge green">Looks fine</span> PTO accrual and rollover are standard and fair.</div>
+  </div>
+</section>
 
-    <div class="doc-preview">
-      <div class="scan-badge"><i class="ti ti-scan" style="font-size:12px"></i> Analyzing...</div>
-      <div class="doc-header">
-        <div class="doc-icon"><i class="ti ti-file-text"></i></div>
+<hr />
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">94%</div><div class="stat-label">of people never fully read contracts they sign</div></div>
+  <div class="stat"><div class="stat-num">&lt;90s</div><div class="stat-label">average time to get a full analysis</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-label">analysis tabs — Summary, Flags, Money, Sections, Questions</div></div>
+  <div class="stat"><div class="stat-num">Plain</div><div class="stat-label">English always — no legal jargon, ever</div></div>
+</div>
+
+<hr />
+
+<section class="section" id="analysis">
+  <div class="section-label">What you get</div>
+  <h2>Five views of every document</h2>
+  <div class="tabs-showcase">
+    <div class="tabs-showcase-header">
+      <button class="showcase-tab active" onclick="showTab('summary',this)"><i class="ti ti-file-description"></i> Summary</button>
+      <button class="showcase-tab" onclick="showTab('flags',this)"><i class="ti ti-flag"></i> Flags</button>
+      <button class="showcase-tab" onclick="showTab('money',this)"><i class="ti ti-coin"></i> Money</button>
+      <button class="showcase-tab" onclick="showTab('sections',this)"><i class="ti ti-layout-list"></i> By section</button>
+      <button class="showcase-tab" onclick="showTab('questions',this)"><i class="ti ti-message-question"></i> Questions</button>
+    </div>
+
+    <div class="showcase-panel active" id="tab-summary">
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <span style="font-size:11px;font-weight:500;background:var(--bg);color:var(--text2);padding:3px 10px;border-radius:20px;border:0.5px solid var(--border)">Employment Agreement</span>
+        <span style="font-size:11px;font-weight:500;background:var(--red-bg);color:var(--red);padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;"><i class="ti ti-alert-triangle" style="font-size:10px"></i> High risk</span>
+      </div>
+      <p style="font-size:13px;line-height:1.7;margin-bottom:1rem">This is an employment contract between you and Acme Technologies Inc. for a Senior Software Engineer role starting January 1, 2025. The agreement contains several restrictive clauses that significantly limit your rights — particularly around non-compete, IP ownership, and dispute resolution.</p>
+      <div style="font-size:11px;color:var(--red);background:var(--red-bg);padding:8px 12px;border-radius:var(--radius);margin-bottom:1rem;font-style:italic">Aggressive non-compete and IP clauses broader than standard. Mandatory arbitration waives your right to sue in court.</div>
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px">Key facts</div>
+      <div class="summary-fact"><span class="summary-fact-label">Parties</span><span>Employee and Acme Technologies Inc.</span></div>
+      <div class="summary-fact"><span class="summary-fact-label">Base salary</span><span>$120,000 per year</span></div>
+      <div class="summary-fact"><span class="summary-fact-label">Non-compete</span><span>24 months after employment ends, worldwide</span></div>
+      <div class="summary-fact"><span class="summary-fact-label">Notice period</span><span>2 weeks (both parties)</span></div>
+    </div>
+
+    <div class="showcase-panel" id="tab-flags">
+      <div class="mock-flag red" style="margin-bottom:8px"><span class="mock-badge red">Red flag</span><div><strong>Non-compete (§7.1)</strong> — 24-month worldwide restriction. You can't work for any competitor anywhere for 2 years after leaving.</div></div>
+      <div class="mock-flag red" style="margin-bottom:8px"><span class="mock-badge red">Red flag</span><div><strong>IP assignment (§6.2)</strong> — covers inventions you build on personal time, on weekends, even if unrelated to the company.</div></div>
+      <div class="mock-flag red" style="margin-bottom:8px"><span class="mock-badge red">Red flag</span><div><strong>Mandatory arbitration (§8.1)</strong> — waives your right to a jury trial. You also can't join a class action lawsuit.</div></div>
+      <div class="mock-flag amber" style="margin-bottom:8px"><span class="mock-badge amber">Ask about</span><div><strong>Discretionary bonus (§2.2)</strong> — no guaranteed amount, no defined criteria. The company can eliminate it without notice.</div></div>
+      <div class="mock-flag green"><span class="mock-badge green">Looks fine</span><div><strong>Benefits (§3.1)</strong> — 15 days PTO, up to 5-day rollover, health insurance from day one. Standard and fair.</div></div>
+    </div>
+
+    <div class="showcase-panel" id="tab-money">
+      <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:10px;">
+        <i class="ti ti-currency-dollar" style="color:var(--accent);font-size:18px"></i>
         <div>
-          <div class="doc-title">Employment Agreement.pdf</div>
-          <div class="doc-sub">12 pages · uploaded just now</div>
+          <div style="font-size:10px;color:var(--text2);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.06em">Total contract value</div>
+          <div style="font-size:13px;font-weight:500">$120,000/year base + discretionary bonus</div>
         </div>
       </div>
-      <div class="doc-line" style="width:100%"></div>
-      <div class="doc-line" style="width:82%"></div>
-      <div class="highlight-red">
-        Non-compete clause covers 24 months in any geography
-        <span class="flag flag-red"><i class="ti ti-alert-triangle" style="font-size:9px"></i> Watch out</span>
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px">Market comparison</div>
+      <div style="border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:1rem;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="background:var(--bg);border-radius:var(--radius);padding:8px 10px;border:0.5px solid var(--border)"><div style="font-size:10px;color:var(--text2);margin-bottom:2px">This contract</div><div style="font-size:12px;font-weight:500">$120,000/year</div></div>
+        <div style="background:var(--bg);border-radius:var(--radius);padding:8px 10px;border:0.5px solid var(--border)"><div style="font-size:10px;color:var(--text2);margin-bottom:2px">Market rate</div><div style="font-size:12px;font-weight:500">$130K–$155K/year</div></div>
+        <div style="grid-column:span 2;font-size:11px;color:var(--red);background:var(--red-bg);padding:6px 8px;border-radius:var(--radius)">Below market — potentially $10K–$35K below comparable roles</div>
       </div>
-      <div class="doc-line" style="width:91%"></div>
-      <div class="doc-line" style="width:67%"></div>
-      <div class="highlight-yellow">
-        Mandatory arbitration — waives right to sue
-        <span class="flag flag-yellow"><i class="ti ti-info-circle" style="font-size:9px"></i> Ask about</span>
-      </div>
-      <div class="doc-line" style="width:75%"></div>
-      <div class="findings">
-        <div class="finding finding-warn">
-          <i class="ti ti-alert-triangle" style="font-size:13px"></i>
-          <span><strong>Red flag:</strong> IP assignment is extremely broad — covers personal projects outside work hours.</span>
-        </div>
-        <div class="finding finding-caution">
-          <i class="ti ti-info-circle" style="font-size:13px"></i>
-          <span><strong>Worth asking:</strong> Termination clause gives only 2 weeks notice — consider requesting 30 days.</span>
-        </div>
-        <div class="finding finding-ok">
-          <i class="ti ti-check" style="font-size:13px"></i>
-          <span><strong>Looks fine:</strong> PTO rollover policy is standard and fair.</span>
+      <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px">Negotiation script</div>
+      <div style="border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div style="padding:8px 12px;background:var(--bg);border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:500">Base salary <span style="font-size:10px;background:var(--green-bg);color:var(--green);padding:2px 7px;border-radius:8px">+$15K potential</span></div>
+        <div style="padding:10px 12px;font-size:12px;color:var(--text2)">Current offer is $10–35K below market for this role.
+          <div class="script-box">"Based on my research, I was expecting closer to $135,000. Is there flexibility to revisit the base salary?"</div>
         </div>
       </div>
     </div>
-  </section>
 
-  <hr />
+    <div class="showcase-panel" id="tab-sections">
+      <div class="section-block"><div class="section-block-header"><i class="ti ti-alert-triangle" style="color:var(--accent);font-size:13px"></i> Non-Compete <span style="font-size:10px;background:var(--red-bg);color:var(--red);padding:2px 7px;border-radius:8px;margin-left:4px">2 issues</span></div><div class="section-block-body">24-month worldwide restriction. Most enforceable non-competes are 6–12 months and limited to a specific region. This is far broader than standard.</div></div>
+      <div class="section-block"><div class="section-block-header"><i class="ti ti-alert-triangle" style="color:var(--accent);font-size:13px"></i> Intellectual Property <span style="font-size:10px;background:var(--red-bg);color:var(--red);padding:2px 7px;border-radius:8px;margin-left:4px">1 issue</span></div><div class="section-block-body">Any project you build on evenings or weekends — even unrelated to the company — belongs to them. Ask for a personal project carve-out.</div></div>
+      <div class="section-block"><div class="section-block-header"><i class="ti ti-check" style="color:var(--green);font-size:13px"></i> Benefits &amp; PTO <span style="font-size:10px;background:var(--green-bg);color:var(--green);padding:2px 7px;border-radius:8px;margin-left:4px">Standard</span></div><div class="section-block-body">15 days PTO with standard rollover, health insurance from day one. Nothing to worry about here.</div></div>
+    </div>
 
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-num">94%</div>
-      <div class="stat-label">of people never fully read contracts they sign</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">&lt; 90s</div>
-      <div class="stat-label">average time to get a full analysis</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">Plain</div>
-      <div class="stat-label">English always — no legal jargon, ever</div>
+    <div class="showcase-panel" id="tab-questions">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:1rem;line-height:1.55">Bring these word-for-word to your negotiation. You don't have to accept everything as written.</p>
+      <div class="question-item"><div class="q-num">1</div><div>"Can the non-compete be limited to 6 months and restricted to my state only?"</div></div>
+      <div class="question-item"><div class="q-num">2</div><div>"Can we add a carve-out for personal projects I work on outside work hours using no company resources?"</div></div>
+      <div class="question-item"><div class="q-num">3</div><div>"Is there flexibility on the base salary — I was expecting closer to $135,000 based on comparable roles."</div></div>
+      <div class="question-item"><div class="q-num">4</div><div>"Can we change termination notice to 30 days for both parties instead of 2 weeks?"</div></div>
     </div>
   </div>
+</section>
 
-  <hr />
-
-  <section class="section" id="how">
-    <div class="section-label">How it works</div>
-    <h2>Three steps to know what you're signing</h2>
-    <div class="how-grid">
-      <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-title">Upload your document</div>
-        <div class="step-desc">Drop in a PDF, take a photo, or paste text. We support contracts, NDAs, leases, terms of service, employment agreements, and more.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-title">We scan and flag it</div>
-        <div class="step-desc">Our AI reads every clause and marks red flags, things to question, and anything that isn't standard — all explained in plain language.</div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-title">Walk in prepared</div>
-        <div class="step-desc">Get a summary of what to push back on, what questions to ask, and what you might be agreeing to without realizing it.</div>
+<div class="alt-bg">
+  <div class="alt-inner">
+    <div class="section-label">Document comparison</div>
+    <h2 style="margin-bottom:0.5rem">Compare up to 3 contracts side by side</h2>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65">Deciding between two job offers? Two leases? Select any saved analyses and get a side-by-side breakdown with pros, cons, category winners, and a clear recommendation.</p>
+    <div class="winner-banner">
+      <div class="trophy"><i class="ti ti-trophy"></i></div>
+      <div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.55);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.06em">High confidence · recommendation</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:3px">Go with: Acme Technologies offer</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7)">Higher salary and better benefits offset the stricter non-compete. Push back on the IP clause before signing.</div>
       </div>
     </div>
-  </section>
-
-  <div class="flags-section" id="flags">
-    <div class="flags-inner">
-      <div class="section-label">What we flag</div>
-      <h2 style="margin-bottom: 1.5rem;">We catch what most people miss</h2>
-      <div class="flags-grid">
-        <div class="flag-card">
-          <div class="flag-icon red"><i class="ti ti-ban"></i></div>
-          <div>
-            <div class="flag-name">Non-competes &amp; restrictions</div>
-            <div class="flag-desc">Clauses that limit what jobs you can take or businesses you can start after leaving.</div>
-          </div>
+    <div class="compare-showcase">
+      <div class="compare-doc">
+        <div class="compare-doc-header">
+          <div class="compare-doc-num" style="background:#4F6AF5">1</div>
+          <div><div style="font-size:12px;font-weight:500">Acme Technologies</div><div style="font-size:10px;color:var(--text2)">Employment Agreement · High risk</div></div>
         </div>
-        <div class="flag-card">
-          <div class="flag-icon amber"><i class="ti ti-gavel"></i></div>
-          <div>
-            <div class="flag-name">Forced arbitration</div>
-            <div class="flag-desc">Language that takes away your right to sue and locks you into private dispute resolution.</div>
-          </div>
+        <div style="padding:10px 14px;">
+          <div style="font-size:10px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-thumb-up" style="font-size:11px"></i> Pros</div>
+          <div class="pro-item"><i class="ti ti-check" style="font-size:12px;flex-shrink:0"></i> $120K base — $5K above Beta Corp</div>
+          <div class="pro-item"><i class="ti ti-check" style="font-size:12px;flex-shrink:0"></i> Health insurance starts day one</div>
+          <div class="pro-item"><i class="ti ti-check" style="font-size:12px;flex-shrink:0"></i> 15 days PTO with rollover</div>
+          <div style="font-size:10px;font-weight:500;color:var(--red);text-transform:uppercase;letter-spacing:0.06em;margin:8px 0 6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-thumb-down" style="font-size:11px"></i> Cons</div>
+          <div class="con-item"><i class="ti ti-x" style="font-size:12px;flex-shrink:0"></i> 24-month worldwide non-compete</div>
+          <div class="con-item"><i class="ti ti-x" style="font-size:12px;flex-shrink:0"></i> IP clause covers personal projects</div>
         </div>
-        <div class="flag-card">
-          <div class="flag-icon red"><i class="ti ti-lock"></i></div>
-          <div>
-            <div class="flag-name">Auto-renewals &amp; cancellation traps</div>
-            <div class="flag-desc">Subscriptions or contracts that roll over automatically and are hard to exit.</div>
-          </div>
+      </div>
+      <div class="compare-doc">
+        <div class="compare-doc-header">
+          <div class="compare-doc-num" style="background:#D85A30">2</div>
+          <div><div style="font-size:12px;font-weight:500">Beta Corp</div><div style="font-size:10px;color:var(--text2)">Employment Agreement · Medium risk</div></div>
         </div>
-        <div class="flag-card">
-          <div class="flag-icon blue"><i class="ti ti-eye"></i></div>
-          <div>
-            <div class="flag-name">Data &amp; privacy clauses</div>
-            <div class="flag-desc">What they can collect, share, or sell about you — buried in the fine print.</div>
-          </div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-icon amber"><i class="ti ti-pencil"></i></div>
-          <div>
-            <div class="flag-name">One-sided change rights</div>
-            <div class="flag-desc">When a company can change the terms whenever they want without telling you.</div>
-          </div>
-        </div>
-        <div class="flag-card">
-          <div class="flag-icon green"><i class="ti ti-checklist"></i></div>
-          <div>
-            <div class="flag-name">What's actually fair</div>
-            <div class="flag-desc">We also call out what looks normal and reasonable so you know what's not worth worrying about.</div>
-          </div>
+        <div style="padding:10px 14px;">
+          <div style="font-size:10px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-thumb-up" style="font-size:11px"></i> Pros</div>
+          <div class="pro-item"><i class="ti ti-check" style="font-size:12px;flex-shrink:0"></i> No non-compete clause</div>
+          <div class="pro-item"><i class="ti ti-check" style="font-size:12px;flex-shrink:0"></i> Personal projects excluded from IP</div>
+          <div style="font-size:10px;font-weight:500;color:var(--red);text-transform:uppercase;letter-spacing:0.06em;margin:8px 0 6px;display:flex;align-items:center;gap:4px;"><i class="ti ti-thumb-down" style="font-size:11px"></i> Cons</div>
+          <div class="con-item"><i class="ti ti-x" style="font-size:12px;flex-shrink:0"></i> $115K base — $5K lower</div>
+          <div class="con-item"><i class="ti ti-x" style="font-size:12px;flex-shrink:0"></i> 90-day insurance waiting period</div>
+          <div class="con-item"><i class="ti ti-x" style="font-size:12px;flex-shrink:0"></i> Only 10 days PTO to start</div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <section class="cta-section" id="cta">
-    <div class="eyebrow" style="margin-bottom: 1rem;"><i class="ti ti-sparkles"></i> Free to start</div>
-    <h2>Stop signing things you don't understand</h2>
-    <p class="cta-sub">Upload your first document free. No account needed to try it.</p>
-    <div class="cta-btns">
-      <a href="auth.html" class="btn-lg"><i class="ti ti-brand-apple"></i> Download on iOS</a>
-      <a href="auth.html" class="btn-ghost"><i class="ti ti-world"></i> Use on web</a>
+<div id="dashboard">
+  <div class="section" style="max-width:1000px">
+    <div class="section-label">Your document library</div>
+    <h2 style="margin-bottom:0.5rem">Everything saved, organized, and searchable</h2>
+    <p style="font-size:14px;color:var(--text2);line-height:1.65">Every analysis saved to your account. Filter by type, risk, or date. Search everything. Compare any two or three side by side.</p>
+    <div class="dashboard-mockup">
+      <div class="dash-nav-bar">
+        <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700">Fine<span style="color:var(--accent)">Print</span>Fix</div>
+        <div style="font-size:11px;color:var(--text2);background:var(--bg2);padding:4px 10px;border-radius:20px;border:0.5px solid var(--border)">Jane Smith</div>
+      </div>
+      <div class="dash-filters">
+        <div class="dash-filter active"><i class="ti ti-search" style="font-size:11px"></i> Search documents...</div>
+        <div class="dash-filter active">Employment Agreement ×</div>
+        <div class="dash-filter">All risk levels</div>
+        <div class="dash-filter">Any date</div>
+        <div class="dash-filter"><i class="ti ti-arrows-sort" style="font-size:11px"></i> Newest first</div>
+      </div>
+      <div class="dash-doc-row">
+        <div class="dash-doc-icon"><i class="ti ti-file-text"></i></div>
+        <div style="flex:1;min-width:0"><div class="dash-doc-name">Acme Technologies — Employment Agreement</div><div class="dash-doc-meta"><span>May 12, 2025</span><span class="type-badge">Employment Agreement</span><span class="risk-badge high">High risk</span><div class="flag-counts"><span class="fc r">4 red</span><span class="fc a">3 amber</span><span class="fc g">3 fine</span></div></div></div>
+        <i class="ti ti-chevron-right" style="font-size:15px;color:var(--text2)"></i>
+      </div>
+      <div class="dash-doc-row">
+        <div class="dash-doc-icon"><i class="ti ti-file-text"></i></div>
+        <div style="flex:1;min-width:0"><div class="dash-doc-name">Beta Corp — Senior Engineer Offer</div><div class="dash-doc-meta"><span>May 10, 2025</span><span class="type-badge">Employment Agreement</span><span class="risk-badge medium">Medium risk</span><div class="flag-counts"><span class="fc r">2 red</span><span class="fc a">2 amber</span><span class="fc g">5 fine</span></div></div></div>
+        <i class="ti ti-chevron-right" style="font-size:15px;color:var(--text2)"></i>
+      </div>
+      <div class="dash-doc-row">
+        <div class="dash-doc-icon"><i class="ti ti-file-text"></i></div>
+        <div style="flex:1;min-width:0"><div class="dash-doc-name">123 Main St — Lease Agreement</div><div class="dash-doc-meta"><span>Apr 28, 2025</span><span class="type-badge">Lease Agreement</span><span class="risk-badge low">Low risk</span><div class="flag-counts"><span class="fc r">1 red</span><span class="fc a">2 amber</span><span class="fc g">6 fine</span></div></div></div>
+        <i class="ti ti-chevron-right" style="font-size:15px;color:var(--text2)"></i>
+      </div>
+      <div class="dash-footer">
+        <div style="font-size:11px;color:var(--text2)">Showing 2 of 5 documents</div>
+        <div style="background:var(--accent);color:#fff;font-size:11px;font-weight:500;padding:6px 12px;border-radius:var(--radius);display:flex;align-items:center;gap:5px;cursor:pointer"><i class="ti ti-layout-columns" style="font-size:11px"></i> Compare selected</div>
+      </div>
     </div>
-  </section>
+  </div>
+</div>
 
-  <footer>
-    <a href="/" class="logo" style="font-size: 14px;">Fine<span>Print</span>Fix</a>
-    <span>Not legal advice. For informational purposes only.</span>
-    <span><a href="#">Privacy</a> · <a href="#">Terms</a></span>
-  </footer>
+<div class="alt-bg" id="flags">
+  <div class="alt-inner">
+    <div class="section-label">What we flag</div>
+    <h2 style="margin-bottom:1.5rem">We catch what most people miss</h2>
+    <div class="flags-grid">
+      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-ban"></i></div><div><div class="flag-name">Non-competes &amp; restrictions</div><div class="flag-desc">Clauses that limit what jobs you can take or businesses you can start after leaving.</div></div></div>
+      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-gavel"></i></div><div><div class="flag-name">Forced arbitration</div><div class="flag-desc">Language that takes away your right to sue and locks you into private dispute resolution.</div></div></div>
+      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-lock"></i></div><div><div class="flag-name">Auto-renewals &amp; cancellation traps</div><div class="flag-desc">Subscriptions or contracts that roll over automatically and are hard to exit.</div></div></div>
+      <div class="flag-card"><div class="flag-icon blue"><i class="ti ti-eye"></i></div><div><div class="flag-name">Data &amp; privacy clauses</div><div class="flag-desc">What they can collect, share, or sell about you — buried in the fine print.</div></div></div>
+      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-coin"></i></div><div><div class="flag-name">Hidden costs &amp; penalties</div><div class="flag-desc">Fees and financial obligations that are easy to miss but costly when triggered.</div></div></div>
+      <div class="flag-card"><div class="flag-icon green"><i class="ti ti-checklist"></i></div><div><div class="flag-name">What's actually fair</div><div class="flag-desc">We call out what's normal and standard so you know what's not worth worrying about.</div></div></div>
+    </div>
+  </div>
+</div>
 
+<section class="section">
+  <div class="section-label">How it works</div>
+  <h2>Three steps to know what you're signing</h2>
+  <div class="how-grid">
+    <div class="step"><div class="step-num">01</div><div class="step-title">Upload your document</div><div class="step-desc">Drop in a PDF or paste text. Contracts, NDAs, leases, terms of service, employment agreements, freelance contracts, and more.</div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-title">Get your full analysis</div><div class="step-desc">In under 90 seconds — Summary, Flags, Money analysis with negotiation scripts, Section breakdown, and Questions to ask.</div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-title">Walk in prepared</div><div class="step-desc">Save everything to your dashboard, compare documents side by side, and go into any negotiation knowing exactly what to push back on.</div></div>
+  </div>
+</section>
+
+<div class="alt-bg" id="pricing">
+  <div class="alt-inner">
+    <div class="section-label">Pricing</div>
+    <h2 style="margin-bottom:0.5rem">Simple pricing, coming soon</h2>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65;max-width:520px">We're finalizing our plans. One thing is certain — your first analysis is always free, no account required.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">Free</div>
+        <div class="price-num">$0</div>
+        <div class="price-sub">No credit card needed</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> 1 free analysis</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No account required</div>
+      </div>
+      <div class="price-card featured">
+        <div class="coming-soon-badge accent">Coming soon</div>
+        <div class="price-tier">Pay per doc</div>
+        <div class="price-num" style="opacity:0.4">$–</div>
+        <div class="price-sub">Per document, one-off</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No subscription needed</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No account required</div>
+      </div>
+      <div class="price-card">
+        <div class="coming-soon-badge neutral">Coming soon</div>
+        <div class="price-tier">Pro</div>
+        <div class="price-num" style="opacity:0.4">$–<span style="font-size:14px;font-weight:400;color:var(--text2)">/mo</span></div>
+        <div class="price-sub">Unlimited analyses</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Unlimited analyses</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Saved dashboard</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Document comparison</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
+      </div>
+    </div>
+    <div class="notify-bar">
+      <div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Get notified when pricing launches</div>
+        <div style="font-size:12px;color:var(--text2)">Be first to know — and lock in early access pricing.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="email" id="notify-email" placeholder="your@email.com" class="notify-input" />
+        <button class="notify-btn" onclick="handleNotify(this)">Notify me</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="cta-section">
+  <div class="eyebrow" style="margin-bottom:1rem"><i class="ti ti-sparkles"></i> Free to start</div>
+  <h2 style="margin-bottom:0.75rem">Stop signing things you don't understand</h2>
+  <p class="cta-sub">Upload your first document free. Full analysis in under 90 seconds — Summary, Flags, Money, and more.</p>
+  <div class="cta-btns">
+    <a href="auth.html" class="btn-lg"><i class="ti ti-upload"></i> Upload a document free</a>
+    <a href="auth.html" class="btn-ghost"><i class="ti ti-brand-apple"></i> iOS app</a>
+  </div>
+</section>
+
+<footer>
+  <a href="/" class="logo" style="font-size:14px">Fine<span>Print</span>Fix</a>
+  <span>Not legal advice. For informational purposes only.</span>
+  <span><a href="#">Privacy</a> · <a href="#">Terms</a></span>
+</footer>
+
+<script>
+  function showTab(tab, btn) {
+    document.querySelectorAll('.showcase-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.showcase-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  function handleNotify(btn) {
+    const email = document.getElementById('notify-email').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('notify-email').style.borderColor = '#D85A30';
+      return;
+    }
+    btn.textContent = '✓ You\'re on the list';
+    btn.style.background = '#3B6D11';
+    btn.disabled = true;
+  }
+</script>
 </body>
 </html>
+
 
 
