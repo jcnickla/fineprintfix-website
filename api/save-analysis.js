@@ -23,7 +23,7 @@ module.exports = async function handler(req, res) {
   const { data: { user }, error: authError } = await sb.auth.getUser(token);
   if (authError || !user) return res.status(401).json({ error: 'Invalid token' });
 
-  const { doc_name, flags, sections, questions, summary, red_count, amber_count, green_count } = req.body;
+  const { doc_name, flags, sections, questions, summary, money, red_count, amber_count, green_count } = req.body;
 
   const { data, error } = await sb
     .from('analyses')
@@ -34,6 +34,7 @@ module.exports = async function handler(req, res) {
       sections: sections || [],
       questions: questions || [],
       summary: summary || {},
+      money: money || {},
       red_count: red_count || 0,
       amber_count: amber_count || 0,
       green_count: green_count || 0,
@@ -48,4 +49,5 @@ module.exports = async function handler(req, res) {
 
   return res.status(200).json({ id: data.id });
 }
+
 
