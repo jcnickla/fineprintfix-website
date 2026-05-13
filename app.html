@@ -307,15 +307,18 @@
 
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(247,245,242,0.97); z-index: 200;
-      align-items: flex-end; justify-content: center;
-      padding: 0;
+      background: rgba(247,245,242,0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 200;
+      align-items: center; justify-content: center;
+      padding: 20px;
     }
     .modal-sheet {
-      background: var(--bg); border-radius: 16px 16px 0 0;
-      padding: 1.75rem 1.5rem 2.5rem; width: 100%; max-width: 560px;
-      border-top: 0.5px solid var(--border);
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+      background: var(--bg); border-radius: 16px;
+      padding: 2rem 1.75rem 2rem; width: 100%; max-width: 460px;
+      border: 0.5px solid var(--border);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
     }
     .modal-handle { width: 36px; height: 4px; background: var(--border2); border-radius: 2px; margin: 0 auto 1.25rem; }
     .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
@@ -621,8 +624,7 @@
 <!-- EMAIL CAPTURE MODAL -->
 <div id="email-capture-modal" class="modal-overlay">
   <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div style="font-size:28px;margin-bottom:10px">🔍</div>
+    <div style="font-size:32px;margin-bottom:12px">🔍</div>
     <div class="modal-title">Your analysis is ready</div>
     <div class="modal-sub">Enter your email to unlock your results. No account or password needed — just your email.</div>
     <input type="email" id="capture-email-input" class="modal-input" placeholder="your@email.com" onkeydown="if(event.key==='Enter') submitEmailCapture()" />
@@ -1484,6 +1486,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
