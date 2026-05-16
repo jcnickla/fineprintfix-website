@@ -468,9 +468,12 @@
 <div class="alt-bg" id="pricing">
   <div class="alt-inner">
     <div class="section-label">Pricing</div>
-    <h2 style="margin-bottom:0.5rem">Simple pricing, coming soon</h2>
-    <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65;max-width:520px">We're finalizing our plans. One thing is certain — your first analysis is always free, no account required.</p>
-    <div class="pricing-grid">
+    <h2 style="margin-bottom:0.5rem">Simple, honest pricing</h2>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65;max-width:520px">No subscription. No monthly fee. Pay only when you need an analysis — and your first one is always free.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+
+      <!-- FREE -->
       <div class="price-card">
         <div class="price-tier">Free</div>
         <div class="price-num">$0</div>
@@ -478,37 +481,36 @@
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> 1 free analysis</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No account required</div>
+        <div style="margin-top:1rem;">
+          <a href="app.html" style="display:block;text-align:center;background:var(--bg2);color:var(--text);border:0.5px solid var(--border2);padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Try free →</a>
+        </div>
       </div>
-      <div class="price-card featured">
-        <div class="coming-soon-badge accent">Coming soon</div>
-        <div class="price-tier">Pay per doc</div>
-        <div class="price-num" style="opacity:0.4">$–</div>
-        <div class="price-sub">Per document, one-off</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No subscription needed</div>
+
+      <!-- PAY PER DOC -->
+      <div class="price-card featured" style="border:2px solid var(--accent);">
+        <div class="price-tier" style="color:var(--accent)">Pay per document</div>
+        <div class="price-num" style="color:var(--accent)">$3.99</div>
+        <div class="price-sub">One-off, no subscription</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No account required</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Saved to your dashboard</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Document comparison tool</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Negotiation scripts</div>
+        <div style="margin-top:1rem;">
+          <a href="app.html" style="display:block;text-align:center;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Get started →</a>
+        </div>
       </div>
-      <div class="price-card">
-        <div class="coming-soon-badge neutral">Coming soon</div>
-        <div class="price-tier">Pro</div>
-        <div class="price-num" style="opacity:0.4">$–<span style="font-size:14px;font-weight:400;color:var(--text2)">/mo</span></div>
-        <div class="price-sub">Unlimited analyses</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Unlimited analyses</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Saved dashboard</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Document comparison</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
-      </div>
+
     </div>
-    <div class="notify-bar">
+
+    <!-- COMPARISON NOTE -->
+    <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:10px;">
+      <i class="ti ti-info-circle" style="color:var(--accent);font-size:18px;flex-shrink:0;margin-top:1px"></i>
       <div>
-        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Get notified when pricing launches</div>
-        <div style="font-size:12px;color:var(--text2)">Be first to know — and lock in early access pricing.</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <input type="email" id="notify-email" placeholder="your@email.com" class="notify-input" />
-        <button class="notify-btn" onclick="handleNotify(this)">Notify me</button>
+        <div style="font-size:13px;font-weight:500;margin-bottom:3px">Why no subscription?</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65">Most people sign a handful of contracts a year — a job offer, a lease, a freelance agreement. You shouldn't pay every month for something you use occasionally. Pay when you need it, keep the rest.</div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -536,19 +538,38 @@
     document.getElementById('tab-' + tab).classList.add('active');
   }
 
-  function handleNotify(btn) {
-    const email = document.getElementById('notify-email').value.trim();
+  async function handleNotify(btn) {
+    const emailInput = document.getElementById('notify-email');
+    const email = emailInput.value.trim();
     if (!email || !email.includes('@')) {
-      document.getElementById('notify-email').style.borderColor = '#D85A30';
+      emailInput.style.borderColor = '#D85A30';
+      emailInput.focus();
       return;
     }
-    btn.textContent = '✓ You\'re on the list';
-    btn.style.background = '#3B6D11';
+    emailInput.style.borderColor = '';
+    btn.textContent = 'Saving...';
     btn.disabled = true;
+    try {
+      const res = await fetch('/api/pricing-waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        btn.textContent = '✓ You\'re on the list';
+        btn.style.background = '#3B6D11';
+      } else {
+        throw new Error('Failed');
+      }
+    } catch (err) {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+    }
   }
 </script>
 </body>
 </html>
+
 
 
 
