@@ -469,8 +469,8 @@
         </a>
         <div style="border-top:0.5px solid var(--border);margin:4px 0;"></div>
         <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:2px;">Or pay for just this document — no account needed</div>
-        <button onclick="handleUpgrade('payperDoc')" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
-          Analyze this document — $1.99
+        <button onclick="handleUpgrade('payperDoc', event)" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+          Analyze this document — $3.99
         </button>
       </div>
 
@@ -485,8 +485,8 @@
         </a>
         <div style="border-top:0.5px solid var(--border);margin:6px 0;"></div>
         <div style="font-size:12px;color:var(--text2);text-align:center;margin-bottom:4px;">Or pay for just this document — no account needed</div>
-        <button onclick="handleUpgrade('payperDoc')" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
-          Analyze this document — $1.99
+        <button onclick="handleUpgrade('payperDoc', event)" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+          Analyze this document — $3.99
         </button>
       </div>
 
@@ -496,11 +496,11 @@
           <div style="position:absolute;top:-10px;left:14px;background:var(--accent);color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Most flexible</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
             <div style="font-size:14px;font-weight:500">Pay per document</div>
-            <div style="font-size:20px;font-weight:700;color:var(--accent)">$1.99</div>
+            <div style="font-size:20px;font-weight:700;color:var(--accent)">$3.99</div>
           </div>
           <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">One-off payment. Saves to your dashboard. All 5 analysis tabs included.</div>
-          <button onclick="handleUpgrade('payperDoc')" style="background:var(--accent);color:#fff;border:none;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
-            Analyze this document — $1.99
+          <button onclick="handleUpgrade('payperDoc', event)" style="background:var(--accent);color:#fff;border:none;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+            Analyze this document — $3.99
           </button>
         </div>
         <div style="border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;">
@@ -509,7 +509,7 @@
             <div style="font-size:20px;font-weight:700">$9.99<span style="font-size:12px;font-weight:400;color:var(--text2)">/mo</span></div>
           </div>
           <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">Unlimited analyses, saved dashboard, document comparison, all 5 tabs.</div>
-          <button onclick="handleUpgrade('pro')" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+          <button onclick="handleUpgrade('pro', event)" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
             Start Pro — $9.99/month
           </button>
         </div>
@@ -802,7 +802,7 @@
     } else {
       // Fully anonymous, no email on record
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
-      document.getElementById('upgrade-sub').textContent = "Create a free account to get more analyses and save your documents — or pay just $1.99 for this one.";
+      document.getElementById('upgrade-sub').textContent = "Create a free account to get more analyses and save your documents — or pay just $3.99 for this one.";
       anon.style.display = 'flex';
     }
   }
@@ -1470,18 +1470,16 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
   }
 
   // ─── STRIPE CHECKOUT ─────────────────────────────────────────
-  async function handleUpgrade(plan) {
+  async function handleUpgrade(plan, evt) {
     if (plan === 'payperDoc') {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) {
-        // Not logged in — send to auth first
         window.location.href = 'auth.html?next=pay';
         return;
       }
 
-      const btn = event.currentTarget;
-      btn.textContent = 'Loading...';
-      btn.disabled = true;
+      const btn = evt?.currentTarget || evt?.target;
+      if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
 
       try {
         const res = await fetch('/api/create-checkout', {
@@ -1501,8 +1499,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
         }
       } catch (err) {
         console.error('Checkout error:', err);
-        btn.textContent = 'Try again';
-        btn.disabled = false;
+        if (btn) { btn.textContent = 'Analyze this document — $3.99'; btn.disabled = false; }
         alert('Something went wrong. Please try again.');
       }
     }
@@ -1595,6 +1592,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
