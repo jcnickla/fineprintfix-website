@@ -1482,6 +1482,21 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
       if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
 
       try {
+        // Save document state before leaving for Stripe
+        if (window.pdfBase64) {
+          sessionStorage.setItem('fpf_pending_doc', JSON.stringify({
+            type: 'pdf',
+            data: window.pdfBase64,
+            name: uploadedFileName,
+          }));
+        } else if (documentText) {
+          sessionStorage.setItem('fpf_pending_doc', JSON.stringify({
+            type: 'text',
+            data: documentText,
+            name: uploadedFileName,
+          }));
+        }
+
         const res = await fetch('/api/create-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1509,13 +1524,39 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
   async function checkPaymentReturn() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
-      // Clean the URL
       window.history.replaceState({}, '', '/app.html');
-      // Show a brief success message then let them analyze
-      showPaymentSuccess();
+
+      // Restore saved document and go straight into analysis
+      const saved = sessionStorage.getItem('fpf_pending_doc');
+      if (saved) {
+        sessionStorage.removeItem('fpf_pending_doc');
+        const doc = JSON.parse(saved);
+        uploadedFileName = doc.name || 'Document';
+
+        if (doc.type === 'pdf') {
+          window.pdfBase64 = doc.data;
+        } else {
+          documentText = doc.data;
+        }
+
+        // Brief toast then auto-start analysis
+        showPaymentSuccess();
+        await new Promise(r => setTimeout(r, 1800));
+
+        showScreen('screen-analyzing');
+        document.getElementById('result-doc-name').textContent = uploadedFileName;
+        animateProgress().then(() => {
+          showScreen('screen-results');
+          runAnalysis();
+          handlePostAnalysis();
+        });
+      } else {
+        // No saved doc — just show upload with toast
+        showPaymentSuccess();
+      }
     } else if (params.get('payment') === 'cancelled') {
       window.history.replaceState({}, '', '/app.html');
-      // Just show the upload screen normally
+      sessionStorage.removeItem('fpf_pending_doc');
     }
   }
 
@@ -1592,6 +1633,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
