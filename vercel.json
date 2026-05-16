@@ -5,6 +5,12 @@
     },
     "api/save-analysis.js": {
       "maxDuration": 30
+    },
+    "api/create-checkout.js": {
+      "maxDuration": 15
+    },
+    "api/stripe-webhook.js": {
+      "maxDuration": 15
     }
   }
 }
