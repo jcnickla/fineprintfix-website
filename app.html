@@ -670,6 +670,7 @@
   // Check auth on load — just store session if exists, don't redirect
   sb.auth.getSession().then(({ data: { session } }) => {
     if (session) currentUser = session.user;
+    checkPaymentReturn();
   });
 
   // ─── STATE ───────────────────────────────────────────────────
@@ -734,7 +735,15 @@
     const { data: { session } } = await sb.auth.getSession();
 
     if (session) {
-      // Logged-in user — check Supabase analysis count
+      // Check credits first
+      const credits = await getUserCredits(session.user.id);
+      if (credits > 0) {
+        // They have paid credits — consume one and allow
+        await consumeCredit(session.user.id);
+        return true;
+      }
+
+      // No credits — check if they've used their free analysis
       const { count } = await sb
         .from('analyses')
         .select('id', { count: 'exact', head: true })
@@ -748,7 +757,6 @@
     } else {
       // Anonymous user — check cookie first (fast)
       if (getCookie(FREE_TIER_COOKIE)) {
-        // Check if they gave us their email
         const hasEmail = !!getCookie(FREE_TIER_EMAIL_COOKIE);
         showUpgradeWall(hasEmail ? 'anonymous-email' : 'anonymous');
         return false;
@@ -1461,16 +1469,84 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
     }
   }
 
-  // ─── UPGRADE HANDLER ─────────────────────────────────────────
-  function handleUpgrade(plan) {
-    // Placeholder — swap these URLs for your real Stripe payment links when ready
+  // ─── STRIPE CHECKOUT ─────────────────────────────────────────
+  async function handleUpgrade(plan) {
     if (plan === 'payperDoc') {
-      alert('Pay per doc coming soon! Stripe integration in progress.');
-      // window.location.href = 'YOUR_STRIPE_PAY_PER_DOC_LINK';
-    } else if (plan === 'pro') {
-      alert('Pro plan coming soon! Stripe integration in progress.');
-      // window.location.href = 'YOUR_STRIPE_PRO_LINK';
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) {
+        // Not logged in — send to auth first
+        window.location.href = 'auth.html?next=pay';
+        return;
+      }
+
+      const btn = event.currentTarget;
+      btn.textContent = 'Loading...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: session.user.id,
+            user_email: session.user.email,
+            doc_name: uploadedFileName || 'Document',
+          }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Could not create checkout session');
+        }
+      } catch (err) {
+        console.error('Checkout error:', err);
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+        alert('Something went wrong. Please try again.');
+      }
     }
+  }
+
+  // Check if returning from successful Stripe payment
+  async function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      // Clean the URL
+      window.history.replaceState({}, '', '/app.html');
+      // Show a brief success message then let them analyze
+      showPaymentSuccess();
+    } else if (params.get('payment') === 'cancelled') {
+      window.history.replaceState({}, '', '/app.html');
+      // Just show the upload screen normally
+    }
+  }
+
+  function showPaymentSuccess() {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      background:#1a1a18; color:#fff; padding:12px 20px; border-radius:10px;
+      font-size:13px; font-weight:500; z-index:999; display:flex;
+      align-items:center; gap:8px; box-shadow:0 4px 20px rgba(0,0,0,0.2);
+    `;
+    toast.innerHTML = '✓ Payment successful — you can now analyze your document';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+  }
+
+  // Check credits for logged-in users
+  async function getUserCredits(userId) {
+    const { data } = await sb
+      .from('user_credits')
+      .select('credits')
+      .eq('user_id', userId)
+      .single();
+    return data?.credits || 0;
+  }
+
+  async function consumeCredit(userId) {
+    await sb.rpc('increment_credits', { uid: userId, amount: -1 });
   }
 
   // ─── UI HELPERS ───────────────────────────────────────────────
@@ -1519,6 +1595,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
