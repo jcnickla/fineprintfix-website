@@ -1860,9 +1860,8 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
     const btn = evt?.currentTarget || evt?.target;
     if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
 
-    const priceId = plan === 'compare'
-      ? process.env.STRIPE_COMPARE_PRICE_ID // $7.99 price
-      : null; // uses default STRIPE_PRICE_ID in API
+    // Price ID is resolved server-side in create-checkout.js using env vars
+    // We just pass the plan name ('single' or 'compare')
 
     try {
       // Save docs to sessionStorage before leaving
@@ -1883,7 +1882,6 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
           user_email: session.user.email,
           doc_name: plan === 'compare' ? 'Document comparison' : uploadedFileName || 'Document',
           plan,
-          price_id: priceId,
         }),
       });
       const data = await res.json();
@@ -2023,6 +2021,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
