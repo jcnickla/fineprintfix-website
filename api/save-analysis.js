@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const ws = require('ws');
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,32 +12,23 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Check env vars
-  if (!process.env.SUPABASE_URL) {
-    console.error('Missing SUPABASE_URL');
-    return res.status(500).json({ error: 'Server config error: missing SUPABASE_URL' });
-  }
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('Missing SUPABASE_SERVICE_ROLE_KEY');
-    return res.status(500).json({ error: 'Server config error: missing SUPABASE_SERVICE_ROLE_KEY' });
-  }
+  if (!process.env.SUPABASE_URL) return res.status(500).json({ error: 'Missing SUPABASE_URL' });
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return res.status(500).json({ error: 'Missing SUPABASE_SERVICE_ROLE_KEY' });
 
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ error: 'Unauthorized — no auth header' });
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
 
-  let sb;
-  try {
-    sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-  } catch (e) {
-    console.error('createClient failed:', e.message);
-    return res.status(500).json({ error: 'Failed to init Supabase: ' + e.message });
-  }
+  const sb = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+    { global: { headers: {} }, realtime: { transport: ws } }
+  );
 
   const token = authHeader.replace('Bearer ', '');
   const { data: { user }, error: authError } = await sb.auth.getUser(token);
   if (authError || !user) {
     console.error('Auth error:', authError?.message);
-    return res.status(401).json({ error: 'Invalid token: ' + (authError?.message || 'no user') });
+    return res.status(401).json({ error: 'Invalid token' });
   }
 
   const { doc_name, flags, sections, questions, summary, money, red_count, amber_count, green_count, paid } = req.body;
@@ -66,3 +58,4 @@ module.exports = async function handler(req, res) {
 
   return res.status(200).json({ id: data.id });
 }
+
