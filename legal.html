@@ -173,34 +173,43 @@
     <p>We take your privacy seriously. Here is what we collect and how we use it:</p>
     <h3>What we collect</h3>
     <ul>
-      <li><strong>Account information:</strong> Your name and email address when you create an account</li>
-      <li><strong>Documents you upload:</strong> The content of documents you submit for analysis</li>
-      <li><strong>Usage data:</strong> Basic analytics such as pages visited and features used</li>
-      <li><strong>Technical data:</strong> IP address, browser type, and device information for security purposes</li>
+      <li><strong>Account information:</strong> Your email address when you create an account</li>
+      <li><strong>Analysis results:</strong> The output of your document analysis (flags, summary, questions, financial breakdown) — not the original document</li>
+      <li><strong>Payment information:</strong> Transaction records processed by Stripe. We never see or store your full card number</li>
+      <li><strong>Technical data:</strong> IP address and basic request data for security and rate limiting purposes</li>
     </ul>
     <h3>What we do not do</h3>
     <ul>
-      <li>We do not sell your personal data or documents to third parties</li>
-      <li>We do not use your documents to train AI models</li>
+      <li>We do not store the original documents you upload — PDFs are sent to the AI for analysis and immediately discarded</li>
+      <li>We do not sell your personal data or analysis results to third parties</li>
+      <li>We do not use your documents or analyses to train AI models</li>
       <li>We do not share your analysis results with anyone other than you</li>
       <li>We do not send marketing emails without your consent</li>
     </ul>
     <h3>How we use your data</h3>
     <ul>
       <li>To provide and improve the FinePrintFix service</li>
-      <li>To send transactional emails (account confirmation, password reset)</li>
+      <li>To send transactional emails (account confirmation, password reset, payment receipts)</li>
       <li>To enforce our terms and protect against abuse</li>
     </ul>
+    <h3>Your rights (CCPA / GDPR)</h3>
+    <p>If you are a California resident or in the European Union you have the right to access, correct, and delete your personal data. To exercise these rights, contact us at <a href="mailto:legal@fineprintfix.com" style="color:var(--accent)">legal@fineprintfix.com</a>. We will respond within 30 days.</p>
   </div>
 
   <hr class="divider" />
 
   <div class="section" id="data">
     <h2>7. Your documents and data</h2>
-    <p>Documents you upload are transmitted securely and used solely to generate your analysis. We do not store the raw content of uploaded PDF files beyond what is needed to complete the analysis.</p>
-    <p>Analysis results (flags, summary, questions, money analysis) are stored in your account so you can access them later from your dashboard. You can delete any saved analysis at any time from your dashboard.</p>
-    <p>If you delete your account, all associated data including saved analyses will be permanently deleted within 30 days.</p>
-    <p>We use industry-standard encryption (TLS) for all data transmitted to and from our service.</p>
+    <h3>Document storage</h3>
+    <p><strong>Your original documents are never stored.</strong> When you upload a PDF or paste text, it is transmitted securely to the AI for analysis and then immediately discarded. We do not retain copies of your contracts, leases, employment agreements, or any other documents you upload.</p>
+    <h3>Analysis results</h3>
+    <p>The analysis output (flags, summary, questions, financial breakdown) is saved to your account so you can access it from your dashboard. This data is encrypted in transit and at rest. Only you can access your own analyses — each user's data is isolated at the database level.</p>
+    <h3>Data retention</h3>
+    <p>Analysis results are retained for as long as your account is active. You can delete any individual analysis at any time from your dashboard. If you close your account, all associated data including saved analyses and payment records will be permanently deleted within 30 days.</p>
+    <h3>Account deletion</h3>
+    <p>To delete your account and all associated data, email <a href="mailto:legal@fineprintfix.com" style="color:var(--accent)">legal@fineprintfix.com</a> with the subject line "Delete my account." We will confirm deletion within 5 business days and complete it within 30 days.</p>
+    <h3>Security</h3>
+    <p>We use TLS encryption for all data in transit, and your data is stored in a secured database with row-level security enforced — meaning no user can access another user's data even in the event of an application error.</p>
   </div>
 
   <hr class="divider" />
@@ -222,4 +231,5 @@
 
 </body>
 </html>
+
 
