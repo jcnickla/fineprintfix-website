@@ -1,4 +1,21 @@
-('DOMContentLoaded', () => {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lease Agreement Review — FinePrintFix</title>
+  <meta name="description" content="Before you sign an apartment or house lease, upload it to FinePrintFix. We flag auto-renewals, hidden fees, excessive late charges, and tenant rights issues in plain English." />
+  <meta name="keywords" content="lease agreement review, apartment lease red flags, rental contract review, lease analysis, tenant rights contract review" />
+  <link rel="canonical" href="https://www.fineprintfix.com/lease-agreements.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+    window.addEventListener('DOMContentLoaded', () => {
       const { createClient } = supabase;
       const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       sb.auth.getSession().then(({ data: { session } }) => {
@@ -26,11 +43,12 @@
     .dropdown-toggle { cursor: pointer; }
     .dropdown-toggle .ti-chevron-down { font-size: 11px; transition: transform 0.15s; }
     .has-dropdown:hover .ti-chevron-down { transform: rotate(180deg); }
-    .dropdown-menu { display: none; position: absolute; top: calc(100% + 8px); left: 0; background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius-lg); padding: 8px; min-width: 220px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); z-index: 200; }
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: -12px; background: transparent; padding-top: 8px; min-width: 244px; z-index: 200; min-width: 220px; z-index: 200; }
     .has-dropdown:hover .dropdown-menu { display: block; }
-    .dropdown-menu a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius); font-size: 13px; color: var(--text2); text-decoration: none; transition: background 0.1s, color 0.1s; }
-    .dropdown-menu a:hover { background: var(--bg2); color: var(--text); }
-    .dropdown-menu a i { font-size: 15px; color: var(--accent); width: 18px; flex-shrink: 0; }
+    .dropdown-menu-inner { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius-lg); padding: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+    .dropdown-menu-inner a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius); font-size: 13px; color: var(--text2); text-decoration: none; transition: background 0.1s, color 0.1s; }
+    .dropdown-menu-inner a:hover { background: var(--bg2); color: var(--text); }
+    .dropdown-menu-inner a i { font-size: 15px; color: var(--accent); width: 18px; flex-shrink: 0; }
     .dropdown-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); padding: 4px 10px 2px; }
     .mobile-dropdown-links { display: none !important; }
     .mobile-dropdown-links { display: none !important; padding-left: 1rem; }
@@ -110,24 +128,25 @@
       <a class="dropdown-toggle" href="#" onclick="toggleMobileDocs(event)">
         Contract types <i class="ti ti-chevron-down"></i>
       </a>
-      <div class="dropdown-menu">
-        <div class="dropdown-label">By document type</div>
-        <a href="contractor-agreements.html"><i class="ti ti-home-wrench"></i> Contractor agreements</a>
+      <div class="dropdown-menu"><div class="dropdown-menu-inner"><div class="dropdown-label">By document type</div>
+        <a href="contractor-agreements.html"><i class="ti ti-tool"></i> Contractor agreements</a>
         <a href="employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
         <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
         <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
         <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
         <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
         <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
+</div>
       </div>
       <div class="mobile-dropdown-links" id="mobile-docs">
-        <a href="contractor-agreements.html"><i class="ti ti-home-wrench"></i> Contractor agreements</a>
+        <a href="contractor-agreements.html"><i class="ti ti-tool"></i> Contractor agreements</a>
         <a href="employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
         <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
         <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
         <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
         <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
         <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
+</div>
       </div>
     </li>
     <li><a href="blog/index.html">Guides</a></li>
@@ -318,6 +337,7 @@
 </footer>
 </body>
 </html>
+
 
 
 
