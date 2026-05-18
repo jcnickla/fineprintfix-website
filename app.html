@@ -873,12 +873,22 @@
 
     // Run all analyses in parallel
     const results = await Promise.all(docs.map(async (doc) => {
+      const base64 = doc.base64;
+
+      // Build prompt objects using existing prompt functions with PDF content
+      const pdfContent = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } };
+      const flagsObj   = { systemPrompt: flagsPrompt('').systemPrompt,   content: pdfContent };
+      const sectionsObj= { systemPrompt: sectionsPrompt('').systemPrompt, content: pdfContent };
+      const questionsObj={ systemPrompt: questionsPrompt('').systemPrompt,content: pdfContent };
+      const summaryObj = { systemPrompt: summaryPrompt('').systemPrompt,  content: pdfContent };
+      const moneyObj   = { systemPrompt: moneyPrompt('').systemPrompt,    content: pdfContent };
+
       const [flags, sections, questions, summary, money] = await Promise.all([
-        analyzeDoc(PROMPTS.flags, doc.base64, true),
-        analyzeDoc(PROMPTS.sections, doc.base64, true),
-        analyzeDoc(PROMPTS.questions, doc.base64, true),
-        analyzeDoc(PROMPTS.summary, doc.base64, true),
-        analyzeDoc(PROMPTS.money, doc.base64, true),
+        analyzeWithClaude(flagsObj, null),
+        analyzeWithClaude(sectionsObj, null),
+        analyzeWithClaude(questionsObj, null),
+        analyzeWithClaude(summaryObj, null),
+        analyzeWithClaude(moneyObj, null),
       ]);
       return { name: doc.name, flags, sections, questions, summary, money };
     }));
@@ -943,11 +953,15 @@
       keyFacts: r.summary?.keyFacts || [],
     }));
 
-    const prompt = `You are FinePrintFix. Compare these ${results.length} documents and return ONLY a JSON object (no markdown):
+    const systemPrompt = `You are FinePrintFix. Compare these ${results.length} documents and return ONLY a JSON object (no markdown):
 {"recommendation":{"winner":1 or 2${results.length > 2 ? ' or 3' : ''} or null,"winnerName":"name or null","confidence":"high" or "medium" or "low","summary":"2-3 sentence plain English explanation","caveat":"one sentence warning or null"},"categoryWinners":[{"category":"name","winner":1 or 2${results.length > 2 ? ' or 3' : ''} or null,"winnerName":"name or Tied","reason":"one sentence"}],"prosAndCons":[{"docIndex":1,"pros":["pro1","pro2","pro3"],"cons":["con1","con2","con3"]}],"sideBySide":[{"category":"name","values":[{"docIndex":1,"value":"what it says","isWinner":true}]}]}
 Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specific with actual values.`;
 
-    return await analyzeDoc(prompt, JSON.stringify(summaries), false);
+    const promptObj = {
+      systemPrompt,
+      content: { type: 'text', text: JSON.stringify(summaries) }
+    };
+    return await analyzeWithClaude(promptObj, null);
   }
 
   function showCompareResults(docs, comparison) {
@@ -2009,6 +2023,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
