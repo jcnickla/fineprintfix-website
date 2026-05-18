@@ -66,7 +66,29 @@
     .cta-section{text-align:center;padding:4rem 2rem;max-width:600px;margin:0 auto;}
     .cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;}
     footer{border-top:0.5px solid var(--border);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text2);flex-wrap:wrap;gap:8px;}footer a{color:var(--text2);text-decoration:none;}
-    @media(max-width:720px){.hero{grid-template-columns:1fr;gap:2rem;padding:2rem 1.25rem;}h1{font-size:32px;}.how-grid,.flags-grid,.pricing-row{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.stat:nth-child(2){border-right:none;}.stat:nth-child(3){border-top:0.5px solid var(--border);}.section,.alt-inner{padding:2.5rem 1.25rem;}footer{flex-direction:column;}}
+    @media(max-width:720px){
+      .hamburger{display:flex;}
+      .nav-links{display:none;width:100%;flex-direction:column;gap:0;border-top:0.5px solid var(--border);padding-top:10px;}
+      .nav-links.open{display:flex;}
+      .nav-links > li > a{padding:10px 4px;border-radius:0;background:none !important;border-bottom:0.5px solid var(--border);width:100%;}
+      .dropdown-menu{display:none !important;}
+      .mobile-dropdown-links{display:none !important;}
+      .mobile-dropdown-links.open{display:flex !important;flex-direction:column;}
+      .mobile-dropdown-links a{padding:8px 4px;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--border);}.hero{grid-template-columns:1fr;gap:2rem;padding:2rem 1.25rem;}h1{font-size:32px;}.how-grid,.flags-grid,.pricing-row{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.stat:nth-child(2){border-right:none;}.stat:nth-child(3){border-top:0.5px solid var(--border);}.section,.alt-inner{padding:2.5rem 1.25rem;}footer{flex-direction:column;}}
+
+    .has-dropdown{position:relative;}.dropdown-toggle{cursor:pointer;user-select:none;}
+    .dropdown-toggle .ti-chevron-down{font-size:11px;transition:transform 0.15s;}
+    .has-dropdown:hover .ti-chevron-down{transform:rotate(180deg);}
+    .dropdown-menu{display:none;position:absolute;top:100%;left:-12px;background:transparent;padding-top:8px;min-width:244px;z-index:200;}
+    .has-dropdown:hover .dropdown-menu{display:block;}
+    .dropdown-menu-inner{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:8px;box-shadow:0 8px 30px rgba(0,0,0,0.1);}
+    .dropdown-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);padding:4px 10px 6px;}
+    .dropdown-menu-inner a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);font-size:13px;color:var(--text2);text-decoration:none;}
+    .dropdown-menu-inner a:hover{background:var(--bg2);color:var(--text);}
+    .dropdown-menu-inner a i{font-size:15px;color:var(--accent);width:18px;flex-shrink:0;}
+    .mobile-dropdown-links{display:none !important;padding-left:1rem;}
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;background:none;border:none;}
+    .hamburger span{display:block;width:20px;height:1.5px;background:var(--text);border-radius:2px;}
   </style>
 </head>
 <body>
@@ -247,6 +269,7 @@
 </footer>
 </body>
 </html>
+
 
 
 
