@@ -871,27 +871,38 @@
     showScreen('screen-analyzing');
     document.getElementById('result-doc-name').textContent = `Comparing ${docs.length} documents...`;
 
-    // Run all analyses in parallel
-    const results = await Promise.all(docs.map(async (doc) => {
+    const results = [];
+
+    // Analyze documents sequentially to avoid rate limiting
+    for (let i = 0; i < docs.length; i++) {
+      const doc = docs[i];
       const base64 = doc.base64;
+      document.getElementById('result-doc-name').textContent = `Analyzing document ${i + 1} of ${docs.length}...`;
 
-      // Build prompt objects using existing prompt functions with PDF content
       const pdfContent = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } };
-      const flagsObj   = { systemPrompt: flagsPrompt('').systemPrompt,   content: pdfContent };
-      const sectionsObj= { systemPrompt: sectionsPrompt('').systemPrompt, content: pdfContent };
-      const questionsObj={ systemPrompt: questionsPrompt('').systemPrompt,content: pdfContent };
-      const summaryObj = { systemPrompt: summaryPrompt('').systemPrompt,  content: pdfContent };
-      const moneyObj   = { systemPrompt: moneyPrompt('').systemPrompt,    content: pdfContent };
 
-      const [flags, sections, questions, summary, money] = await Promise.all([
-        analyzeWithClaude(flagsObj, null),
-        analyzeWithClaude(sectionsObj, null),
-        analyzeWithClaude(questionsObj, null),
-        analyzeWithClaude(summaryObj, null),
-        analyzeWithClaude(moneyObj, null),
-      ]);
-      return { name: doc.name, flags, sections, questions, summary, money };
-    }));
+      // Run 5 prompts for this doc sequentially with small delays
+      const flagsObj    = { systemPrompt: flagsPrompt('').systemPrompt,    content: pdfContent };
+      const sectionsObj = { systemPrompt: sectionsPrompt('').systemPrompt,  content: pdfContent };
+      const questionsObj= { systemPrompt: questionsPrompt('').systemPrompt, content: pdfContent };
+      const summaryObj  = { systemPrompt: summaryPrompt('').systemPrompt,   content: pdfContent };
+      const moneyObj    = { systemPrompt: moneyPrompt('').systemPrompt,     content: pdfContent };
+
+      const flags    = await analyzeWithClaude(flagsObj, null);
+      await new Promise(r => setTimeout(r, 500));
+      const sections = await analyzeWithClaude(sectionsObj, null);
+      await new Promise(r => setTimeout(r, 500));
+      const questions= await analyzeWithClaude(questionsObj, null);
+      await new Promise(r => setTimeout(r, 500));
+      const summary  = await analyzeWithClaude(summaryObj, null);
+      await new Promise(r => setTimeout(r, 500));
+      const money    = await analyzeWithClaude(moneyObj, null);
+
+      results.push({ name: doc.name, flags, sections, questions, summary, money });
+
+      // Pause between documents
+      if (i < docs.length - 1) await new Promise(r => setTimeout(r, 1000));
+    }
 
     // Save each to Supabase
     const { data: { session } } = await sb.auth.getSession();
@@ -929,6 +940,7 @@
     }
 
     // Run comparison
+    document.getElementById('result-doc-name').textContent = 'Generating comparison...';
     const comparisonResult = await runComparisonAnalysis(results);
 
     // Show compare results screen
@@ -2037,6 +2049,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
