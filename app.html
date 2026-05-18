@@ -897,19 +897,35 @@
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       for (const r of results) {
-        await fetch('/api/save-analysis', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-          body: JSON.stringify({
-            doc_name: r.name,
-            flags: r.flags, sections: r.sections,
-            questions: r.questions, summary: r.summary, money: r.money,
-            red_count: (r.flags?.red||[]).length,
-            amber_count: (r.flags?.amber||[]).length,
-            green_count: (r.flags?.green||[]).length,
-          }),
-        });
+        try {
+          const saveRes = await fetch('/api/save-analysis', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+            body: JSON.stringify({
+              doc_name: r.name,
+              flags: r.flags || { red: [], amber: [], green: [] },
+              sections: r.sections || [],
+              questions: r.questions || [],
+              summary: r.summary || {},
+              money: r.money || {},
+              red_count: (r.flags?.red||[]).length,
+              amber_count: (r.flags?.amber||[]).length,
+              green_count: (r.flags?.green||[]).length,
+              paid: true,
+            }),
+          });
+          if (!saveRes.ok) {
+            const errText = await saveRes.text();
+            console.error('Save failed for', r.name, ':', errText);
+          } else {
+            console.log('✓ Saved:', r.name);
+          }
+        } catch (err) {
+          console.error('Save error for', r.name, ':', err);
+        }
       }
+    } else {
+      console.warn('No session — analyses not saved to dashboard');
     }
 
     // Run comparison
@@ -2021,6 +2037,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
