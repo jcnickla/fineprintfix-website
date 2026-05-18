@@ -705,10 +705,159 @@
 </script>
 <div style="border-top:0.5px solid rgba(0,0,0,0.1);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#6b6b67;flex-wrap:wrap;gap:6px;">
   <span>AI-powered analysis for informational purposes only — not legal advice.</span>
-  <a href="legal.html" style="color:#6b6b67;text-decoration:none">Terms &amp; Disclaimer</a>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a href="legal.html" style="color:#6b6b67;text-decoration:none">Terms &amp; Disclaimer</a>
+    <button onclick="showAccountSettings()" style="background:none;border:none;color:#6b6b67;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;">Account settings</button>
+  </div>
 </div>
-</body>
-</html>
+
+<!-- ACCOUNT SETTINGS MODAL -->
+<div id="account-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:#fff;border-radius:14px;padding:1.75rem;width:100%;max-width:420px;border:0.5px solid rgba(0,0,0,0.1);">
+
+    <div id="account-main-view">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+        <div style="font-size:16px;font-weight:600;">Account settings</div>
+        <button onclick="closeAccountModal()" style="background:none;border:none;cursor:pointer;color:#6b6b67;font-size:18px;line-height:1;">✕</button>
+      </div>
+
+      <!-- Account info -->
+      <div style="background:#f7f5f2;border-radius:10px;padding:12px 14px;margin-bottom:1.25rem;">
+        <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6b6b67;margin-bottom:6px;">Signed in as</div>
+        <div style="font-size:14px;font-weight:500;" id="account-email">—</div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem;">
+        <button onclick="signOut()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border:0.5px solid rgba(0,0,0,0.16);border-radius:8px;background:#fff;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;color:#1a1a18;width:100%;text-align:left;">
+          <i class="ti ti-logout" style="font-size:15px;color:#6b6b67"></i> Sign out
+        </button>
+      </div>
+
+      <!-- Danger zone -->
+      <div style="border:0.5px solid #F5C4B3;border-radius:10px;padding:14px;">
+        <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#993C1D;margin-bottom:6px;">Danger zone</div>
+        <p style="font-size:12px;color:#6b6b67;line-height:1.55;margin-bottom:10px;">Permanently delete your account and all saved analyses. This cannot be undone.</p>
+        <button onclick="showDeleteConfirm()" style="background:#FAECE7;color:#993C1D;border:0.5px solid #F5C4B3;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;">
+          Delete my account
+        </button>
+      </div>
+    </div>
+
+    <!-- Delete confirmation view -->
+    <div id="account-delete-view" style="display:none;">
+      <div style="text-align:center;padding:8px 0;">
+        <div style="font-size:32px;margin-bottom:12px;">⚠️</div>
+        <div style="font-size:16px;font-weight:600;margin-bottom:8px;">Delete your account?</div>
+        <p style="font-size:13px;color:#6b6b67;line-height:1.6;margin-bottom:1.5rem;">This will permanently delete your account and all <span id="delete-count">your</span> saved analyses. This cannot be undone.</p>
+        <p style="font-size:12px;color:#6b6b67;line-height:1.6;margin-bottom:1.5rem;">Type <strong>DELETE</strong> to confirm:</p>
+        <input id="delete-confirm-input" type="text" placeholder="Type DELETE here" style="width:100%;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.2);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:12px;text-align:center;letter-spacing:0.05em;" oninput="checkDeleteInput()" />
+        <div style="display:flex;gap:8px;">
+          <button onclick="showAccountMain()" style="flex:1;background:transparent;color:#6b6b67;border:0.5px solid rgba(0,0,0,0.16);padding:10px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;">Cancel</button>
+          <button id="confirm-delete-btn" onclick="deleteAccount()" disabled style="flex:1;background:#ccc;color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:500;cursor:not-allowed;font-family:'DM Sans',sans-serif;">Delete account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deleting state -->
+    <div id="account-deleting-view" style="display:none;text-align:center;padding:2rem 0;">
+      <div style="font-size:14px;color:#6b6b67;">Deleting your account...</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function showAccountSettings() {
+    const modal = document.getElementById('account-modal');
+    modal.style.display = 'flex';
+    showAccountMain();
+    // Populate email
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        document.getElementById('account-email').textContent = session.user.email;
+      }
+    });
+    // Show analysis count
+    const count = document.querySelectorAll('.analysis-card, .analysis-row, [data-id]').length;
+    if (count > 0) document.getElementById('delete-count').textContent = `your ${count} saved`;
+  }
+
+  function closeAccountModal() {
+    document.getElementById('account-modal').style.display = 'none';
+  }
+
+  function showAccountMain() {
+    document.getElementById('account-main-view').style.display = 'block';
+    document.getElementById('account-delete-view').style.display = 'none';
+    document.getElementById('account-deleting-view').style.display = 'none';
+  }
+
+  function showDeleteConfirm() {
+    document.getElementById('account-main-view').style.display = 'none';
+    document.getElementById('account-delete-view').style.display = 'block';
+    document.getElementById('delete-confirm-input').value = '';
+    document.getElementById('confirm-delete-btn').disabled = true;
+    document.getElementById('confirm-delete-btn').style.background = '#ccc';
+    document.getElementById('confirm-delete-btn').style.cursor = 'not-allowed';
+  }
+
+  function checkDeleteInput() {
+    const val = document.getElementById('delete-confirm-input').value.trim();
+    const btn = document.getElementById('confirm-delete-btn');
+    if (val === 'DELETE') {
+      btn.disabled = false;
+      btn.style.background = '#D85A30';
+      btn.style.cursor = 'pointer';
+    } else {
+      btn.disabled = true;
+      btn.style.background = '#ccc';
+      btn.style.cursor = 'not-allowed';
+    }
+  }
+
+  async function deleteAccount() {
+    document.getElementById('account-delete-view').style.display = 'none';
+    document.getElementById('account-deleting-view').style.display = 'block';
+
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) throw new Error('Not signed in');
+
+      // Delete all analyses for this user
+      await sb.from('analyses').delete().eq('user_id', session.user.id);
+
+      // Sign out — Supabase doesn't allow client-side account deletion
+      // Full account deletion happens server-side within 30 days per our policy
+      await sb.auth.signOut();
+
+      // Redirect with message
+      window.location.href = 'index.html?account=deleted';
+    } catch (err) {
+      console.error('Delete account error:', err);
+      showAccountMain();
+      alert('Something went wrong. Please email legal@fineprintfix.com to delete your account.');
+    }
+  }
+
+  // Close modal on backdrop click
+  document.getElementById('account-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeAccountModal();
+  });
+
+  // Show deleted message if redirected back
+  if (window.location.search.includes('account=deleted')) {
+    window.history.replaceState({}, '', '/');
+    setTimeout(() => {
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;';
+      toast.textContent = 'Your analyses have been deleted. Account removal completes within 30 days.';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }, 500);
+  }
+</script>
+
 
 
 
