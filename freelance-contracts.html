@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freelance Contract Review — FinePrintFix</title>
+  <meta name="description" content="Before you sign a freelance contract or services agreement, upload it to FinePrintFix. We flag kill fees, IP ownership, non-solicitation clauses, and payment terms in plain English." />
+  <meta name="keywords" content="freelance contract review, freelance agreement red flags, independent contractor contract review, services agreement analysis, kill fee clause" />
+  <link rel="canonical" href="https://www.fineprintfix.com/freelance-contracts.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+    window.addEventListener('DOMContentLoaded', () => {
+      const { createClient } = supabase;
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      sb.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          document.getElementById('nav-login-li').style.display = 'none';
+          const cta = document.getElementById('nav-cta');
+          cta.href = 'dashboard.html';
+          cta.innerHTML = '<i class="ti ti-layout-dashboard"></i> Dashboard';
+        }
+      });
+    });
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg: #ffffff; --bg2: #f7f5f2; --text: #1a1a18; --text2: #6b6b67; --border: rgba(0,0,0,0.09); --border2: rgba(0,0,0,0.16); --accent: #D85A30; --accent-light: #FAECE7; --accent-mid: #F0997B; --green: #3B6D11; --green-bg: #EAF3DE; --amber: #633806; --amber-bg: #FAEEDA; --red: #993C1D; --red-bg: #FAECE7; --radius: 8px; --radius-lg: 14px; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); overflow-x: hidden; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 2rem; border-bottom: 0.5px solid var(--border); position: sticky; top: 0; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); z-index: 100; flex-wrap: wrap; gap: 10px; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; text-decoration: none; color: var(--text); }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 18px; font-size: 12px; list-style: none; flex-wrap: wrap; }
+    .nav-links a { color: var(--text2); text-decoration: none; }
+    .btn-nav { background: var(--accent); color: #fff; border: none; padding: 7px 16px; border-radius: var(--radius); font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); background: var(--accent-light); padding: 5px 11px; border-radius: 20px; margin-bottom: 1.25rem; }
+    .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding: 4rem 2rem 3rem; align-items: center; max-width: 1000px; margin: 0 auto; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 44px; line-height: 1.1; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 1rem; }
+    h1 em { font-style: italic; color: var(--accent); }
+    .hero-sub { font-size: 15px; line-height: 1.7; color: var(--text2); margin-bottom: 2rem; font-weight: 300; }
+    .cta-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .btn-lg { background: var(--accent); color: #fff; border: none; padding: 13px 26px; border-radius: var(--radius); font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 7px; text-decoration: none; }
+    .btn-ghost { background: transparent; color: var(--text); border: 0.5px solid var(--border2); padding: 13px 22px; border-radius: var(--radius); font-size: 14px; font-family: 'DM Sans', sans-serif; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+    .hero-mockup { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; position: relative; }
+    .scan-badge { position: absolute; top: -10px; right: 14px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 500; padding: 4px 10px; border-radius: 10px; display: flex; align-items: center; gap: 4px; }
+    .mock-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 0.5px solid var(--border); }
+    .mock-icon { width: 28px; height: 28px; background: var(--accent-light); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 14px; }
+    .mock-flag { display: flex; align-items: flex-start; gap: 7px; padding: 7px 10px; border-radius: var(--radius); margin-bottom: 6px; font-size: 11px; line-height: 1.45; }
+    .mock-flag.red { background: var(--red-bg); color: var(--red); }
+    .mock-flag.amber { background: var(--amber-bg); color: var(--amber); }
+    .mock-flag.green { background: var(--green-bg); color: var(--green); }
+    .mock-badge { font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+    .mock-badge.red { background: #F5C4B3; color: var(--red); }
+    .mock-badge.amber { background: #FAC775; color: var(--amber); }
+    .mock-badge.green { background: #C0DD97; color: var(--green); }
+    hr { border: none; border-top: 0.5px solid var(--border); margin: 0 2rem; }
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    .stat { padding: 1rem 1.5rem; border-right: 0.5px solid var(--border); }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 12px; color: var(--text2); line-height: 1.4; }
+    .alt-bg { background: var(--bg2); border-top: 0.5px solid var(--border); border-bottom: 0.5px solid var(--border); }
+    .alt-inner { padding: 3.5rem 2rem; max-width: 1000px; margin: 0 auto; }
+    .section { padding: 3.5rem 2rem; max-width: 1000px; margin: 0 auto; }
+    .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text2); margin-bottom: 0.5rem; }
+    h2 { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.2; }
+    .flags-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
+    .flag-card { display: flex; align-items: flex-start; gap: 12px; padding: 1rem 1.25rem; border-radius: var(--radius-lg); background: var(--bg); border: 0.5px solid var(--border); }
+    .flag-icon { width: 32px; height: 32px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+    .flag-icon.red { background: var(--red-bg); color: var(--accent); }
+    .flag-icon.amber { background: var(--amber-bg); color: #BA7517; }
+    .flag-icon.green { background: var(--green-bg); color: var(--green); }
+    .flag-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+    .flag-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+    .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+    .step { padding: 1.25rem; border: 0.5px solid var(--border); border-radius: var(--radius-lg); }
+    .step-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--accent-mid); line-height: 1; margin-bottom: 0.75rem; }
+    .step-title { font-size: 14px; font-weight: 500; margin-bottom: 0.5rem; }
+    .step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+    .questions-list { display: flex; flex-direction: column; gap: 8px; }
+    .question-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 14px; border: 0.5px solid var(--border); border-radius: var(--radius-lg); font-size: 13px; line-height: 1.55; background: var(--bg); }
+    .q-num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent-light); color: var(--accent); font-size: 10px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .pricing-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .price-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+    .price-card.featured { border: 2px solid var(--accent); }
+    .price-tier { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text2); margin-bottom: 8px; }
+    .price-num { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .price-feature { display: flex; align-items: center; gap: 7px; font-size: 12px; margin-bottom: 6px; }
+    .cta-section { text-align: center; padding: 4rem 2rem; max-width: 600px; margin: 0 auto; }
+    .cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+    footer { border-top: 0.5px solid var(--border); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text2); flex-wrap: wrap; gap: 8px; }
+    footer a { color: var(--text2); text-decoration: none; }
+    @media (max-width: 720px) { .hero { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem; } h1 { font-size: 32px; } .how-grid, .flags-grid, .pricing-row { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2,1fr); } .stat:nth-child(2) { border-right: none; } .stat:nth-child(3) { border-top: 0.5px solid var(--border); } .section, .alt-inner { padding: 2.5rem 1.25rem; } footer { flex-direction: column; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="employment-contracts.html">Employment</a></li>
+    <li><a href="lease-agreements.html">Leases</a></li>
+    <li><a href="contractor-agreements.html">Contractor</a></li>
+    <li id="nav-login-li"><a href="auth.html" id="nav-login">Log in</a></li>
+    <li id="nav-cta-li"><a href="app.html" class="btn-nav" id="nav-cta"><i class="ti ti-upload"></i> Try for free</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow"><i class="ti ti-pencil"></i> Freelance contract review</div>
+    <h1>Before you sign that <em>client contract</em></h1>
+    <p class="hero-sub">Freelance agreements, services contracts, SOWs — clients write these to protect themselves. Upload yours and we'll flag kill fees, IP traps, non-solicitation clauses, and payment risks in plain English.</p>
+    <div class="cta-row">
+      <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload your contract free</a>
+      <a href="#flags" class="btn-ghost"><i class="ti ti-alert-triangle"></i> See what we flag</a>
+    </div>
+    <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;">
+      <i class="ti ti-shield-check" style="color:var(--green)"></i>
+      First analysis free — no account, no credit card
+    </div>
+  </div>
+  <div class="hero-mockup">
+    <div class="scan-badge"><i class="ti ti-scan" style="font-size:11px"></i> Analyzing...</div>
+    <div class="mock-header">
+      <div class="mock-icon"><i class="ti ti-file-text"></i></div>
+      <div>
+        <div style="font-size:12px;font-weight:500">NovaBrand_Freelance_Agreement.pdf</div>
+        <div style="font-size:11px;color:var(--text2)">$8,500 · Brand Identity · NovaBrand Agency</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:8px;">
+      <span style="background:var(--amber-bg);color:var(--amber);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;">Medium risk</span>
+    </div>
+    <div class="mock-flag red"><span class="mock-badge red">Red flag</span> Kill fee: if they cancel, you're owed all work done plus 25% of remaining contract value.</div>
+    <div class="mock-flag red"><span class="mock-badge red">Red flag</span> Non-solicitation: you can't hire any of their staff for 18 months or you owe a 20% finder's fee.</div>
+    <div class="mock-flag amber"><span class="mock-badge amber">Ask about</span> Silence = approval: 5 days of no feedback and they can proceed to the next phase without you.</div>
+    <div class="mock-flag amber"><span class="mock-badge amber">Ask about</span> Rejected designs go into their portfolio — your creative process work is theirs to show publicly.</div>
+    <div class="mock-flag green"><span class="mock-badge green">Looks fine</span> IP transfers on full payment — standard and fair for creative work.</div>
+  </div>
+</section>
+
+<hr />
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">59M</div><div class="stat-label">freelancers in the US — most sign client contracts without legal review</div></div>
+  <div class="stat"><div class="stat-num">71%</div><div class="stat-label">of freelancers report payment disputes or contract issues with clients</div></div>
+  <div class="stat"><div class="stat-num">&lt;90s</div><div class="stat-label">to get a full plain-English analysis of your contract</div></div>
+  <div class="stat"><div class="stat-num">$3.99</div><div class="stat-label">before committing to a project that could tie up your time for months</div></div>
+</div>
+
+<hr />
+
+<div class="alt-bg" id="flags">
+  <div class="alt-inner">
+    <div class="section-label">What we flag</div>
+    <h2 style="margin-bottom:1.5rem">Freelance contract red flags that hurt your business</h2>
+    <div class="flags-grid">
+      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-skull"></i></div><div><div class="flag-name">Kill fees</div><div class="flag-desc">What the client owes if they cancel — and whether it actually covers your time and lost opportunities.</div></div></div>
+      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-bulb"></i></div><div><div class="flag-name">IP ownership terms</div><div class="flag-desc">When ownership transfers, whether rejected concepts are theirs, and what pre-existing tools you can still use.</div></div></div>
+      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-users-minus"></i></div><div><div class="flag-name">Non-solicitation clauses</div><div class="flag-desc">Restrictions on working with the client's staff or competitors — and financial penalties if you violate them.</div></div></div>
+      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-clock-check"></i></div><div><div class="flag-name">Silence-as-approval clauses</div><div class="flag-desc">Review windows where your client's silence automatically approves work and moves the project forward.</div></div></div>
+      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-coin"></i></div><div><div class="flag-name">Late payment terms</div><div class="flag-desc">Interest rates on overdue invoices, collection cost responsibility, and what triggers each payment milestone.</div></div></div>
+      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-repeat"></i></div><div><div class="flag-name">Revision scope</div><div class="flag-desc">How many revision rounds are included, what triggers overage charges, and hourly rates for additional work.</div></div></div>
+      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-clock-dollar"></i></div><div><div class="flag-name">Delay penalties</div><div class="flag-desc">Whether client delays can extend the timeline — and whether you can charge for projects that drag on.</div></div></div>
+      <div class="flag-card"><div class="flag-icon green"><i class="ti ti-checklist"></i></div><div><div class="flag-name">What's standard and fair</div><div class="flag-desc">We tell you which clauses are normal so you know exactly what to negotiate before you start work.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="alt-bg">
+  <div class="alt-inner">
+    <div class="section-label">Negotiation scripts</div>
+    <h2 style="margin-bottom:0.5rem">Questions to ask before you start work</h2>
+    <p style="font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:1.5rem;">FinePrintFix generates word-for-word scripts based on your specific contract. Here's the kind of thing we surface:</p>
+    <div class="questions-list">
+      <div class="question-item"><div class="q-num">1</div><div>"Can the kill fee be increased to cover all work completed to date at my full rate, plus 30 days of booked time?"</div></div>
+      <div class="question-item"><div class="q-num">2</div><div>"Can we change the silence-as-approval clause so that approval requires explicit written sign-off, not just the passage of time?"</div></div>
+      <div class="question-item"><div class="q-num">3</div><div>"Can we add language that client delays beyond 30 cumulative days allow me to renegotiate the project fee or terminate with full payment for work done?"</div></div>
+      <div class="question-item"><div class="q-num">4</div><div>"Can we limit the non-solicitation to direct competitors rather than any employee or contractor who worked on the project?"</div></div>
+      <div class="question-item"><div class="q-num">5</div><div>"Can we clarify that rejected concepts and preliminary work remain mine and are not included in the portfolio rights granted to you?"</div></div>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-label">How it works</div>
+  <h2>Three steps before you take on a new client</h2>
+  <div class="how-grid">
+    <div class="step"><div class="step-num">01</div><div class="step-title">Upload the contract</div><div class="step-desc">Drop in the PDF your client sent. Works with freelance agreements, SOWs, retainer agreements, and independent contractor contracts.</div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-title">Get your analysis</div><div class="step-desc">In under 90 seconds — red flags, a plain-English summary of every key term, financial exposure breakdown, and negotiation scripts.</div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-title">Negotiate your terms</div><div class="step-desc">Good clients expect contractors to negotiate. Walk into the conversation knowing exactly what to ask for and how to phrase it professionally.</div></div>
+  </div>
+</section>
+
+<div class="alt-bg">
+  <div class="alt-inner">
+    <div class="section-label">Pricing</div>
+    <h2 style="margin-bottom:0.5rem">Simple, honest pricing</h2>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65">No subscription. Pay only when you need an analysis.</p>
+    <div class="pricing-row">
+      <div class="price-card">
+        <div class="price-tier">Free</div>
+        <div class="price-num">$0</div>
+        <div class="price-sub">No credit card needed</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> 1 free analysis</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No account required</div>
+        <div style="margin-top:1rem;"><a href="app.html" style="display:block;text-align:center;background:var(--bg2);color:var(--text);border:0.5px solid var(--border2);padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Try free →</a></div>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tier" style="color:var(--accent)">Pay per document</div>
+        <div class="price-num" style="color:var(--accent)">$3.99</div>
+        <div class="price-sub">One-off, no subscription</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Saved to your dashboard</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Negotiation scripts</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Financial exposure breakdown</div>
+        <div style="margin-top:1rem;"><a href="app.html" style="display:block;text-align:center;background:var(--accent);color:#fff;padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Get started →</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="cta-section">
+  <div class="eyebrow" style="margin-bottom:1rem"><i class="ti ti-shield-check"></i> Free to start</div>
+  <h2 style="margin-bottom:0.75rem">Know what you're agreeing to before you start work</h2>
+  <p style="font-size:14px;color:var(--text2);line-height:1.7">Upload your freelance contract free. Full analysis in under 90 seconds — plain English, no legal background needed.</p>
+  <div class="cta-btns">
+    <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload your contract free</a>
+    <a href="app.html" class="btn-ghost"><i class="ti ti-layout-columns"></i> Compare contracts — $7.99</a>
+  </div>
+</section>
+
+<footer>
+  <a href="index.html" class="logo" style="font-size:14px">Fine<span>Print</span>Fix</a>
+  <span>AI-powered analysis for informational purposes only — not legal advice.</span>
+  <span><a href="legal.html">Terms &amp; Disclaimer</a> · <a href="legal.html#privacy">Privacy</a></span>
+</footer>
+</body>
+</html>
