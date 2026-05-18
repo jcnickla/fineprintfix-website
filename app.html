@@ -346,65 +346,147 @@
       <div class="step-pill">Step 1 of 3 — Upload</div>
     </div>
     <div class="screen-body">
-      <div class="screen-title">Upload your document</div>
-      <div class="screen-sub">We'll scan it and flag anything you should know about — in plain English. No legal background needed.</div>
 
-      <div class="upload-tabs">
-        <button class="utab active" id="utab-pdf" onclick="switchUploadTab('pdf')">
-          <i class="ti ti-file-text"></i> PDF
+      <!-- MODE SELECTOR -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;">
+        <button id="mode-single" onclick="setUploadMode('single')" style="padding:10px 8px;border-radius:var(--radius);border:2px solid var(--accent);background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <i class="ti ti-file-text" style="font-size:18px"></i>
+          Single document
+          <span style="font-size:10px;opacity:0.8">$3.99 · 1 free</span>
         </button>
-        <button class="utab" id="utab-paste" onclick="switchUploadTab('paste')">
-          <i class="ti ti-clipboard-text"></i> Paste text
-        </button>
-        <button class="utab" id="utab-photo" onclick="switchUploadTab('photo')">
-          <i class="ti ti-camera"></i> Photo
+        <button id="mode-compare" onclick="setUploadMode('compare')" style="padding:10px 8px;border-radius:var(--radius);border:0.5px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <i class="ti ti-layout-columns" style="font-size:18px"></i>
+          Compare documents
+          <span style="font-size:10px;opacity:0.8">$7.99 · up to 3 docs</span>
         </button>
       </div>
 
-      <!-- PDF UPLOAD -->
-      <div id="panel-pdf" class="upload-panel active">
-        <div class="drop-zone" id="drop-zone"
-          ondragover="event.preventDefault(); this.style.background='var(--bg2)'"
-          ondragleave="this.style.background=''"
-          ondrop="handleDrop(event)">
-          <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="handleFile(this.files[0])" />
-          <div class="drop-icon"><i class="ti ti-cloud-upload"></i></div>
-          <div class="drop-title" id="drop-title">Drag & drop your PDF here</div>
-          <div class="drop-sub" id="drop-sub">Contracts, NDAs, leases, terms of service — up to 20MB</div>
-          <button style="margin-top:14px; background:var(--accent); color:#fff; border:none; padding:9px 18px; border-radius:var(--radius); font-size:12px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:5px;"
-            onclick="document.getElementById('file-input').click()">
-            <i class="ti ti-upload"></i> Choose file
+      <!-- SINGLE MODE -->
+      <div id="single-mode">
+        <div class="screen-title" style="font-size:16px;margin-bottom:4px">Upload your document</div>
+        <div class="screen-sub">We'll scan it and flag anything you should know — in plain English.</div>
+
+        <div class="upload-tabs">
+          <button class="utab active" id="utab-pdf" onclick="switchUploadTab('pdf')">
+            <i class="ti ti-file-text"></i> PDF
+          </button>
+          <button class="utab" id="utab-paste" onclick="switchUploadTab('paste')">
+            <i class="ti ti-clipboard-text"></i> Paste text
+          </button>
+          <button class="utab" id="utab-photo" onclick="switchUploadTab('photo')">
+            <i class="ti ti-camera"></i> Photo
           </button>
         </div>
-      </div>
 
-      <!-- PASTE TEXT -->
-      <div id="panel-paste" class="upload-panel">
-        <textarea id="paste-input"
-          placeholder="Paste the full contract or terms of service text here..."
-          oninput="document.getElementById('char-count').textContent = this.value.length.toLocaleString()"></textarea>
-        <div class="char-count"><span id="char-count">0</span> characters</div>
-      </div>
-
-      <!-- PHOTO (iOS only) -->
-      <div id="panel-photo" class="upload-panel">
-        <div class="drop-zone">
-          <div class="drop-icon"><i class="ti ti-brand-apple"></i></div>
-          <div class="drop-title">Available on iOS</div>
-          <div class="drop-sub">Download the FinePrintFix iOS app to photograph documents with your iPhone camera</div>
-          <button style="margin-top:14px; background:var(--accent); color:#fff; border:none; padding:9px 18px; border-radius:var(--radius); font-size:12px; font-weight:500; cursor:pointer; font-family:'DM Sans',sans-serif; display:inline-flex; align-items:center; gap:5px;">
-            <i class="ti ti-brand-apple"></i> Get the iOS app
-          </button>
+        <div id="panel-pdf" class="upload-panel active">
+          <div class="drop-zone" id="drop-zone"
+            ondragover="event.preventDefault(); this.style.background='var(--bg2)'"
+            ondragleave="this.style.background=''"
+            ondrop="handleDrop(event)">
+            <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="handleFile(this.files[0])" />
+            <div class="drop-icon"><i class="ti ti-cloud-upload"></i></div>
+            <div class="drop-title" id="drop-title">Drag & drop your PDF here</div>
+            <div class="drop-sub" id="drop-sub">Contracts, NDAs, leases, terms of service — up to 20MB</div>
+            <button style="margin-top:14px;background:var(--accent);color:#fff;border:none;padding:9px 18px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;"
+              onclick="document.getElementById('file-input').click()">
+              <i class="ti ti-upload"></i> Choose file
+            </button>
+          </div>
         </div>
+
+        <div id="panel-paste" class="upload-panel">
+          <textarea id="paste-input"
+            placeholder="Paste the full contract or terms of service text here..."
+            oninput="document.getElementById('char-count').textContent = this.value.length.toLocaleString()"></textarea>
+          <div class="char-count"><span id="char-count">0</span> characters</div>
+        </div>
+
+        <div id="panel-photo" class="upload-panel">
+          <div class="drop-zone">
+            <div class="drop-icon"><i class="ti ti-brand-apple"></i></div>
+            <div class="drop-title">Available on iOS</div>
+            <div class="drop-sub">Download the FinePrintFix iOS app to photograph documents with your iPhone camera</div>
+            <button style="margin-top:14px;background:var(--accent);color:#fff;border:none;padding:9px 18px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:5px;">
+              <i class="ti ti-brand-apple"></i> Get the iOS app
+            </button>
+          </div>
+        </div>
+
+        <div id="upload-error" class="error-box">
+          Please add a PDF or paste some document text before continuing.
+        </div>
+
+        <button class="btn-full" style="margin-top:1.25rem;" onclick="validateAndContinue()">
+          Continue <i class="ti ti-arrow-right"></i>
+        </button>
       </div>
 
-      <div id="upload-error" class="error-box">
-        Please add a PDF or paste some document text before continuing.
+      <!-- COMPARE MODE -->
+      <div id="compare-mode" style="display:none;">
+        <div class="screen-title" style="font-size:16px;margin-bottom:4px">Upload 2–3 documents to compare</div>
+        <div class="screen-sub" style="margin-bottom:1rem;">Each document gets a full analysis. Then we'll compare them side by side and give you a clear recommendation.</div>
+
+        <!-- Compare pricing note -->
+        <div style="background:var(--accent-light);border-radius:var(--radius);padding:10px 12px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--accent);">
+          <i class="ti ti-sparkles" style="font-size:14px;flex-shrink:0"></i>
+          <span><strong>$7.99</strong> — up to 3 full analyses + comparison report. Your first single document is still free.</span>
+        </div>
+
+        <!-- Doc slots -->
+        <div id="compare-slots" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+
+          <!-- Slot 1 -->
+          <div class="compare-slot" id="slot-0">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+              <div style="flex:1;min-width:0;">
+                <div id="slot-0-name" style="font-size:12px;font-weight:500;color:var(--text2)">Document 1 — required</div>
+              </div>
+              <input type="file" id="slot-0-input" accept=".pdf" style="display:none" onchange="handleCompareFile(0, this.files[0])" />
+              <button onclick="document.getElementById('slot-0-input').click()" style="background:var(--accent);color:#fff;border:none;padding:6px 12px;border-radius:var(--radius);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;">
+                Choose PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Slot 2 -->
+          <div class="compare-slot" id="slot-1">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);background:var(--bg2);">
+              <div style="width:28px;height:28px;border-radius:50%;background:#4F6AF5;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+              <div style="flex:1;min-width:0;">
+                <div id="slot-1-name" style="font-size:12px;font-weight:500;color:var(--text2)">Document 2 — required</div>
+              </div>
+              <input type="file" id="slot-1-input" accept=".pdf" style="display:none" onchange="handleCompareFile(1, this.files[0])" />
+              <button onclick="document.getElementById('slot-1-input').click()" style="background:#4F6AF5;color:#fff;border:none;padding:6px 12px;border-radius:var(--radius);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;">
+                Choose PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Slot 3 (optional) -->
+          <div class="compare-slot" id="slot-2">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px dashed var(--border2);border-radius:var(--radius);background:transparent;">
+              <div style="width:28px;height:28px;border-radius:50%;background:var(--bg2);border:0.5px solid var(--border2);color:var(--text2);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+              <div style="flex:1;min-width:0;">
+                <div id="slot-2-name" style="font-size:12px;font-weight:500;color:var(--text2)">Document 3 — optional</div>
+              </div>
+              <input type="file" id="slot-2-input" accept=".pdf" style="display:none" onchange="handleCompareFile(2, this.files[0])" />
+              <button onclick="document.getElementById('slot-2-input').click()" style="background:transparent;color:var(--text2);border:0.5px solid var(--border2);padding:6px 12px;border-radius:var(--radius);font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;">
+                Add PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="compare-error" class="error-box">
+          Please upload at least 2 documents to compare.
+        </div>
+
+        <button class="btn-full" style="margin-top:0.5rem;" onclick="validateCompareAndContinue()">
+          Continue <i class="ti ti-arrow-right"></i>
+        </button>
       </div>
 
-      <button class="btn-full" style="margin-top:1.25rem;" onclick="validateAndContinue()">
-        Continue <i class="ti ti-arrow-right"></i>
-      </button>
     </div>
   </div>
 
@@ -443,6 +525,20 @@
       <button class="btn-full secondary" onclick="goToAnalyzing()">
         <i class="ti ti-login"></i> Sign in instead
       </button>
+    </div>
+  </div>
+
+  <!-- SCREEN: COMPARE RESULTS -->
+  <div id="screen-compare-results" class="screen">
+    <div class="topbar">
+      <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+      <div style="display:flex;gap:8px;">
+        <button onclick="resetFlow()" style="background:transparent;border:0.5px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;">New comparison</button>
+        <a href="dashboard.html" style="background:var(--accent);color:#fff;padding:6px 12px;border-radius:var(--radius);font-size:12px;font-weight:500;text-decoration:none;">Dashboard</a>
+      </div>
+    </div>
+    <div class="screen-body">
+      <div id="compare-results-container"></div>
     </div>
   </div>
 
@@ -488,6 +584,32 @@
         <button onclick="handleUpgrade('payperDoc', event)" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
           Analyze this document — $3.99
         </button>
+      </div>
+
+      <!-- FOR COMPARE PACK -->
+      <div id="upgrade-compare" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
+        <div style="border:2px solid #4F6AF5;border-radius:var(--radius-lg);padding:1.1rem 1.25rem;position:relative;">
+          <div style="position:absolute;top:-10px;left:14px;background:#4F6AF5;color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Best value</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:14px;font-weight:500">Comparison pack</div>
+            <div style="font-size:20px;font-weight:700;color:#4F6AF5">$7.99</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:4px;line-height:1.5">Up to 3 full analyses + side-by-side comparison with recommendation.</div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:12px;">That's $2.66 per document — cheaper than a single doc.</div>
+          <button onclick="handleUpgrade('compare', event)" style="background:#4F6AF5;color:#fff;border:none;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+            Compare my documents — $7.99
+          </button>
+        </div>
+        <div style="border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:14px;font-weight:500">Single document</div>
+            <div style="font-size:20px;font-weight:700">$3.99</div>
+          </div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">Analyze one document instead. Switch back to single mode to upload.</div>
+          <button onclick="setUploadMode('single'); showScreen('screen-upload');" style="background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
+            Analyze a single document — $3.99
+          </button>
+        </div>
       </div>
 
       <!-- FOR LOGGED-IN USERS -->
@@ -672,6 +794,258 @@
   let uploadedFileName = 'Your document';
   let currentUploadTab = 'pdf';
   let analysisResult = null;
+  let currentUploadMode = 'single'; // 'single' | 'compare'
+
+  // Compare mode state
+  const compareDocs = [null, null, null]; // up to 3 docs {name, base64}
+
+  // ─── MODE SWITCHING ───────────────────────────────────────────
+  function setUploadMode(mode) {
+    currentUploadMode = mode;
+    const singleBtn = document.getElementById('mode-single');
+    const compareBtn = document.getElementById('mode-compare');
+    const singleEl = document.getElementById('single-mode');
+    const compareEl = document.getElementById('compare-mode');
+
+    if (mode === 'single') {
+      singleBtn.style.border = '2px solid var(--accent)';
+      singleBtn.style.background = 'var(--accent-light)';
+      singleBtn.style.color = 'var(--accent)';
+      compareBtn.style.border = '0.5px solid var(--border2)';
+      compareBtn.style.background = 'transparent';
+      compareBtn.style.color = 'var(--text2)';
+      singleEl.style.display = 'block';
+      compareEl.style.display = 'none';
+    } else {
+      compareBtn.style.border = '2px solid #4F6AF5';
+      compareBtn.style.background = '#EEF0FE';
+      compareBtn.style.color = '#4F6AF5';
+      singleBtn.style.border = '0.5px solid var(--border2)';
+      singleBtn.style.background = 'transparent';
+      singleBtn.style.color = 'var(--text2)';
+      singleEl.style.display = 'none';
+      compareEl.style.display = 'block';
+    }
+  }
+
+  // ─── COMPARE FILE HANDLING ────────────────────────────────────
+  function handleCompareFile(index, file) {
+    if (!file || file.type !== 'application/pdf') {
+      alert('Please upload a PDF file.');
+      return;
+    }
+    const colors = ['var(--accent)', '#4F6AF5', '#27A17E'];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const base64 = e.target.result.split(',')[1];
+      compareDocs[index] = { name: file.name, base64 };
+      const nameEl = document.getElementById(`slot-${index}-name`);
+      nameEl.textContent = file.name;
+      nameEl.style.color = colors[index];
+      // Mark slot as filled
+      const btn = document.querySelector(`#slot-${index} button:last-child`);
+      if (btn) { btn.textContent = 'Change'; btn.style.background = colors[index]; }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function validateCompareAndContinue() {
+    const errBox = document.getElementById('compare-error');
+    const filled = compareDocs.filter(d => d !== null);
+    if (filled.length < 2) {
+      errBox.style.display = 'block';
+      return;
+    }
+    errBox.style.display = 'none';
+
+    // Check gate
+    const allowed = await checkFreeTierGate('compare');
+    if (!allowed) return;
+
+    // Save compare docs to sessionStorage and start analysis
+    sessionStorage.setItem('fpf_compare_docs', JSON.stringify(compareDocs.filter(d => d !== null)));
+    startCompareAnalysis(compareDocs.filter(d => d !== null));
+  }
+
+  async function startCompareAnalysis(docs) {
+    showScreen('screen-analyzing');
+    document.getElementById('result-doc-name').textContent = `Comparing ${docs.length} documents...`;
+
+    // Run all analyses in parallel
+    const results = await Promise.all(docs.map(async (doc) => {
+      const [flags, sections, questions, summary, money] = await Promise.all([
+        analyzeDoc(PROMPTS.flags, doc.base64, true),
+        analyzeDoc(PROMPTS.sections, doc.base64, true),
+        analyzeDoc(PROMPTS.questions, doc.base64, true),
+        analyzeDoc(PROMPTS.summary, doc.base64, true),
+        analyzeDoc(PROMPTS.money, doc.base64, true),
+      ]);
+      return { name: doc.name, flags, sections, questions, summary, money };
+    }));
+
+    // Save each to Supabase
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      for (const r of results) {
+        await fetch('/api/save-analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+          body: JSON.stringify({
+            doc_name: r.name,
+            flags: r.flags, sections: r.sections,
+            questions: r.questions, summary: r.summary, money: r.money,
+            red_count: (r.flags?.red||[]).length,
+            amber_count: (r.flags?.amber||[]).length,
+            green_count: (r.flags?.green||[]).length,
+          }),
+        });
+      }
+    }
+
+    // Run comparison
+    const comparisonResult = await runComparisonAnalysis(results);
+
+    // Show compare results screen
+    showCompareResults(results, comparisonResult);
+  }
+
+  async function analyzeDoc(systemPrompt, base64, isPdf) {
+    try {
+      const messages = isPdf
+        ? [{ role: 'user', content: [
+            { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } },
+            { type: 'text', text: 'Analyze this document.' }
+          ]}]
+        : [{ role: 'user', content: 'Analyze this document:\n\n' + base64 }];
+
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: systemPrompt, messages }),
+      });
+      const data = await res.json();
+      const raw = data.content?.map(b => b.text || '').join('') || '{}';
+      return JSON.parse(raw.replace(/```json|```/g, '').trim());
+    } catch (e) {
+      console.error('analyzeDoc error:', e);
+      return {};
+    }
+  }
+
+  async function runComparisonAnalysis(results) {
+    const summaries = results.map((r, i) => ({
+      index: i + 1, name: r.name,
+      docType: r.summary?.docType || 'Document',
+      overview: r.summary?.overview || '',
+      overallRisk: r.summary?.overallRisk || 'unknown',
+      redCount: (r.flags?.red||[]).length,
+      amberCount: (r.flags?.amber||[]).length,
+      keyFacts: r.summary?.keyFacts || [],
+    }));
+
+    const prompt = `You are FinePrintFix. Compare these ${results.length} documents and return ONLY a JSON object (no markdown):
+{"recommendation":{"winner":1 or 2${results.length > 2 ? ' or 3' : ''} or null,"winnerName":"name or null","confidence":"high" or "medium" or "low","summary":"2-3 sentence plain English explanation","caveat":"one sentence warning or null"},"categoryWinners":[{"category":"name","winner":1 or 2${results.length > 2 ? ' or 3' : ''} or null,"winnerName":"name or Tied","reason":"one sentence"}],"prosAndCons":[{"docIndex":1,"pros":["pro1","pro2","pro3"],"cons":["con1","con2","con3"]}],"sideBySide":[{"category":"name","values":[{"docIndex":1,"value":"what it says","isWinner":true}]}]}
+Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specific with actual values.`;
+
+    return await analyzeDoc(prompt, JSON.stringify(summaries), false);
+  }
+
+  function showCompareResults(docs, comparison) {
+    // Build the compare results screen dynamically
+    const colors = ['#D85A30', '#4F6AF5', '#27A17E'];
+    showScreen('screen-compare-results');
+
+    const container = document.getElementById('compare-results-container');
+    if (!container) return;
+
+    const rec = comparison?.recommendation;
+    const winnerDoc = rec?.winner ? docs[rec.winner - 1] : null;
+
+    let html = '';
+
+    // Winner banner
+    html += `<div style="background:var(--text);color:#fff;border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:1rem;display:flex;align-items:flex-start;gap:12px;">
+      <div style="width:36px;height:36px;background:var(--accent);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏆</div>
+      <div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px;">${rec?.confidence || 'medium'} confidence · recommendation</div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px;">${winnerDoc ? 'Go with: ' + winnerDoc.name : "It's a close call"}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.55;">${rec?.summary || ''}</div>
+        ${rec?.caveat ? `<div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:5px;font-style:italic;">⚠ ${rec.caveat}</div>` : ''}
+      </div>
+    </div>`;
+
+    // Doc tabs
+    html += `<div style="display:flex;gap:6px;margin-bottom:1rem;overflow-x:auto;">`;
+    html += `<button onclick="showCompareTab('comparison')" id="ctab-comparison" style="padding:7px 14px;border-radius:var(--radius);border:0.5px solid var(--accent);background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;">⇄ Comparison</button>`;
+    docs.forEach((doc, i) => {
+      html += `<button onclick="showCompareTab('doc${i}')" id="ctab-doc${i}" style="padding:7px 14px;border-radius:var(--radius);border:0.5px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;">${i + 1}. ${doc.name.replace('.pdf', '').substring(0, 20)}</button>`;
+    });
+    html += `</div>`;
+
+    // Comparison panel
+    html += `<div id="cpanel-comparison">`;
+
+    // Pros & cons
+    if (comparison?.prosAndCons) {
+      comparison.prosAndCons.forEach((pc) => {
+        const di = pc.docIndex - 1;
+        const doc = docs[di];
+        const color = colors[di];
+        html += `<div style="border:0.5px solid var(--border);border-radius:var(--radius-lg);margin-bottom:10px;overflow:hidden;">
+          <div style="padding:9px 12px;background:var(--bg2);border-bottom:0.5px solid var(--border);border-left:3px solid ${color};font-size:12px;font-weight:500;">${doc.name}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;">
+            <div style="padding:10px 12px;border-right:0.5px solid var(--border);">
+              <div style="font-size:10px;font-weight:500;color:var(--green);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">👍 Pros</div>
+              ${(pc.pros||[]).map(p => `<div style="font-size:11px;color:var(--green);line-height:1.5;margin-bottom:4px;display:flex;gap:5px;"><span>•</span><span>${p}</span></div>`).join('')}
+            </div>
+            <div style="padding:10px 12px;">
+              <div style="font-size:10px;font-weight:500;color:var(--red);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">👎 Cons</div>
+              ${(pc.cons||[]).map(c => `<div style="font-size:11px;color:var(--red);line-height:1.5;margin-bottom:4px;display:flex;gap:5px;"><span>•</span><span>${c}</span></div>`).join('')}
+            </div>
+          </div>
+        </div>`;
+      });
+    }
+    html += `</div>`;
+
+    // Individual doc panels
+    docs.forEach((doc, i) => {
+      const risk = doc.summary?.overallRisk || '';
+      const riskColor = risk === 'high' ? 'var(--red)' : risk === 'medium' ? 'var(--amber)' : 'var(--green)';
+      const riskBg = risk === 'high' ? 'var(--red-bg)' : risk === 'medium' ? 'var(--amber-bg)' : 'var(--green-bg)';
+      html += `<div id="cpanel-doc${i}" style="display:none;">
+        <div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:500;background:var(--bg2);color:var(--text2);padding:3px 10px;border-radius:20px;border:0.5px solid var(--border)">${doc.summary?.docType || 'Document'}</span>
+          ${risk ? `<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${riskBg};color:${riskColor}">${risk} risk</span>` : ''}
+        </div>
+        <p style="font-size:13px;line-height:1.7;margin-bottom:10px;">${doc.summary?.overview || ''}</p>
+        ${(doc.summary?.keyFacts||[]).map(f => `<div style="display:flex;gap:10px;padding:7px 10px;background:var(--bg2);border-radius:var(--radius);border:0.5px solid var(--border);font-size:12px;margin-bottom:5px;"><span style="font-size:11px;font-weight:500;color:var(--text2);min-width:90px;flex-shrink:0;">${f.label}</span><span>${f.value}</span></div>`).join('')}
+        <div style="margin-top:12px;">
+          ${(doc.flags?.red||[]).map(f => `<div style="display:flex;gap:7px;padding:8px 10px;border-radius:var(--radius);margin-bottom:6px;background:var(--red-bg);color:var(--red);font-size:11px;line-height:1.5;"><span style="font-size:9px;font-weight:500;padding:2px 6px;border-radius:8px;background:#F5C4B3;color:var(--red);white-space:nowrap;flex-shrink:0;align-self:flex-start;">Red flag</span>${f.text}</div>`).join('')}
+          ${(doc.flags?.amber||[]).map(f => `<div style="display:flex;gap:7px;padding:8px 10px;border-radius:var(--radius);margin-bottom:6px;background:var(--amber-bg);color:var(--amber);font-size:11px;line-height:1.5;"><span style="font-size:9px;font-weight:500;padding:2px 6px;border-radius:8px;background:#FAC775;color:var(--amber);white-space:nowrap;flex-shrink:0;align-self:flex-start;">Ask about</span>${f.text}</div>`).join('')}
+        </div>
+      </div>`;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function showCompareTab(tab) {
+    document.querySelectorAll('[id^="cpanel-"]').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('[id^="ctab-"]').forEach(b => {
+      b.style.background = 'transparent';
+      b.style.color = 'var(--text2)';
+      b.style.border = '0.5px solid var(--border2)';
+    });
+    const panel = document.getElementById('cpanel-' + tab);
+    const btn = document.getElementById('ctab-' + tab);
+    if (panel) panel.style.display = 'block';
+    if (btn) {
+      btn.style.background = tab === 'comparison' ? 'var(--accent-light)' : 'var(--bg2)';
+      btn.style.color = tab === 'comparison' ? 'var(--accent)' : 'var(--text)';
+      btn.style.border = tab === 'comparison' ? '0.5px solid var(--accent)' : '0.5px solid var(--border)';
+    }
+  }
 
   // ─── UPLOAD TAB SWITCH ────────────────────────────────────────
   function switchUploadTab(tab) {
@@ -725,37 +1099,37 @@
     document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
   }
 
-  async function checkFreeTierGate() {
+  async function checkFreeTierGate(mode = 'single') {
     const { data: { session } } = await sb.auth.getSession();
 
     if (session) {
       // Check credits first
       const credits = await getUserCredits(session.user.id);
+      if (mode === 'compare') {
+        // Compare requires a comparison credit
+        if (credits >= 3) { await consumeCredit(session.user.id); return true; }
+        showUpgradeWall('loggedin-compare');
+        return false;
+      }
       if (credits > 0) {
-        // They have paid credits — consume one and allow
         await consumeCredit(session.user.id);
         return true;
       }
-
-      // No credits — check if they've used their free analysis
       const { count } = await sb
         .from('analyses')
         .select('id', { count: 'exact', head: true })
         .eq('user_id', session.user.id);
-
       if (count >= 1) {
         showUpgradeWall('loggedin');
         return false;
       }
       return true;
     } else {
-      // Anonymous user — check cookie first (fast)
       if (getCookie(FREE_TIER_COOKIE)) {
         const hasEmail = !!getCookie(FREE_TIER_EMAIL_COOKIE);
         showUpgradeWall(hasEmail ? 'anonymous-email' : 'anonymous');
         return false;
       }
-      // Also check stored email against database
       const storedEmail = getCookie(FREE_TIER_EMAIL_COOKIE);
       if (storedEmail) {
         const res = await fetch('/api/free-tier', {
@@ -779,25 +1153,26 @@
     const anon = document.getElementById('upgrade-anonymous');
     const plans = document.getElementById('upgrade-plans');
     const anonPaid = document.getElementById('upgrade-anon-paid');
+    const compare = document.getElementById('upgrade-compare');
 
-    // Hide all first
-    anon.style.display = 'none';
-    plans.style.display = 'none';
-    anonPaid.style.display = 'none';
+    [anon, plans, anonPaid, compare].forEach(el => { if (el) el.style.display = 'none'; });
 
-    if (type === 'loggedin') {
+    if (type === 'loggedin-compare') {
+      document.getElementById('upgrade-title').textContent = 'Compare up to 3 documents';
+      document.getElementById('upgrade-sub').textContent = 'Get a full analysis of each document plus a side-by-side comparison with a clear recommendation.';
+      if (compare) compare.style.display = 'flex';
+    } else if (type === 'loggedin') {
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
       document.getElementById('upgrade-sub').textContent = "Pay $3.99 to analyze this document. No subscription — your results save to your dashboard automatically.";
-      plans.style.display = 'flex';
+      if (plans) plans.style.display = 'flex';
     } else if (type === 'anonymous-email') {
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
-      document.getElementById('upgrade-sub').textContent = "To analyze more documents, create an account and pay per doc — or go Pro for unlimited access.";
-      anonPaid.style.display = 'flex';
+      document.getElementById('upgrade-sub').textContent = "To analyze more documents, create an account and pay per doc — or pay $3.99 for just this one.";
+      if (anonPaid) anonPaid.style.display = 'flex';
     } else {
-      // Fully anonymous, no email on record
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
       document.getElementById('upgrade-sub').textContent = "Create a free account to get more analyses and save your documents — or pay just $3.99 for this one.";
-      anon.style.display = 'flex';
+      if (anon) anon.style.display = 'flex';
     }
   }
 
@@ -1465,52 +1840,51 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 
   // ─── STRIPE CHECKOUT ─────────────────────────────────────────
   async function handleUpgrade(plan, evt) {
-    if (plan === 'payperDoc') {
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session) {
-        window.location.href = 'auth.html?next=pay';
-        return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'auth.html?next=pay'; return; }
+
+    const btn = evt?.currentTarget || evt?.target;
+    if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
+
+    const priceId = plan === 'compare'
+      ? process.env.STRIPE_COMPARE_PRICE_ID // $7.99 price
+      : null; // uses default STRIPE_PRICE_ID in API
+
+    try {
+      // Save docs to sessionStorage before leaving
+      if (plan === 'compare') {
+        const docs = compareDocs.filter(d => d !== null);
+        sessionStorage.setItem('fpf_compare_docs', JSON.stringify(docs));
+      } else if (window.pdfBase64) {
+        sessionStorage.setItem('fpf_pending_doc', JSON.stringify({ type: 'pdf', data: window.pdfBase64, name: uploadedFileName }));
+      } else if (documentText) {
+        sessionStorage.setItem('fpf_pending_doc', JSON.stringify({ type: 'text', data: documentText, name: uploadedFileName }));
       }
 
-      const btn = evt?.currentTarget || evt?.target;
-      if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
-
-      try {
-        // Save document state before leaving for Stripe
-        if (window.pdfBase64) {
-          sessionStorage.setItem('fpf_pending_doc', JSON.stringify({
-            type: 'pdf',
-            data: window.pdfBase64,
-            name: uploadedFileName,
-          }));
-        } else if (documentText) {
-          sessionStorage.setItem('fpf_pending_doc', JSON.stringify({
-            type: 'text',
-            data: documentText,
-            name: uploadedFileName,
-          }));
-        }
-
-        const res = await fetch('/api/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user_id: session.user.id,
-            user_email: session.user.email,
-            doc_name: uploadedFileName || 'Document',
-          }),
-        });
-        const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          throw new Error(data.error || 'Could not create checkout session');
-        }
-      } catch (err) {
-        console.error('Checkout error:', err);
-        if (btn) { btn.textContent = 'Analyze this document — $3.99'; btn.disabled = false; }
-        alert('Something went wrong. Please try again.');
+      const res = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: session.user.id,
+          user_email: session.user.email,
+          doc_name: plan === 'compare' ? 'Document comparison' : uploadedFileName || 'Document',
+          plan,
+          price_id: priceId,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Could not create checkout session');
       }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      if (btn) {
+        btn.textContent = plan === 'compare' ? 'Compare my documents — $7.99' : 'Analyze this document — $3.99';
+        btn.disabled = false;
+      }
+      alert('Something went wrong. Please try again.');
     }
   }
 
@@ -1519,38 +1893,46 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
       window.history.replaceState({}, '', '/app.html');
+      const plan = params.get('plan');
 
-      // Restore saved document and go straight into analysis
-      const saved = sessionStorage.getItem('fpf_pending_doc');
-      if (saved) {
-        sessionStorage.removeItem('fpf_pending_doc');
-        const doc = JSON.parse(saved);
-        uploadedFileName = doc.name || 'Document';
-
-        if (doc.type === 'pdf') {
-          window.pdfBase64 = doc.data;
+      if (plan === 'compare') {
+        // Restore compare docs and start comparison analysis
+        const saved = sessionStorage.getItem('fpf_compare_docs');
+        if (saved) {
+          sessionStorage.removeItem('fpf_compare_docs');
+          const docs = JSON.parse(saved);
+          showPaymentSuccess();
+          await new Promise(r => setTimeout(r, 1800));
+          startCompareAnalysis(docs);
         } else {
-          documentText = doc.data;
+          showPaymentSuccess();
         }
-
-        // Brief toast then auto-start analysis
-        showPaymentSuccess();
-        await new Promise(r => setTimeout(r, 1800));
-
-        showScreen('screen-analyzing');
-        document.getElementById('result-doc-name').textContent = uploadedFileName;
-        animateProgress().then(() => {
-          showScreen('screen-results');
-          runAnalysis();
-          handlePostAnalysis();
-        });
       } else {
-        // No saved doc — just show upload with toast
-        showPaymentSuccess();
+        // Single doc flow
+        const saved = sessionStorage.getItem('fpf_pending_doc');
+        if (saved) {
+          sessionStorage.removeItem('fpf_pending_doc');
+          const doc = JSON.parse(saved);
+          uploadedFileName = doc.name || 'Document';
+          if (doc.type === 'pdf') { window.pdfBase64 = doc.data; }
+          else { documentText = doc.data; }
+          showPaymentSuccess();
+          await new Promise(r => setTimeout(r, 1800));
+          showScreen('screen-analyzing');
+          document.getElementById('result-doc-name').textContent = uploadedFileName;
+          animateProgress().then(() => {
+            showScreen('screen-results');
+            runAnalysis();
+            handlePostAnalysis();
+          });
+        } else {
+          showPaymentSuccess();
+        }
       }
     } else if (params.get('payment') === 'cancelled') {
       window.history.replaceState({}, '', '/app.html');
       sessionStorage.removeItem('fpf_pending_doc');
+      sessionStorage.removeItem('fpf_compare_docs');
     }
   }
 
@@ -1627,6 +2009,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
