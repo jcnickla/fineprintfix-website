@@ -56,11 +56,44 @@
 <body>
 <nav>
   <a href="../index.html" class="logo">Fine<span>Print</span>Fix</a>
-  <div class="nav-right">
-    <a href="../employment-contracts.html">Employment contracts</a>
-    <a href="../app.html" class="btn-nav"><i class="ti ti-upload"></i> Try free</a>
-  </div>
+  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="main-nav">
+    <li class="has-dropdown">
+      <a class="dropdown-toggle" href="#" onclick="toggleMobileDocs(event)">
+        Contract types <i class="ti ti-chevron-down"></i>
+      </a>
+      <div class="dropdown-menu">
+        <div class="dropdown-label">By document type</div>
+        <a href="../contractor-agreements.html"><i class="ti ti-home-wrench"></i> Contractor agreements</a>
+        <a href="../employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
+        <a href="../lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
+        <a href="../freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
+        <a href="../nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
+        <a href="../subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
+        <a href="../severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
+      </div>
+      <div class="mobile-dropdown-links" id="mobile-docs">
+        <a href="../contractor-agreements.html"><i class="ti ti-home-wrench"></i> Contractor agreements</a>
+        <a href="../employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
+        <a href="../lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
+        <a href="../freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
+        <a href="../nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
+        <a href="../subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
+        <a href="../severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
+      </div>
+    </li>
+    <li><a href="index.html">Guides</a></li>
+    <li><a href="../index.html#pricing">Pricing</a></li>
+    <li id="nav-login-li"><a href="../auth.html" id="nav-login">Log in</a></li>
+    <li id="nav-cta-li"><a href="../app.html" class="btn-nav" id="nav-cta"><i class="ti ti-upload"></i> Try for free</a></li>
+  </ul>
 </nav>
+<script>
+  function toggleMobileNav() { document.getElementById('main-nav').classList.toggle('open'); }
+  function toggleMobileDocs(e) { if (window.innerWidth <= 720) { e.preventDefault(); document.getElementById('mobile-docs').classList.toggle('open'); } }
+</script>
 <div class="article-wrap">
   <div class="article-meta"><span class="meta-tag">Employment contracts</span><span class="meta-date">May 2025</span><span class="meta-date">·</span><span class="meta-date">7 min read</span></div>
   <h1 class="article-title">6 Employment Contract Red Flags Most People Miss Before Accepting a Job</h1>
@@ -98,3 +131,4 @@
 </footer>
 </body>
 </html>
+
