@@ -198,7 +198,7 @@
     .cta-sub { font-size: 14px; color: var(--text2); margin-bottom: 1.5rem; line-height: 1.7; }
     .cta-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-    footer { border-top: 0.5px solid var(--border); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text2); flex-wrap: wrap; gap: 8px; }
+    footer { font-size: 12px; color: var(--text2); }
     footer a { color: var(--text2); text-decoration: none; }
     footer a:hover { color: var(--text); }
 
@@ -295,6 +295,11 @@
     <div class="cta-row">
       <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload a document</a>
       <a href="#analysis" class="btn-ghost"><i class="ti ti-player-play"></i> See how it works</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:1.25rem;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><i class="ti ti-shield-check" style="color:var(--green);font-size:13px"></i> Documents never stored</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><i class="ti ti-eye-off" style="color:var(--green);font-size:13px"></i> Data never sold</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><i class="ti ti-cpu-off" style="color:var(--green);font-size:13px"></i> Not used to train AI</div>
     </div>
     <div class="platform-row">
       <div class="platform-badge"><i class="ti ti-world"></i> Web</div>
@@ -599,35 +604,61 @@
   </div>
 </section>
 
-<footer>
-  <a href="/" class="logo" style="font-size:14px">Fine<span>Print</span>Fix</a>
-  <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+<footer style="border-top:0.5px solid var(--border);padding:2.5rem 2rem 1.5rem;font-size:12px;color:var(--text2);">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:2rem;max-width:1000px;margin:0 auto;align-items:start;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;">
+
+    <!-- Logo + tagline -->
     <div>
-      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:6px;">Document types</div>
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <a href="contractor-agreements.html">Contractor agreements</a>
-        <a href="employment-contracts.html">Employment contracts</a>
-        <a href="lease-agreements.html">Lease agreements</a>
-        <a href="freelance-contracts.html">Freelance contracts</a>
-        <a href="nda-agreements.html">NDAs</a>
-        <a href="subscription-agreements.html">Subscription agreements</a>
-        <a href="severance-agreements.html">Severance agreements</a>
+      <a href="/" class="logo" style="font-size:16px;display:block;margin-bottom:8px;">Fine<span>Print</span>Fix</a>
+      <div style="font-size:12px;color:var(--text2);line-height:1.6;max-width:180px;">Plain-English contract analysis. Know what you're signing.</div>
+    </div>
+
+    <!-- Document types -->
+    <div>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px;">Contract types</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="contractor-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Contractor agreements</a>
+        <a href="employment-contracts.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Employment contracts</a>
+        <a href="lease-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Lease agreements</a>
+        <a href="freelance-contracts.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Freelance contracts</a>
+        <a href="nda-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">NDAs</a>
+        <a href="subscription-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Subscription agreements</a>
+        <a href="severance-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Severance agreements</a>
       </div>
     </div>
+
+    <!-- Guides -->
     <div>
-      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:6px;">Guides</div>
-      <div style="display:flex;flex-direction:column;gap:4px;">
-        <a href="blog/contractor-red-flags.html">Contractor red flags</a>
-        <a href="blog/employment-contract-red-flags.html">Employment red flags</a>
-        <a href="blog/lease-agreement-red-flags.html">Lease red flags</a>
-        <a href="blog/freelance-contract-mistakes.html">Freelance mistakes</a>
-        <a href="blog/severance-agreement-guide.html">Severance guide</a>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px;">Guides</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="blog/index.html" style="color:var(--text2);text-decoration:none;font-size:12px;">All guides</a>
+        <a href="blog/contractor-red-flags.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Contractor red flags</a>
+        <a href="blog/employment-contract-red-flags.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Employment red flags</a>
+        <a href="blog/lease-agreement-red-flags.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Lease red flags</a>
+        <a href="blog/freelance-contract-mistakes.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Freelance mistakes</a>
+        <a href="blog/severance-agreement-guide.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Severance guide</a>
       </div>
     </div>
+
+    <!-- Legal + CTA -->
+    <div>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:10px;">Legal</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:1.25rem;">
+        <a href="legal.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Terms &amp; Disclaimer</a>
+        <a href="legal.html#privacy" style="color:var(--text2);text-decoration:none;font-size:12px;">Privacy policy</a>
+        <a href="legal.html#refunds" style="color:var(--text2);text-decoration:none;font-size:12px;">Refund policy</a>
+      </div>
+      <a href="app.html" style="display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;padding:9px 16px;border-radius:var(--radius);font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;">
+        <i class="ti ti-upload" style="font-size:12px"></i> Try free
+      </a>
+    </div>
+
   </div>
-  <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;">
-    <span>AI-powered analysis — not legal advice.</span>
-    <span><a href="legal.html">Terms &amp; Disclaimer</a> · <a href="legal.html#privacy">Privacy</a></span>
+
+  <!-- Bottom bar -->
+  <div style="max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+    <span>© 2025 FinePrintFix. AI-powered analysis for informational purposes only — not legal advice.</span>
+    <span style="display:flex;align-items:center;gap:5px;"><i class="ti ti-shield-check" style="color:var(--green);font-size:12px"></i> Documents never stored · Data never sold</span>
   </div>
 </footer>
 
@@ -670,6 +701,7 @@
 </script>
 </body>
 </html>
+
 
 
 
