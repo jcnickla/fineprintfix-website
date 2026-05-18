@@ -1,21 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lease Agreement Review — FinePrintFix</title>
-  <meta name="description" content="Before you sign an apartment or house lease, upload it to FinePrintFix. We flag auto-renewals, hidden fees, excessive late charges, and tenant rights issues in plain English." />
-  <meta name="keywords" content="lease agreement review, apartment lease red flags, rental contract review, lease analysis, tenant rights contract review" />
-  <link rel="canonical" href="https://www.fineprintfix.com/lease-agreements.html" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = 'https://pjtxghrbteathhxurqbk.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
-    window.addEventListener('DOMContentLoaded', () => {
+('DOMContentLoaded', () => {
       const { createClient } = supabase;
       const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       sb.auth.getSession().then(({ data: { session } }) => {
@@ -49,8 +32,9 @@
     .dropdown-menu a:hover { background: var(--bg2); color: var(--text); }
     .dropdown-menu a i { font-size: 15px; color: var(--accent); width: 18px; flex-shrink: 0; }
     .dropdown-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); padding: 4px 10px 2px; }
-    .mobile-dropdown-links { display: none; padding-left: 1rem; }
-    .mobile-dropdown-links.open { display: flex; flex-direction: column; }
+    .mobile-dropdown-links { display: none !important; }
+    .mobile-dropdown-links { display: none !important; padding-left: 1rem; }
+    .mobile-dropdown-links.open { display: flex !important; flex-direction: column; }
     .mobile-dropdown-links a { padding: 8px 4px; font-size: 12px; color: var(--text2); text-decoration: none; display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--border); }
     .mobile-dropdown-links a i { font-size: 13px; color: var(--accent); }
     .btn-nav { background: var(--accent); color: #fff; border: none; padding: 7px 16px; border-radius: var(--radius); font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
@@ -334,5 +318,6 @@
 </footer>
 </body>
 </html>
+
 
 
