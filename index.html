@@ -192,6 +192,7 @@
       .how-grid { grid-template-columns: 1fr; }
       .flags-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; }
+      #pricing .price-grid-3 { grid-template-columns: 1fr !important; }
       .stats { grid-template-columns: repeat(2,1fr); }
       .stat:nth-child(2) { border-right: none; }
       .stat:nth-child(3) { border-top: 0.5px solid var(--border); }
@@ -474,7 +475,7 @@
     <h2 style="margin-bottom:0.5rem">Simple, honest pricing</h2>
     <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65;max-width:520px">No subscription. No monthly fee. Pay only when you need an analysis — and your first one is always free.</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
 
       <!-- FREE -->
       <div class="price-card">
@@ -490,16 +491,30 @@
       </div>
 
       <!-- PAY PER DOC -->
-      <div class="price-card featured" style="border:2px solid var(--accent);">
+      <div class="price-card featured" style="border:2px solid var(--accent);position:relative;">
+        <div style="position:absolute;top:-10px;left:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Most popular</div>
         <div class="price-tier" style="color:var(--accent)">Pay per document</div>
         <div class="price-num" style="color:var(--accent)">$3.99</div>
         <div class="price-sub">One-off, no subscription</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Saved to your dashboard</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Document comparison tool</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Negotiation scripts</div>
         <div style="margin-top:1rem;">
           <a href="app.html" style="display:block;text-align:center;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Get started →</a>
+        </div>
+      </div>
+
+      <!-- COMPARISON PACK -->
+      <div class="price-card" style="border:2px solid #4F6AF5;position:relative;">
+        <div style="position:absolute;top:-10px;left:12px;background:#4F6AF5;color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Best value</div>
+        <div class="price-tier" style="color:#4F6AF5">Comparison pack</div>
+        <div class="price-num" style="color:#4F6AF5">$7.99</div>
+        <div class="price-sub">Up to 3 docs + comparison</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Up to 3 full analyses</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Side-by-side comparison</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Winner recommendation</div>
+        <div style="margin-top:1rem;">
+          <a href="app.html" style="display:block;text-align:center;background:#4F6AF5;color:#fff;border:none;padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Compare documents →</a>
         </div>
       </div>
 
@@ -598,6 +613,7 @@
 </script>
 </body>
 </html>
+
 
 
 
