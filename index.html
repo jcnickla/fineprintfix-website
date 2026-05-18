@@ -203,8 +203,10 @@
     footer a:hover { color: var(--text); }
 
     @media (max-width: 720px) {
-      .hero { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem; }
-      h1 { font-size: 32px; }
+      .hero { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem 1.25rem 1rem; }
+      h1 { font-size: 30px; }
+      .hero-sub { font-size: 14px; margin-bottom: 1.25rem; }
+      .hero-mockup { display: none; } /* Hide mockup on mobile — text first */
       .how-grid { grid-template-columns: 1fr; }
       .flags-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; }
@@ -225,8 +227,12 @@
       .mobile-dropdown-links a i { font-size: 13px; color: var(--accent); }
       .hamburger { display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; background: none; border: none; }
       .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text); border-radius: 2px; }
-      .section, .alt-inner { padding: 2.5rem 1.25rem; }
+      .section, .alt-inner { padding: 2rem 1.25rem; }
+      .btn-lg { width: 100%; justify-content: center; padding: 14px; }
+      .btn-ghost { width: 100%; justify-content: center; padding: 14px; }
+      .cta-row { flex-direction: column; gap: 8px; }
       footer { flex-direction: column; align-items: flex-start; }
+      .cta-section { padding: 2.5rem 1.25rem; }
     }
     .hamburger { display: none; }
     @media (min-width: 721px) { .hamburger { display: none !important; } }
@@ -701,6 +707,7 @@
 </script>
 </body>
 </html>
+
 
 
 
