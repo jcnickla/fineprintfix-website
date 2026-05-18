@@ -38,6 +38,20 @@
     .logo span { color: var(--accent); }
     .nav-links { display: flex; align-items: center; gap: 18px; font-size: 12px; list-style: none; flex-wrap: wrap; }
     .nav-links a { color: var(--text2); text-decoration: none; }
+    .has-dropdown { position: relative; }
+    .dropdown-toggle { cursor: pointer; user-select: none; }
+    .dropdown-toggle .ti-chevron-down { font-size: 11px; transition: transform 0.15s; }
+    .has-dropdown:hover .ti-chevron-down { transform: rotate(180deg); }
+    .dropdown-menu { display: none; position: absolute; top: 100%; left: -12px; background: transparent; padding-top: 8px; min-width: 244px; z-index: 200; }
+    .has-dropdown:hover .dropdown-menu { display: block; }
+    .dropdown-menu-inner { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius-lg); padding: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+    .dropdown-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); padding: 4px 10px 6px; }
+    .dropdown-menu-inner a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius); font-size: 13px; color: var(--text2); text-decoration: none; transition: background 0.1s, color 0.1s; }
+    .dropdown-menu-inner a:hover { background: var(--bg2); color: var(--text); }
+    .dropdown-menu-inner a i { font-size: 15px; color: var(--accent); width: 18px; flex-shrink: 0; }
+    .mobile-dropdown-links { display: none !important; padding-left: 1rem; }
+    .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; background: none; border: none; }
+    .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text); border-radius: 2px; }
     .btn-nav { background: var(--accent); color: #fff; border: none; padding: 7px 16px; border-radius: var(--radius); font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
     .eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); background: var(--accent-light); padding: 5px 11px; border-radius: 20px; margin-bottom: 1.25rem; }
     .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding: 4rem 2rem 3rem; align-items: center; max-width: 1000px; margin: 0 auto; }
@@ -293,8 +307,3 @@
 </footer>
 </body>
 </html>
-
-
-
-
-
