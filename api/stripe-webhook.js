@@ -1,5 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { createClient } = require('@supabase/supabase-js');
+const ws = require('ws');
 
 // Stripe requires the raw body for webhook signature verification
 // Vercel provides it via the rawBody property when you disable body parsing
@@ -41,10 +42,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
-    const sb = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
+    const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { realtime: { transport: ws } });
 
     try {
       // 1. Upsert credits — give user 1 credit
@@ -96,3 +94,4 @@ module.exports.config = {
     bodyParser: false,
   },
 };
+
