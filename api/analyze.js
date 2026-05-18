@@ -1,10 +1,11 @@
 // ─── RATE LIMIT CONFIG ────────────────────────────────────────────
-// Each document analysis = 5 API calls (summary, flags, sections, questions, money)
+// Each single analysis = 5 API calls
+// Compare mode (3 docs) = 15 API calls sequentially + 1 comparison = 16 total
 // Limits below are per IP address
 const LIMITS = {
-  PER_MINUTE:  10,   // max 10 calls/min = 2 full analyses/min
-  PER_HOUR:    50,   // max 50 calls/hour = 10 full analyses/hour
-  PER_DAY:    100,   // max 100 calls/day = 20 full analyses/day
+  PER_MINUTE:  20,   // max 20 calls/min — accommodates compare mode
+  PER_HOUR:   100,   // max 100 calls/hour
+  PER_DAY:    300,   // max 300 calls/day
 };
 
 // In-memory store (resets on cold start — fine for basic protection)
@@ -147,5 +148,6 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 
