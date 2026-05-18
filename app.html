@@ -642,25 +642,27 @@
   <div id="screen-analyzing" class="screen">
     <div class="topbar">
       <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
-      <div class="step-pill">Step 3 of 3 — Analyzing</div>
+      <div class="step-pill" id="analyzing-step-pill">Step 3 of 3 — Analyzing</div>
     </div>
     <div class="screen-body">
       <div class="analyzing-wrap">
         <div class="pulse-ring"><i class="ti ti-scan"></i></div>
-        <div class="analyzing-title">Reading your document...</div>
-        <div class="analyzing-sub">This usually takes under 90 seconds</div>
-        <div class="progress-steps">
+        <div class="analyzing-title" id="analyzing-title">Reading your document...</div>
+        <div class="analyzing-sub" id="analyzing-sub">This usually takes under 90 seconds</div>
+
+        <!-- SINGLE DOC STEPS -->
+        <div class="progress-steps" id="progress-single">
           <div class="prog-step">
             <div class="prog-dot done" id="dot1"><i class="ti ti-check" style="font-size:10px"></i></div>
             <span>Document received</span>
           </div>
           <div class="prog-step">
             <div class="prog-dot done" id="dot2"><i class="ti ti-check" style="font-size:10px"></i></div>
-            <span>Parsing structure & sections</span>
+            <span>Parsing structure &amp; sections</span>
           </div>
           <div class="prog-step">
             <div class="prog-dot active" id="dot3"><i class="ti ti-brain" style="font-size:10px"></i></div>
-            <span>Identifying flags & risks</span>
+            <span>Identifying flags &amp; risks</span>
           </div>
           <div class="prog-step">
             <div class="prog-dot pending" id="dot4"><i class="ti ti-dots" style="font-size:10px"></i></div>
@@ -671,6 +673,26 @@
             <span>Building your questions list</span>
           </div>
         </div>
+
+        <!-- COMPARE MODE STEPS -->
+        <div id="progress-compare" style="display:none;width:100%;max-width:320px;margin:0 auto;">
+
+          <!-- Doc progress bars -->
+          <div id="compare-doc-progress" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1rem;"></div>
+
+          <!-- Current action -->
+          <div id="compare-current-action" style="font-size:12px;color:var(--text2);text-align:center;min-height:18px;"></div>
+
+          <!-- Overall progress bar -->
+          <div style="background:var(--bg2);border-radius:20px;height:4px;margin-top:12px;overflow:hidden;">
+            <div id="compare-progress-bar" style="height:100%;background:var(--accent);border-radius:20px;width:0%;transition:width 0.6s ease;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:5px;">
+            <span style="font-size:10px;color:var(--text2)" id="compare-progress-label">0% complete</span>
+            <span style="font-size:10px;color:var(--text2)" id="compare-time-estimate">~3 min remaining</span>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -867,41 +889,93 @@
     startCompareAnalysis(compareDocs.filter(d => d !== null));
   }
 
+  // ─── COMPARE PROGRESS UI ─────────────────────────────────────
+  const COMPARE_STEP_LABELS = ['Identifying flags & risks', 'Analyzing sections', 'Building questions', 'Generating summary', 'Analyzing financials'];
+
+  function initCompareProgress(docs) {
+    document.getElementById('progress-single').style.display = 'none';
+    document.getElementById('progress-compare').style.display = 'block';
+    document.getElementById('analyzing-title').textContent = 'Analyzing your documents...';
+    document.getElementById('analyzing-sub').textContent = "This takes 2–3 minutes. We're reading every clause.";
+    document.getElementById('analyzing-step-pill').textContent = 'Comparing documents';
+    const colors = ['#D85A30', '#4F6AF5', '#27A17E'];
+    const container = document.getElementById('compare-doc-progress');
+    container.innerHTML = docs.map((doc, i) => `
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:${colors[i]};flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;font-weight:500;color:var(--text2);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${doc.name}</div>
+          <div style="background:var(--bg2);border-radius:20px;height:3px;overflow:hidden;">
+            <div id="doc-bar-${i}" style="height:100%;background:${colors[i]};border-radius:20px;width:0%;transition:width 0.5s ease;"></div>
+          </div>
+        </div>
+        <div id="doc-pct-${i}" style="font-size:10px;color:var(--text2);min-width:28px;text-align:right;">0%</div>
+      </div>`).join('');
+  }
+
+  function updateCompareProgress(docIndex, stepIndex, totalDocs) {
+    const totalSteps = COMPARE_STEP_LABELS.length;
+    const docPct = Math.round((stepIndex / totalSteps) * 100);
+    const bar = document.getElementById(`doc-bar-${docIndex}`);
+    const pct = document.getElementById(`doc-pct-${docIndex}`);
+    if (bar) bar.style.width = docPct + '%';
+    if (pct) pct.textContent = docPct + '%';
+    document.getElementById('compare-current-action').textContent =
+      `Document ${docIndex + 1} of ${totalDocs} — ${COMPARE_STEP_LABELS[stepIndex] || 'Complete'}`;
+    const completedSteps = (docIndex * totalSteps) + stepIndex;
+    const totalStepsAll = totalDocs * totalSteps + 1;
+    const overallPct = Math.round((completedSteps / totalStepsAll) * 100);
+    document.getElementById('compare-progress-bar').style.width = overallPct + '%';
+    document.getElementById('compare-progress-label').textContent = overallPct + '% complete';
+    const secsLeft = (totalStepsAll - completedSteps) * 12;
+    const minsLeft = Math.ceil(secsLeft / 60);
+    document.getElementById('compare-time-estimate').textContent =
+      minsLeft <= 1 ? 'Almost done...' : `~${minsLeft} min remaining`;
+  }
+
+  function finishCompareProgress() {
+    document.getElementById('compare-progress-bar').style.width = '95%';
+    document.getElementById('compare-progress-label').textContent = 'Almost done...';
+    document.getElementById('compare-time-estimate').textContent = 'Generating comparison';
+    document.getElementById('compare-current-action').textContent = 'Building comparison report...';
+    document.getElementById('analyzing-title').textContent = 'Almost there...';
+  }
+
   async function startCompareAnalysis(docs) {
     showScreen('screen-analyzing');
-    document.getElementById('result-doc-name').textContent = `Comparing ${docs.length} documents...`;
+    initCompareProgress(docs);
 
     const results = [];
 
-    // Analyze documents sequentially to avoid rate limiting
     for (let i = 0; i < docs.length; i++) {
       const doc = docs[i];
-      const base64 = doc.base64;
-      document.getElementById('result-doc-name').textContent = `Analyzing document ${i + 1} of ${docs.length}...`;
+      const pdfContent = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: doc.base64 } };
+      const prompts = [
+        { systemPrompt: flagsPrompt('').systemPrompt,    content: pdfContent },
+        { systemPrompt: sectionsPrompt('').systemPrompt,  content: pdfContent },
+        { systemPrompt: questionsPrompt('').systemPrompt, content: pdfContent },
+        { systemPrompt: summaryPrompt('').systemPrompt,   content: pdfContent },
+        { systemPrompt: moneyPrompt('').systemPrompt,     content: pdfContent },
+      ];
 
-      const pdfContent = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: base64 } };
+      const resultData = [];
+      for (let j = 0; j < prompts.length; j++) {
+        updateCompareProgress(i, j, docs.length);
+        const data = await analyzeWithClaude(prompts[j], null);
+        resultData.push(data);
+        await new Promise(r => setTimeout(r, 400));
+      }
 
-      // Run 5 prompts for this doc sequentially with small delays
-      const flagsObj    = { systemPrompt: flagsPrompt('').systemPrompt,    content: pdfContent };
-      const sectionsObj = { systemPrompt: sectionsPrompt('').systemPrompt,  content: pdfContent };
-      const questionsObj= { systemPrompt: questionsPrompt('').systemPrompt, content: pdfContent };
-      const summaryObj  = { systemPrompt: summaryPrompt('').systemPrompt,   content: pdfContent };
-      const moneyObj    = { systemPrompt: moneyPrompt('').systemPrompt,     content: pdfContent };
+      // Mark doc complete
+      const docBar = document.getElementById(`doc-bar-${i}`);
+      const docPct = document.getElementById(`doc-pct-${i}`);
+      if (docBar) docBar.style.width = '100%';
+      if (docPct) docPct.textContent = '100%';
 
-      const flags    = await analyzeWithClaude(flagsObj, null);
-      await new Promise(r => setTimeout(r, 500));
-      const sections = await analyzeWithClaude(sectionsObj, null);
-      await new Promise(r => setTimeout(r, 500));
-      const questions= await analyzeWithClaude(questionsObj, null);
-      await new Promise(r => setTimeout(r, 500));
-      const summary  = await analyzeWithClaude(summaryObj, null);
-      await new Promise(r => setTimeout(r, 500));
-      const money    = await analyzeWithClaude(moneyObj, null);
-
+      const [flags, sections, questions, summary, money] = resultData;
       results.push({ name: doc.name, flags, sections, questions, summary, money });
 
-      // Pause between documents
-      if (i < docs.length - 1) await new Promise(r => setTimeout(r, 1000));
+      if (i < docs.length - 1) await new Promise(r => setTimeout(r, 800));
     }
 
     // Save each to Supabase
@@ -935,15 +1009,12 @@
           console.error('Save error for', r.name, ':', err);
         }
       }
-    } else {
-      console.warn('No session — analyses not saved to dashboard');
     }
 
     // Run comparison
-    document.getElementById('result-doc-name').textContent = 'Generating comparison...';
+    finishCompareProgress();
+    await new Promise(r => setTimeout(r, 500));
     const comparisonResult = await runComparisonAnalysis(results);
-
-    // Show compare results screen
     showCompareResults(results, comparisonResult);
   }
 
@@ -963,7 +1034,7 @@
       });
       const data = await res.json();
       const raw = data.content?.map(b => b.text || '').join('') || '{}';
-      return JSON.parse(raw.replace(/```json|```/g, '').trim());
+      return extractJSON(raw);
     } catch (e) {
       console.error('analyzeDoc error:', e);
       return {};
@@ -1388,8 +1459,7 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
         return {};
       }
       const raw = data.content.map(b => b.text || '').join('');
-      const clean = raw.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(clean);
+      const parsed = extractJSON(raw);
       console.log('Summary fetched successfully:', parsed.docType);
       return parsed;
     } catch (err) {
@@ -1416,8 +1486,7 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       const data = await response.json();
       if (!data.content) { console.error('Money: no content', data); return {}; }
       const raw = data.content.map(b => b.text || '').join('');
-      const clean = raw.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(clean);
+      const parsed = extractJSON(raw);
       console.log('Money fetched successfully, hasFinancials:', parsed.hasFinancials, 'keys:', Object.keys(parsed));
       return parsed;
     } catch (err) {
@@ -1528,16 +1597,37 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
     return { systemPrompt, content: docContent };
   }
 
+  // Robust JSON extractor — handles trailing text, markdown fences, and partial responses
+  function extractJSON(raw) {
+    if (!raw) return null;
+    // Strip markdown fences
+    let cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+    // Try parsing directly first
+    try { return JSON.parse(cleaned); } catch(e) {}
+    // Try extracting first JSON object
+    const objMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (objMatch) { try { return JSON.parse(objMatch[0]); } catch(e) {} }
+    // Try extracting first JSON array
+    const arrMatch = cleaned.match(/\[[\s\S]*\]/);
+    if (arrMatch) { try { return JSON.parse(arrMatch[0]); } catch(e) {} }
+    // Find the last valid closing brace/bracket
+    for (let i = cleaned.length - 1; i >= 0; i--) {
+      if (cleaned[i] === '}' || cleaned[i] === ']') {
+        try { return JSON.parse(cleaned.substring(0, i + 1)); } catch(e) {}
+      }
+    }
+    return null;
+  }
+
   async function analyzeWithClaude(promptObj, outputId, redId, amberId, greenId) {
     const el = document.getElementById(outputId);
     if (!el) {
-      // Element not in DOM yet — just fetch and return the data
       try {
         const messages = [];
         if (promptObj.content.type === 'document') {
           messages.push({ role: 'user', content: [promptObj.content, { type: 'text', text: 'Analyze this document.' }] });
         } else {
-          messages.push({ role: 'user', content: 'Analyze this document:\n\n' + promptObj.content.text });
+          messages.push({ role: 'user', content: 'Analyze this document:\n\n' + (promptObj.content.text || '') });
         }
         const response = await fetch('/api/analyze', {
           method: 'POST',
@@ -1547,8 +1637,9 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
         if (!response.ok) throw new Error('API error: ' + response.status);
         const data = await response.json();
         const raw = data.content.map(b => b.text || '').join('');
-        const clean = raw.replace(/```json|```/g, '').trim();
-        return JSON.parse(clean);
+        const result = extractJSON(raw);
+        if (!result) throw new Error('Could not parse JSON from response');
+        return result;
       } catch (err) {
         console.error('Analysis error (no element):', err);
         return null;
@@ -1582,8 +1673,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 
       const data = await response.json();
       const raw = data.content.map(b => b.text || '').join('');
-      const clean = raw.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(clean);
+      const parsed = extractJSON(raw);
 
       // Render based on which tab this is
       if (outputId === 'summary-content') {
@@ -2049,6 +2139,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
