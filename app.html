@@ -2531,18 +2531,11 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           else { documentText = doc.data; }
           showPaymentSuccess(plan === 'professional');
           await new Promise(r => setTimeout(r, 1800));
-          showScreen('screen-analyzing');
-
-          // Update analyzing screen for Professional mode
-          if (isProfessionalMode) {
-            document.getElementById('analyzing-title').textContent = 'Running Professional analysis...';
-            document.getElementById('analyzing-sub').textContent = 'Exhaustive clause review — this takes a little longer than standard.';
-          }
 
           document.getElementById('result-doc-name').textContent = uploadedFileName;
-          animateProgress().then(() => {
-            showScreen('screen-results');
-            runAnalysis();
+          showScreen('screen-analyzing');
+          animateProgress().then(async () => {
+            await runAnalysis();
             handlePostAnalysis();
           });
         } else {
@@ -2738,6 +2731,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
