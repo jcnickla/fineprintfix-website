@@ -367,7 +367,7 @@
       </div>
 
       <!-- PROFESSIONAL MODE CALLOUT — shown when pro tab selected -->
-      <div id="pro-mode-banner" style="display:none;background:#1a1a18;border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:none;">
+      <div id="pro-mode-banner" style="background:#1a1a18;border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:none;">
         <div style="display:flex;align-items:flex-start;gap:10px;">
           <i class="ti ti-shield-check" style="font-size:16px;color:#C0DD97;flex-shrink:0;margin-top:1px"></i>
           <div>
@@ -862,7 +862,8 @@
 
   // ─── MODE SWITCHING ───────────────────────────────────────────
   function setUploadMode(mode) {
-    currentUploadMode = mode;
+    try {
+      currentUploadMode = mode;
     const singleBtn  = document.getElementById('mode-single');
     const proBtn     = document.getElementById('mode-professional');
     const compareBtn = document.getElementById('mode-compare');
@@ -885,9 +886,8 @@
       singleEl.style.display = 'block';
       compareEl.style.display = 'none';
       proBanner.style.display = 'block';
-      // Update continue button label
       const continueBtn = document.getElementById('continue-btn');
-      if (continueBtn) continueBtn.textContent = 'Continue — Professional →';
+      if (continueBtn) continueBtn.innerHTML = 'Continue — Professional <i class="ti ti-arrow-right"></i>';
     } else if (mode === 'compare') {
       isProfessionalMode = false;
       compareBtn.style.border = '2px solid #4F6AF5';
@@ -897,7 +897,7 @@
       compareEl.style.display = 'block';
       proBanner.style.display = 'none';
       const continueBtn = document.getElementById('continue-btn');
-      if (continueBtn) continueBtn.textContent = 'Continue →';
+      if (continueBtn) continueBtn.innerHTML = 'Continue <i class="ti ti-arrow-right"></i>';
     } else {
       isProfessionalMode = false;
       singleBtn.style.border = '2px solid var(--accent)';
@@ -907,8 +907,9 @@
       compareEl.style.display = 'none';
       proBanner.style.display = 'none';
       const continueBtn = document.getElementById('continue-btn');
-      if (continueBtn) continueBtn.textContent = 'Continue →';
+      if (continueBtn) continueBtn.innerHTML = 'Continue <i class="ti ti-arrow-right"></i>';
     }
+  } catch(e) { console.error('setUploadMode error:', e); }
   }
 
   // ─── COMPARE FILE HANDLING ────────────────────────────────────
@@ -2739,6 +2740,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 </div>
 </body>
 </html>
+
 
 
 
