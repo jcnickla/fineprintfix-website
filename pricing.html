@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pricing — FinePrintFix</title>
+  <meta name="description" content="Simple, honest pricing. Free first analysis. $3.99 standard, $24.99 professional, $7.99 comparison pack. No subscription, no monthly fee."/>
+  <link rel="canonical" href="https://www.fineprintfix.com/pricing.html"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL='https://pjtxghrbteathhxurqbk.supabase.co';
+    const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
+    window.addEventListener('DOMContentLoaded',()=>{
+      const{createClient}=supabase;
+      const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+      sb.auth.getSession().then(({data:{session}})=>{
+        if(session){
+          document.getElementById('nav-login-li').style.display='none';
+          const cta=document.getElementById('nav-cta');
+          cta.href='dashboard.html';
+          cta.innerHTML='<i class="ti ti-layout-dashboard"></i> Dashboard';
+        }
+      });
+    });
+  </script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#fff;--bg2:#f7f5f2;--text:#1a1a18;--text2:#6b6b67;
+      --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);
+      --accent:#D85A30;--accent-light:#FAECE7;
+      --green:#3B6D11;--green-bg:#EAF3DE;
+      --amber:#633806;--amber-bg:#FAEEDA;
+      --red:#993C1D;--red-bg:#FAECE7;
+      --pro:#1a1a18;
+      --blue:#185FA5;--blue-bg:#E6F1FB;
+      --radius:8px;--radius-lg:14px;
+    }
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);overflow-x:hidden;}
+
+    /* NAV */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2rem;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);z-index:100;flex-wrap:wrap;gap:10px;}
+    .logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;text-decoration:none;color:var(--text);}.logo span{color:var(--accent);}
+    .nav-links{display:flex;align-items:center;gap:6px;font-size:13px;list-style:none;}
+    .nav-links>li>a{color:var(--text2);text-decoration:none;padding:7px 11px;border-radius:var(--radius);transition:color 0.12s,background 0.12s;display:flex;align-items:center;gap:4px;}
+    .nav-links>li>a:hover{color:var(--text);background:var(--bg2);}
+    .has-dropdown{position:relative;}.dropdown-toggle{cursor:pointer;user-select:none;}
+    .dropdown-toggle .ti-chevron-down{font-size:11px;transition:transform 0.15s;}
+    .has-dropdown:hover .ti-chevron-down{transform:rotate(180deg);}
+    .dropdown-menu{display:none;position:absolute;top:100%;left:-12px;background:transparent;padding-top:8px;min-width:244px;z-index:200;}
+    .has-dropdown:hover .dropdown-menu{display:block;}
+    .dropdown-menu-inner{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:8px;box-shadow:0 8px 30px rgba(0,0,0,0.1);}
+    .dropdown-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);padding:4px 10px 6px;}
+    .mobile-dropdown-links{display:none !important;}
+    .dropdown-menu-inner a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);font-size:13px;color:var(--text2);text-decoration:none;}
+    .dropdown-menu-inner a:hover{background:var(--bg2);color:var(--text);}
+    .dropdown-menu-inner a i{font-size:15px;color:var(--accent);width:18px;flex-shrink:0;}
+    .btn-nav{background:var(--accent);color:#fff;border:none;padding:8px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;background:none;border:none;}
+    .hamburger span{display:block;width:20px;height:1.5px;background:var(--text);border-radius:2px;}
+
+    /* HERO */
+    .pricing-hero{text-align:center;padding:4rem 2rem 3rem;max-width:700px;margin:0 auto;}
+    .eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);padding:5px 11px;border-radius:20px;margin-bottom:1.25rem;}
+    h1{font-family:'Playfair Display',serif;font-size:42px;line-height:1.1;font-weight:700;letter-spacing:-0.5px;margin-bottom:1rem;}
+    h1 em{font-style:italic;color:var(--accent);}
+    .hero-sub{font-size:15px;line-height:1.7;color:var(--text2);font-weight:300;}
+
+    /* TIER CARDS */
+    .tiers-wrap{max-width:1100px;margin:0 auto;padding:0 2rem 3rem;}
+    .tiers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:3rem;}
+    .tier-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;position:relative;display:flex;flex-direction:column;}
+    .tier-card.featured{border:2px solid var(--accent);}
+    .tier-card.pro{border:2px solid var(--pro);background:var(--pro);}
+    .tier-card.compare{border:2px solid #4F6AF5;}
+    .tier-badge{position:absolute;top:-11px;left:14px;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;}
+    .tier-badge.orange{background:var(--accent);color:#fff;}
+    .tier-badge.dark{background:var(--pro);color:#fff;}
+    .tier-badge.blue{background:#4F6AF5;color:#fff;}
+    .tier-name{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;}
+    .tier-card.pro .tier-name{color:rgba(255,255,255,0.5);}
+    .tier-price{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;line-height:1;margin-bottom:4px;}
+    .tier-card.pro .tier-price{color:#fff;}
+    .tier-price.orange{color:var(--accent);}
+    .tier-price.blue{color:#4F6AF5;}
+    .tier-sub{font-size:12px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5;}
+    .tier-card.pro .tier-sub{color:rgba(255,255,255,0.6);}
+    .tier-who{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:0.5px solid var(--border);flex:1;}
+    .tier-card.pro .tier-who{color:rgba(255,255,255,0.75);border-bottom-color:rgba(255,255,255,0.15);}
+    .tier-feats{display:flex;flex-direction:column;gap:7px;margin-bottom:1.5rem;}
+    .tier-feat{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text);line-height:1.45;}
+    .tier-card.pro .tier-feat{color:rgba(255,255,255,0.85);}
+    .tier-feat i{flex-shrink:0;margin-top:1px;}
+    .tier-cta{display:block;text-align:center;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;margin-top:auto;}
+    .tier-cta.free{background:var(--bg2);color:var(--text);border:0.5px solid var(--border2);}
+    .tier-cta.orange{background:var(--accent);color:#fff;}
+    .tier-cta.white{background:#fff;color:var(--pro);}
+    .tier-cta.blue{background:#4F6AF5;color:#fff;}
+
+    /* FEATURE TABLE */
+    .table-section{max-width:1100px;margin:0 auto;padding:0 2rem 4rem;}
+    .section-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--text2);margin-bottom:0.75rem;}
+    h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:2rem;line-height:1.2;}
+    .feat-table{width:100%;border-collapse:collapse;}
+    .feat-table th{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;padding:10px 14px;text-align:center;border-bottom:2px solid var(--border);}
+    .feat-table th:first-child{text-align:left;width:35%;}
+    .feat-table th.th-pro{background:#1a1a18;color:#fff;border-radius:8px 8px 0 0;}
+    .feat-table td{padding:11px 14px;font-size:13px;border-bottom:0.5px solid var(--border);text-align:center;vertical-align:middle;}
+    .feat-table td:first-child{text-align:left;color:var(--text2);font-size:12px;}
+    .feat-table tr:hover td{background:var(--bg2);}
+    .feat-table tr.group-header td{background:var(--bg2);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);padding:8px 14px;border-bottom:0.5px solid var(--border);}
+    .feat-table td.pro-col{background:rgba(26,26,24,0.04);}
+    .check{color:var(--green);font-size:16px;}
+    .cross{color:var(--border2);font-size:16px;}
+    .val{font-size:12px;font-weight:500;color:var(--text);}
+    .val-pro{font-size:12px;font-weight:500;color:var(--pro);}
+
+    /* WHO IS IT FOR */
+    .who-section{background:var(--bg2);border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);}
+    .who-inner{max-width:1100px;margin:0 auto;padding:3.5rem 2rem;}
+    .who-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+    .who-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+    .who-card.pro-card{background:var(--pro);border-color:var(--pro);}
+    .who-tier{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:6px;}
+    .who-card.pro-card .who-tier{color:rgba(255,255,255,0.5);}
+    .who-price{font-size:20px;font-weight:700;margin-bottom:8px;}
+    .who-card.pro-card .who-price{color:#fff;}
+    .who-price.orange{color:var(--accent);}
+    .who-price.blue{color:#4F6AF5;}
+    .who-title{font-size:13px;font-weight:500;margin-bottom:6px;line-height:1.4;}
+    .who-card.pro-card .who-title{color:#fff;}
+    .who-examples{font-size:12px;color:var(--text2);line-height:1.65;}
+    .who-card.pro-card .who-examples{color:rgba(255,255,255,0.65);}
+    .who-examples strong{color:var(--text);font-weight:500;}
+    .who-card.pro-card .who-examples strong{color:rgba(255,255,255,0.9);}
+
+    /* FAQ */
+    .faq-section{max-width:700px;margin:0 auto;padding:4rem 2rem;}
+    .faq-item{border-bottom:0.5px solid var(--border);padding:1.25rem 0;}
+    .faq-q{font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none;}
+    .faq-q::-webkit-details-marker{display:none;}
+    .faq-a{font-size:13px;color:var(--text2);line-height:1.7;padding-top:0.75rem;}
+    .faq-a a{color:var(--accent);}
+
+    /* CTA */
+    .cta-section{text-align:center;padding:4rem 2rem;border-top:0.5px solid var(--border);}
+    .cta-section h2{margin-bottom:0.75rem;}
+    .cta-sub{font-size:14px;color:var(--text2);line-height:1.7;max-width:480px;margin:0 auto 2rem;}
+    .cta-btns{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;}
+    .btn-lg{background:var(--accent);color:#fff;border:none;padding:13px 26px;border-radius:var(--radius);font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:7px;text-decoration:none;}
+    .btn-ghost{background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:13px 22px;border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;text-decoration:none;}
+
+    footer{border-top:0.5px solid var(--border);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text2);flex-wrap:wrap;gap:8px;}
+    footer a{color:var(--text2);text-decoration:none;}
+
+    @media(max-width:900px){
+      .tiers-grid{grid-template-columns:repeat(2,1fr);}
+      .who-grid{grid-template-columns:repeat(2,1fr);}
+      .feat-table{display:none;}
+    }
+    @media(max-width:720px){
+      .hamburger{display:flex !important;}
+      h1{font-size:30px;}
+      .tiers-grid{grid-template-columns:1fr;}
+      .who-grid{grid-template-columns:1fr;}
+      .pricing-hero{padding:2.5rem 1.25rem 2rem;}
+      .tiers-wrap,.table-section,.faq-section{padding-left:1.25rem;padding-right:1.25rem;}
+      .who-inner{padding:2rem 1.25rem;}
+      .cta-btns{flex-direction:column;}
+      .btn-lg,.btn-ghost{width:100%;justify-content:center;}
+      nav{padding:1rem 1.25rem;}
+      .nav-links{display:none;width:100%;flex-direction:column;gap:0;border-top:0.5px solid var(--border);padding-top:10px;}
+      .nav-links.open{display:flex;}
+      .nav-links>li>a{padding:10px 4px;border-radius:0;background:none !important;border-bottom:0.5px solid var(--border);width:100%;}
+      .nav-links>li:last-child>a{border-bottom:none;}
+      .dropdown-menu{display:none !important;}
+      .mobile-dropdown-links{display:none !important;}
+      .mobile-dropdown-links.open{display:flex !important;flex-direction:column;}
+      .mobile-dropdown-links a{padding:8px 4px;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--border);}
+      .mobile-dropdown-links a i{font-size:13px;color:var(--accent);}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
+  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="main-nav">
+    <li class="has-dropdown">
+      <a class="dropdown-toggle" href="#" onclick="toggleMobileDocs(event)">Contract types <i class="ti ti-chevron-down"></i></a>
+      <div class="dropdown-menu"><div class="dropdown-menu-inner">
+        <div class="dropdown-label">By document type</div>
+        <a href="contractor-agreements.html"><i class="ti ti-tool"></i> Contractor agreements</a>
+        <a href="employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
+        <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
+        <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
+        <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
+        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Terms &amp; subscriptions</a>
+        <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
+      </div></div>
+      <div class="mobile-dropdown-links" id="mobile-docs">
+        <a href="contractor-agreements.html"><i class="ti ti-tool"></i> Contractor agreements</a>
+        <a href="employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
+        <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
+        <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
+        <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
+        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Terms &amp; subscriptions</a>
+        <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
+      </div>
+    </li>
+    <li><a href="blog/index.html">Guides</a></li>
+    <li><a href="pricing.html" style="color:var(--text);font-weight:500;">Pricing</a></li>
+    <li id="nav-login-li"><a href="auth.html" id="nav-login">Log in</a></li>
+    <li><a href="app.html" class="btn-nav" id="nav-cta"><i class="ti ti-upload"></i> Try for free</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="pricing-hero">
+  <div class="eyebrow"><i class="ti ti-tag"></i> Pricing</div>
+  <h1>Pay when you need it. <em>Keep the rest.</em></h1>
+  <p class="hero-sub">No subscription. No monthly fee. One document, one payment — or your first one free. Choose the level of analysis that matches what's at stake.</p>
+</div>
+
+<!-- TIER CARDS -->
+<div class="tiers-wrap">
+  <div class="tiers-grid">
+
+    <!-- FREE -->
+    <div class="tier-card">
+      <div class="tier-name">Free</div>
+      <div class="tier-price">$0</div>
+      <div class="tier-sub">No credit card needed</div>
+      <p class="tier-who">Try the product before you pay. Good for a quick first look at any document.</p>
+      <div class="tier-feats">
+        <div class="tier-feat"><i class="ti ti-check check"></i> 1 free analysis</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> All 5 analysis tabs</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> No account required</div>
+        <div class="tier-feat"><i class="ti ti-x cross"></i> Not saved to dashboard</div>
+        <div class="tier-feat"><i class="ti ti-x cross"></i> No risk scoring</div>
+      </div>
+      <a href="app.html" class="tier-cta free">Try free →</a>
+    </div>
+
+    <!-- STANDARD -->
+    <div class="tier-card featured">
+      <div class="tier-badge orange">Most popular</div>
+      <div class="tier-name" style="color:var(--accent)">Standard</div>
+      <div class="tier-price orange">$3.99</div>
+      <div class="tier-sub">One-off, no subscription</div>
+      <p class="tier-who">For personal documents — apartment leases, freelance contracts, NDAs, gym memberships, app terms. Covers what you need without over-engineering it.</p>
+      <div class="tier-feats">
+        <div class="tier-feat"><i class="ti ti-check check"></i> Full analysis, all 5 tabs</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> Up to 5 flags per category</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> Saved to your dashboard</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> 5–7 questions to ask</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> 3 negotiation scripts</div>
+        <div class="tier-feat"><i class="ti ti-x cross"></i> No risk scoring</div>
+        <div class="tier-feat"><i class="ti ti-x cross"></i> No replacement clause language</div>
+      </div>
+      <a href="app.html" class="tier-cta orange">Get started →</a>
+    </div>
+
+    <!-- PROFESSIONAL -->
+    <div class="tier-card pro">
+      <div class="tier-badge dark">For high-stakes docs</div>
+      <div class="tier-name">Professional</div>
+      <div class="tier-price" style="color:#fff;">$24.99</div>
+      <div class="tier-sub">For documents worth negotiating</div>
+      <p class="tier-who">Employment offers, home improvement contracts, commercial leases, severance packages — anything where the dollar amount or life impact is significant.</p>
+      <div class="tier-feats">
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> Every clause reviewed — no cap</div>
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> Risk score 0–100 with breakdown</div>
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> 10–15 prioritized questions</div>
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> Replacement clause language</div>
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> Missing protections flagged</div>
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> Executive summary to share</div>
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> Power balance assessment</div>
+        <div class="tier-feat"><i class="ti ti-check" style="color:#C0DD97;flex-shrink:0;margin-top:1px"></i> Saved to your dashboard</div>
+      </div>
+      <a href="app.html" class="tier-cta white">Professional analysis →</a>
+    </div>
+
+    <!-- COMPARISON PACK -->
+    <div class="tier-card compare">
+      <div class="tier-badge blue">Best value</div>
+      <div class="tier-name" style="color:#4F6AF5">Comparison pack</div>
+      <div class="tier-price blue">$7.99</div>
+      <div class="tier-sub">Up to 3 docs + comparison</div>
+      <p class="tier-who">Got multiple bids, offers, or options? Upload up to 3 documents and get a side-by-side breakdown with a clear winner recommendation.</p>
+      <div class="tier-feats">
+        <div class="tier-feat"><i class="ti ti-check check"></i> Up to 3 full analyses</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> Side-by-side comparison</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> Winner recommendation</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> All saved to dashboard</div>
+        <div class="tier-feat"><i class="ti ti-check check"></i> $2.66 per document</div>
+      </div>
+      <a href="app.html" class="tier-cta blue">Compare documents →</a>
+    </div>
+
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;padding:1.5rem 0;border-top:0.5px solid var(--border);border-bottom:0.5px solid var(--border);margin-bottom:3rem;">
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);"><i class="ti ti-shield-check" style="color:var(--green);font-size:14px"></i> Documents never stored</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);"><i class="ti ti-eye-off" style="color:var(--green);font-size:14px"></i> Data never sold</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);"><i class="ti ti-cpu-off" style="color:var(--green);font-size:14px"></i> Not used to train AI</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);"><i class="ti ti-receipt-off" style="color:var(--green);font-size:14px"></i> No subscription ever</div>
+  </div>
+</div>
+
+<!-- FEATURE TABLE -->
+<div class="table-section">
+  <div class="section-label">Compare in detail</div>
+  <h2>Everything side by side</h2>
+
+  <table class="feat-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Free</th>
+        <th style="color:var(--accent)">Standard<br/><span style="font-size:16px;font-weight:700;">$3.99</span></th>
+        <th class="th-pro">Professional<br/><span style="font-size:16px;font-weight:700;">$24.99</span></th>
+        <th style="color:#4F6AF5">Compare<br/><span style="font-size:16px;font-weight:700;">$7.99</span></th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr class="group-header"><td colspan="5">Analysis depth</td></tr>
+      <tr>
+        <td>Number of analyses</td>
+        <td><span class="val">1</span></td>
+        <td><span class="val">1</span></td>
+        <td class="pro-col"><span class="val-pro">1 (exhaustive)</span></td>
+        <td><span class="val">Up to 3</span></td>
+      </tr>
+      <tr>
+        <td>Flags per category</td>
+        <td><span class="val">Up to 5</span></td>
+        <td><span class="val">Up to 5</span></td>
+        <td class="pro-col"><span class="val-pro">No cap — every clause</span></td>
+        <td><span class="val">Up to 5</span></td>
+      </tr>
+      <tr>
+        <td>Sections covered</td>
+        <td><span class="val">5–8 key sections</span></td>
+        <td><span class="val">5–8 key sections</span></td>
+        <td class="pro-col"><span class="val-pro">Every section + missing ones</span></td>
+        <td><span class="val">5–8 key sections</span></td>
+      </tr>
+      <tr>
+        <td>Questions to ask</td>
+        <td><span class="val">5–7</span></td>
+        <td><span class="val">5–7</span></td>
+        <td class="pro-col"><span class="val-pro">10–15, prioritized</span></td>
+        <td><span class="val">5–7 per doc</span></td>
+      </tr>
+      <tr>
+        <td>Risk assessment</td>
+        <td><span class="val">Low / Medium / High</span></td>
+        <td><span class="val">Low / Medium / High</span></td>
+        <td class="pro-col"><span class="val-pro">Score 0–100 + breakdown</span></td>
+        <td><span class="val">Low / Medium / High</span></td>
+      </tr>
+
+      <tr class="group-header"><td colspan="5">Negotiation tools</td></tr>
+      <tr>
+        <td>Negotiation scripts</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><span class="val">3 scripts</span></td>
+        <td class="pro-col"><span class="val-pro">All worth negotiating</span></td>
+        <td><span class="val">3 scripts per doc</span></td>
+      </tr>
+      <tr>
+        <td>Replacement clause language</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td class="pro-col"><i class="ti ti-check check"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+      </tr>
+      <tr>
+        <td>Missing protections flagged</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td class="pro-col"><i class="ti ti-check check"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+      </tr>
+      <tr>
+        <td>Power balance assessment</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td class="pro-col"><i class="ti ti-check check"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+      </tr>
+      <tr>
+        <td>Executive summary to share</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td class="pro-col"><i class="ti ti-check check"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+      </tr>
+
+      <tr class="group-header"><td colspan="5">Compare features</td></tr>
+      <tr>
+        <td>Side-by-side comparison</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td class="pro-col"><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-check check"></i></td>
+      </tr>
+      <tr>
+        <td>Winner recommendation</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td class="pro-col"><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-check check"></i></td>
+      </tr>
+      <tr>
+        <td>Max documents</td>
+        <td><span class="val">1</span></td>
+        <td><span class="val">1</span></td>
+        <td class="pro-col"><span class="val-pro">1</span></td>
+        <td><span class="val">3</span></td>
+      </tr>
+
+      <tr class="group-header"><td colspan="5">Account & storage</td></tr>
+      <tr>
+        <td>Account required</td>
+        <td><span class="val">No</span></td>
+        <td><span class="val">Yes</span></td>
+        <td class="pro-col"><span class="val-pro">Yes</span></td>
+        <td><span class="val">Yes</span></td>
+      </tr>
+      <tr>
+        <td>Saved to dashboard</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-check check"></i></td>
+        <td class="pro-col"><i class="ti ti-check check"></i></td>
+        <td><i class="ti ti-check check"></i></td>
+      </tr>
+      <tr>
+        <td>PDF export (all tabs)</td>
+        <td><i class="ti ti-x cross"></i></td>
+        <td><i class="ti ti-check check"></i></td>
+        <td class="pro-col"><i class="ti ti-check check"></i></td>
+        <td><i class="ti ti-check check"></i></td>
+      </tr>
+      <tr>
+        <td>Original document stored</td>
+        <td><span class="val" style="color:var(--green);font-weight:500;">Never</span></td>
+        <td><span class="val" style="color:var(--green);font-weight:500;">Never</span></td>
+        <td class="pro-col"><span class="val-pro" style="color:var(--green);font-weight:500;">Never</span></td>
+        <td><span class="val" style="color:var(--green);font-weight:500;">Never</span></td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<!-- WHO IS IT FOR -->
+<div class="who-section">
+  <div class="who-inner">
+    <div class="section-label">Who is each tier for</div>
+    <h2>Pick the level that matches what's at stake</h2>
+    <div class="who-grid">
+
+      <div class="who-card">
+        <div class="who-tier">Free</div>
+        <div class="who-price">$0</div>
+        <div class="who-title">Just looking</div>
+        <div class="who-examples">Someone who wants to see what the product does before committing. First document free, no account needed.<br/><br/><strong>Example:</strong> Curious what's in that app's terms of service.</div>
+      </div>
+
+      <div class="who-card">
+        <div class="who-tier">Standard</div>
+        <div class="who-price orange">$3.99</div>
+        <div class="who-title">Personal documents, everyday use</div>
+        <div class="who-examples"><strong>Best for:</strong> Apartment leases, freelance contracts, NDAs, gym memberships, employment offers at smaller companies, subscription terms.<br/><br/>Documents where you want to understand what you're signing but the negotiating leverage is limited.</div>
+      </div>
+
+      <div class="who-card pro-card">
+        <div class="who-tier">Professional</div>
+        <div class="who-price">$24.99</div>
+        <div class="who-title">High-stakes, negotiable documents</div>
+        <div class="who-examples"><strong>Best for:</strong> Executive employment offers, commercial leases, home improvement contracts ($15K+), severance packages, business service agreements, any contract where you have real negotiating leverage and the financial or life impact is significant.<br/><br/>When $24.99 of analysis could save you thousands.</div>
+      </div>
+
+      <div class="who-card">
+        <div class="who-tier">Comparison pack</div>
+        <div class="who-price blue">$7.99</div>
+        <div class="who-title">Choosing between options</div>
+        <div class="who-examples"><strong>Best for:</strong> Multiple contractor bids, two job offers, comparing lease terms at different apartments, evaluating competing service contracts.<br/><br/>When the question isn't just "is this fair" but "which one is better."</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="section-label" style="text-align:center;margin-bottom:1rem;">FAQ</div>
+  <h2 style="text-align:center;margin-bottom:2rem;">Common questions</h2>
+
+  <details class="faq-item">
+    <summary class="faq-q">Why no subscription? <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text2);flex-shrink:0;"></i></summary>
+    <p class="faq-a">Most people sign a handful of contracts a year — a job offer, a lease, a freelance agreement. A subscription model means you'd pay every month for something you might use twice. We think that's the wrong model for this product. Pay when you have a document in front of you, keep your money the rest of the time.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary class="faq-q">What's the real difference between Standard and Professional? <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text2);flex-shrink:0;"></i></summary>
+    <p class="faq-a">Standard gives you a solid overview — the most important flags, key sections, questions to ask, and negotiation scripts. It's designed for most personal documents where you want to understand what you're signing.<br/><br/>Professional removes every cap and goes exhaustive — it reads every clause, gives you a risk score out of 100 with a breakdown, flags everything missing from the document that should be there, and gives you actual replacement contract language ready to paste into a redline. It's designed for documents where you have real leverage and the stakes are high enough to negotiate.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary class="faq-q">Is this legal advice? <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text2);flex-shrink:0;"></i></summary>
+    <p class="faq-a">No. FinePrintFix is an AI-powered analysis tool for informational purposes only. It helps you understand what a document says and flags potential issues — it is not a substitute for advice from a qualified attorney. For high-stakes documents, we recommend using FinePrintFix as preparation before consulting an attorney, not instead of one.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary class="faq-q">Do you store my documents? <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text2);flex-shrink:0;"></i></summary>
+    <p class="faq-a">No. Your original documents — PDFs, text, whatever you upload — are sent to the AI for analysis and immediately discarded. We never store the source document. What gets saved to your dashboard (if you have an account) is only the analysis output: the flags, summary, questions, and financial breakdown. Per Anthropic's API policy, data sent via their API is not used to train AI models.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary class="faq-q">Can I get a refund? <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text2);flex-shrink:0;"></i></summary>
+    <p class="faq-a">All sales are final for completed analyses since the service is delivered immediately and digitally. If you were charged due to a technical error, or charged more than once for the same analysis, we will refund you in full. Contact <a href="mailto:hello@fineprintfix.com">hello@fineprintfix.com</a> within 7 days with your payment details.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary class="faq-q">What document types can I analyze? <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text2);flex-shrink:0;"></i></summary>
+    <p class="faq-a">Any legal document in PDF format or pasted text. This includes employment contracts, leases, contractor agreements, freelance contracts, NDAs, severance agreements, terms of service, subscription agreements, privacy policies, service contracts, and more. If it's a legal document you're being asked to sign or agree to, FinePrintFix can analyze it.</p>
+  </details>
+
+  <details class="faq-item">
+    <summary class="faq-q">How long does an analysis take? <i class="ti ti-chevron-down" style="font-size:14px;color:var(--text2);flex-shrink:0;"></i></summary>
+    <p class="faq-a">Standard analyses typically complete in under 90 seconds. Professional analyses are more exhaustive and may take 2–3 minutes depending on document length. Comparison pack analyses (up to 3 documents) take approximately 3–5 minutes total since documents are analyzed sequentially.</p>
+  </details>
+
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="eyebrow" style="margin-bottom:1rem;"><i class="ti ti-sparkles"></i> Free to start</div>
+  <h2>Your first analysis is always free</h2>
+  <p class="cta-sub">No credit card. No account. Upload a document and see exactly what you're agreeing to — in under 90 seconds.</p>
+  <div class="cta-btns">
+    <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload a document free</a>
+    <a href="index.html" class="btn-ghost"><i class="ti ti-arrow-left"></i> Back to home</a>
+  </div>
+  <div style="font-size:11px;color:var(--text2);margin-top:1.25rem;">AI-powered analysis for informational purposes only — not legal advice.</div>
+</div>
+
+<footer>
+  <a href="index.html" class="logo" style="font-size:14px">Fine<span>Print</span>Fix</a>
+  <span>AI-powered analysis — not legal advice.</span>
+  <span><a href="legal.html">Terms &amp; Disclaimer</a> · <a href="legal.html#privacy">Privacy</a> · <a href="legal.html#refunds">Refunds</a></span>
+</footer>
+
+<script>
+  function toggleMobileNav(){document.getElementById('main-nav').classList.toggle('open');}
+  function toggleMobileDocs(e){if(window.innerWidth<=720){e.preventDefault();document.getElementById('mobile-docs').classList.toggle('open');}}
+</script>
+</body>
+</html>
