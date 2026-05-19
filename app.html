@@ -654,7 +654,7 @@
       <div id="upgrade-plans" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
 
         <!-- PROFESSIONAL TIER -->
-        <div style="border:2px solid #1a1a18;border-radius:var(--radius-lg);padding:1.1rem 1.25rem;position:relative;background:#1a1a18;">
+        <div id="upgrade-pro-card" style="border:2px solid #1a1a18;border-radius:var(--radius-lg);padding:1.1rem 1.25rem;position:relative;background:#1a1a18;">
           <div style="position:absolute;top:-10px;left:14px;background:#1a1a18;color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">For high-stakes documents</div>
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
             <div style="font-size:14px;font-weight:500;color:#fff;">Professional</div>
@@ -674,7 +674,7 @@
         </div>
 
         <!-- STANDARD TIER -->
-        <div style="border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;">
+        <div id="upgrade-standard-card" style="border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.1rem 1.25rem;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
             <div style="font-size:14px;font-weight:500;">Standard</div>
             <div style="font-size:20px;font-weight:700;color:var(--accent)">$3.99</div>
@@ -1374,6 +1374,8 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     } else if (type === 'loggedin-professional') {
       document.getElementById('upgrade-title').textContent = 'Professional analysis — $24.99';
       document.getElementById('upgrade-sub').textContent = 'Exhaustive clause-by-clause review, risk score 0–100, replacement contract language, missing protections, and an executive summary.';
+      document.getElementById('upgrade-pro-card').style.display = 'block';
+      document.getElementById('upgrade-standard-card').style.display = 'none';
       if (plans) plans.style.display = 'flex';
     } else if (type === 'anonymous-professional') {
       document.getElementById('upgrade-title').textContent = 'Create an account for Professional';
@@ -1382,6 +1384,8 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     } else if (type === 'loggedin') {
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
       document.getElementById('upgrade-sub').textContent = "Pay $3.99 to analyze this document. No subscription — your results save to your dashboard automatically.";
+      document.getElementById('upgrade-pro-card').style.display = 'none';
+      document.getElementById('upgrade-standard-card').style.display = 'block';
       if (plans) plans.style.display = 'flex';
     } else if (type === 'anonymous-email') {
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
@@ -2670,6 +2674,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
