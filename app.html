@@ -862,14 +862,15 @@
 
   // ─── MODE SWITCHING ───────────────────────────────────────────
   function setUploadMode(mode) {
-    try {
-      currentUploadMode = mode;
+    currentUploadMode = mode;
     const singleBtn  = document.getElementById('mode-single');
     const proBtn     = document.getElementById('mode-professional');
     const compareBtn = document.getElementById('mode-compare');
     const singleEl   = document.getElementById('single-mode');
     const compareEl  = document.getElementById('compare-mode');
     const proBanner  = document.getElementById('pro-mode-banner');
+
+    if (!singleBtn || !proBtn || !compareBtn) return;
 
     // Reset all tabs
     [singleBtn, proBtn, compareBtn].forEach(b => {
@@ -885,7 +886,7 @@
       proBtn.style.color = '#1a1a18';
       singleEl.style.display = 'block';
       compareEl.style.display = 'none';
-      proBanner.style.display = 'block';
+      if (proBanner) proBanner.style.display = 'block';
       const continueBtn = document.getElementById('continue-btn');
       if (continueBtn) continueBtn.innerHTML = 'Continue — Professional <i class="ti ti-arrow-right"></i>';
     } else if (mode === 'compare') {
@@ -895,7 +896,7 @@
       compareBtn.style.color = '#4F6AF5';
       singleEl.style.display = 'none';
       compareEl.style.display = 'block';
-      proBanner.style.display = 'none';
+      if (proBanner) proBanner.style.display = 'none';
       const continueBtn = document.getElementById('continue-btn');
       if (continueBtn) continueBtn.innerHTML = 'Continue <i class="ti ti-arrow-right"></i>';
     } else {
@@ -905,11 +906,10 @@
       singleBtn.style.color = 'var(--accent)';
       singleEl.style.display = 'block';
       compareEl.style.display = 'none';
-      proBanner.style.display = 'none';
+      if (proBanner) proBanner.style.display = 'none';
       const continueBtn = document.getElementById('continue-btn');
       if (continueBtn) continueBtn.innerHTML = 'Continue <i class="ti ti-arrow-right"></i>';
     }
-  } catch(e) { console.error('setUploadMode error:', e); }
   }
 
   // ─── COMPARE FILE HANDLING ────────────────────────────────────
@@ -2449,8 +2449,6 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     }
   }
 
-  function showPaymentSuccess() {
-    const toast = document.createElement('div');
   function showPaymentSuccess(isPro = false) {
     const toast = document.createElement('div');
     toast.style.cssText = `
@@ -2633,6 +2631,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
