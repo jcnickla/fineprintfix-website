@@ -824,7 +824,9 @@
       const { data: { session } } = await sb.auth.getSession();
       if (!session) throw new Error('Not signed in');
 
-      // Call server-side delete endpoint — handles all data + auth deletion
+      const userEmail = session.user.email;
+
+      // Call server-side delete endpoint
       const res = await fetch('/api/delete-account', {
         method: 'POST',
         headers: {
@@ -835,14 +837,10 @@
 
       const data = await res.json();
 
-      if (res.ok && data.success) {
-        // Full deletion successful — sign out and redirect
+      if (res.ok && data.success || (data.dataDeleted && !data.authDeleted)) {
         await sb.auth.signOut();
-        window.location.href = 'index.html?account=deleted';
-      } else if (data.dataDeleted && !data.authDeleted) {
-        // Data deleted but auth account couldn't be removed
-        await sb.auth.signOut();
-        window.location.href = 'index.html?account=deleted';
+        // Pass email in URL so confirmation page can show it
+        window.location.href = 'account-deleted.html?email=' + encodeURIComponent(userEmail);
       } else {
         throw new Error(data.error || 'Deletion failed');
       }
@@ -872,6 +870,7 @@
     }, 500);
   }
 </script>
+
 
 
 
