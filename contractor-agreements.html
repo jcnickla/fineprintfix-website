@@ -169,6 +169,7 @@
       h1 { font-size: 32px; }
       .how-grid, .trades-grid { grid-template-columns: 1fr 1fr; }
       .flags-grid, .pricing-row { grid-template-columns: 1fr; }
+      div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
       .stats { grid-template-columns: repeat(2,1fr); }
       .stat:nth-child(2) { border-right: none; }
       .stat:nth-child(3) { border-top: 0.5px solid var(--border); }
@@ -277,7 +278,7 @@
   <div class="stat"><div class="stat-num">$400B</div><div class="stat-label">spent on home improvement in the US each year</div></div>
   <div class="stat"><div class="stat-num">72%</div><div class="stat-label">of homeowners report contractor disputes or unexpected costs</div></div>
   <div class="stat"><div class="stat-num">&lt;90s</div><div class="stat-label">to get a full plain-English analysis of your contract</div></div>
-  <div class="stat"><div class="stat-num">$3.99</div><div class="stat-label">before signing a $10,000–$100,000 contract</div></div>
+  <div class="stat"><div class="stat-num">$24.99</div><div class="stat-label">for a Professional analysis before signing a $10K–$100K contract</div></div>
 </div>
 
 <hr />
@@ -299,6 +300,34 @@
     <div class="trade-card"><span class="trade-icon">🏗️</span> Additions & extensions</div>
     <div class="trade-card"><span class="trade-icon">🎨</span> Painting</div>
     <div class="trade-card"><span class="trade-icon">🪵</span> Flooring</div>
+  </div>
+
+  <!-- HOME IMPROVEMENT CALLOUT -->
+  <div style="margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    <div style="background:#1a1a18;border-radius:var(--radius-lg);padding:1.5rem;">
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.5);margin-bottom:8px;">Recommended for home improvement</div>
+      <div style="font-size:17px;font-weight:500;color:#fff;margin-bottom:8px;">Professional analysis — $24.99</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.7);line-height:1.65;margin-bottom:1.25rem;">When you're signing a $15,000 roofing contract or a $60,000 kitchen remodel, a $24.99 exhaustive review pays for itself the moment it catches one bad clause. Get every flag, actual replacement contract language, and a risk score — not just a summary.</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:1.25rem;">
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:#C0DD97"></i> Every clause reviewed — no cap on flags</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:#C0DD97"></i> Risk score 0–100 with financial exposure</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:#C0DD97"></i> Replacement clause language ready to use</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.8);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:#C0DD97"></i> Missing protections flagged (payment schedule, lien waivers, delay penalties)</div>
+      </div>
+      <a href="app.html" style="display:block;text-align:center;background:#fff;color:#1a1a18;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Get Professional analysis →</a>
+    </div>
+    <div style="background:var(--bg2);border-radius:var(--radius-lg);padding:1.5rem;border:0.5px solid var(--border);">
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;">Comparing multiple bids?</div>
+      <div style="font-size:17px;font-weight:500;color:var(--text);margin-bottom:8px;">Comparison pack — $7.99</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.65;margin-bottom:1.25rem;">Got quotes from three different roofers or contractors? Upload all three and get a side-by-side analysis with a clear recommendation — which contract protects you most, which is priced fairly, and which one to walk away from.</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:1.25rem;">
+        <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:var(--green)"></i> Up to 3 contracts analyzed</div>
+        <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:var(--green)"></i> Side-by-side comparison</div>
+        <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:var(--green)"></i> Clear winner recommendation</div>
+        <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:7px;"><i class="ti ti-check" style="font-size:12px;color:var(--green)"></i> $2.66 per document</div>
+      </div>
+      <a href="app.html" style="display:block;text-align:center;background:var(--accent);color:#fff;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Compare bids →</a>
+    </div>
   </div>
 </section>
 
@@ -433,7 +462,14 @@
   <div class="alt-inner">
     <div class="section-label">Pricing</div>
     <h2 style="margin-bottom:0.5rem">Simple, honest pricing</h2>
-    <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65">No subscription. Pay only when you need an analysis. Your first one is always free.</p>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:1rem;line-height:1.65">No subscription. Pay only when you need an analysis. Your first one is always free.</p>
+
+    <!-- HOME IMPROVEMENT RECOMMENDATION -->
+    <div style="background:var(--accent-light);border:0.5px solid #F5C4B3;border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;">
+      <i class="ti ti-tool" style="font-size:16px;color:var(--accent);flex-shrink:0"></i>
+      <div style="font-size:13px;color:var(--red);line-height:1.55;"><strong>For home improvement contracts:</strong> We recommend the Professional tier. When you're signing a $15,000–$100,000 contract, exhaustive clause review and replacement language pays for itself immediately.</div>
+    </div>
+
     <div class="pricing-row">
       <div class="price-card">
         <div class="price-tier">Free</div>
@@ -505,6 +541,7 @@
 
 </body>
 </html>
+
 
 
 
