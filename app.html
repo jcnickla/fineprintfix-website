@@ -2142,9 +2142,6 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 
   // ─── EXPORT FULL PDF ─────────────────────────────────────────
   function exportFullPDF() {
-    // Show quick tip
-    showToast('Opening PDF — in the print dialog, set Headers & Footers to "None"');
-
     const docName = document.getElementById('result-doc-name')?.textContent || 'Analysis';
     const redCount = document.getElementById('count-red')?.textContent || '0';
     const amberCount = document.getElementById('count-amber')?.textContent || '0';
@@ -2334,6 +2331,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
