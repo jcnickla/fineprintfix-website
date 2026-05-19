@@ -40,7 +40,8 @@
       --radius: 8px; --radius-lg: 14px;
     }
     html { scroll-behavior: smooth; }
-    body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); overflow-x: hidden; }
+    html { overflow-x: hidden; }
+    body { font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--bg); overflow-x: hidden; max-width: 100vw; }
 
     nav {
       display: flex; align-items: center; justify-content: space-between;
@@ -202,11 +203,15 @@
     footer a { color: var(--text2); text-decoration: none; }
     footer a:hover { color: var(--text); }
 
+    .hamburger { display: none; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; background: none; border: none; }
+    .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text); border-radius: 2px; }
+
     @media (max-width: 720px) {
-      .hero { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem 1.25rem 1rem; }
-      h1 { font-size: 30px; }
+      .hamburger { display: flex !important; }
+      .hero { grid-template-columns: 1fr !important; gap: 1rem; padding: 1.5rem 1.25rem 1rem; }
+      h1 { font-size: 28px; }
       .hero-sub { font-size: 14px; margin-bottom: 1.25rem; }
-      .hero-mockup { display: none; } /* Hide mockup on mobile — text first */
+      .hero-mockup { display: none !important; }
       .how-grid { grid-template-columns: 1fr; }
       .flags-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; }
@@ -214,7 +219,7 @@
       .stats { grid-template-columns: repeat(2,1fr); }
       .stat:nth-child(2) { border-right: none; }
       .stat:nth-child(3) { border-top: 0.5px solid var(--border); }
-      .compare-showcase { grid-template-columns: 1fr; }
+      .compare-showcase { grid-template-columns: 1fr !important; }
       nav { padding: 1rem 1.25rem; flex-wrap: wrap; gap: 10px; }
       .nav-links { display: none; width: 100%; flex-direction: column; gap: 0; border-top: 0.5px solid var(--border); padding-top: 10px; }
       .nav-links.open { display: flex; }
@@ -225,17 +230,17 @@
       .mobile-dropdown-links.open { display: flex !important; flex-direction: column; }
       .mobile-dropdown-links a { padding: 8px 4px; font-size: 12px; color: var(--text2); text-decoration: none; display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--border); }
       .mobile-dropdown-links a i { font-size: 13px; color: var(--accent); }
-      .hamburger { display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 4px; background: none; border: none; }
-      .hamburger span { display: block; width: 20px; height: 1.5px; background: var(--text); border-radius: 2px; }
+      .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 1.5rem !important; }
       .section, .alt-inner { padding: 2rem 1.25rem; }
-      .btn-lg { width: 100%; justify-content: center; padding: 14px; }
-      .btn-ghost { width: 100%; justify-content: center; padding: 14px; }
-      .cta-row { flex-direction: column; gap: 8px; }
+      .btn-lg { width: 100%; justify-content: center; padding: 14px; box-sizing: border-box; }
+      .btn-ghost { width: 100%; justify-content: center; padding: 14px; box-sizing: border-box; }
+      .cta-row { flex-direction: column; gap: 8px; width: 100%; }
       footer { flex-direction: column; align-items: flex-start; }
       .cta-section { padding: 2.5rem 1.25rem; }
+      footer > div:last-child { flex-direction: column; gap: 6px; }
+      /* Prevent any element from causing horizontal scroll */
+      .section, .alt-inner, .hero, nav, footer { overflow-x: hidden; }
     }
-    .hamburger { display: none; }
-    @media (min-width: 721px) { .hamburger { display: none !important; } }
   </style>
 </head>
 <body>
@@ -611,7 +616,7 @@
 </section>
 
 <footer style="border-top:0.5px solid var(--border);padding:2.5rem 2rem 1.5rem;font-size:12px;color:var(--text2);">
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:2rem;max-width:1000px;margin:0 auto;align-items:start;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:2rem;max-width:1000px;margin:0 auto;align-items:start;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;" class="footer-grid">
 
     <!-- Logo + tagline -->
     <div>
@@ -707,6 +712,7 @@
 </script>
 </body>
 </html>
+
 
 
 
