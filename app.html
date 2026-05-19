@@ -348,17 +348,33 @@
     <div class="screen-body">
 
       <!-- MODE SELECTOR -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1.25rem;">
         <button id="mode-single" onclick="setUploadMode('single')" style="padding:10px 8px;border-radius:var(--radius);border:2px solid var(--accent);background:var(--accent-light);color:var(--accent);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;">
           <i class="ti ti-file-text" style="font-size:18px"></i>
-          Single document
+          Standard
           <span style="font-size:10px;opacity:0.8">$3.99 · 1 free</span>
+        </button>
+        <button id="mode-professional" onclick="setUploadMode('professional')" style="padding:10px 8px;border-radius:var(--radius);border:0.5px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <i class="ti ti-shield-check" style="font-size:18px"></i>
+          Professional
+          <span style="font-size:10px;opacity:0.8">$24.99 · exhaustive</span>
         </button>
         <button id="mode-compare" onclick="setUploadMode('compare')" style="padding:10px 8px;border-radius:var(--radius);border:0.5px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:3px;">
           <i class="ti ti-layout-columns" style="font-size:18px"></i>
-          Compare documents
+          Compare
           <span style="font-size:10px;opacity:0.8">$7.99 · up to 3 docs</span>
         </button>
+      </div>
+
+      <!-- PROFESSIONAL MODE CALLOUT — shown when pro tab selected -->
+      <div id="pro-mode-banner" style="display:none;background:#1a1a18;border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:none;">
+        <div style="display:flex;align-items:flex-start;gap:10px;">
+          <i class="ti ti-shield-check" style="font-size:16px;color:#C0DD97;flex-shrink:0;margin-top:1px"></i>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:#fff;margin-bottom:3px;">Professional analysis — $24.99</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.5;">Every clause reviewed · Risk score 0–100 · Replacement contract language · Missing protections flagged · Executive summary</div>
+          </div>
+        </div>
       </div>
 
       <!-- SINGLE MODE -->
@@ -416,7 +432,7 @@
           Please add a PDF or paste some document text before continuing.
         </div>
 
-        <button class="btn-full" style="margin-top:1.25rem;" onclick="validateAndContinue()">
+        <button id="continue-btn" class="btn-full" style="margin-top:1.25rem;" onclick="validateAndContinue()">
           Continue <i class="ti ti-arrow-right"></i>
         </button>
       </div>
@@ -847,29 +863,51 @@
   // ─── MODE SWITCHING ───────────────────────────────────────────
   function setUploadMode(mode) {
     currentUploadMode = mode;
-    const singleBtn = document.getElementById('mode-single');
+    const singleBtn  = document.getElementById('mode-single');
+    const proBtn     = document.getElementById('mode-professional');
     const compareBtn = document.getElementById('mode-compare');
-    const singleEl = document.getElementById('single-mode');
-    const compareEl = document.getElementById('compare-mode');
+    const singleEl   = document.getElementById('single-mode');
+    const compareEl  = document.getElementById('compare-mode');
+    const proBanner  = document.getElementById('pro-mode-banner');
 
-    if (mode === 'single') {
-      singleBtn.style.border = '2px solid var(--accent)';
-      singleBtn.style.background = 'var(--accent-light)';
-      singleBtn.style.color = 'var(--accent)';
-      compareBtn.style.border = '0.5px solid var(--border2)';
-      compareBtn.style.background = 'transparent';
-      compareBtn.style.color = 'var(--text2)';
+    // Reset all tabs
+    [singleBtn, proBtn, compareBtn].forEach(b => {
+      b.style.border = '0.5px solid var(--border2)';
+      b.style.background = 'transparent';
+      b.style.color = 'var(--text2)';
+    });
+
+    if (mode === 'professional') {
+      isProfessionalMode = true;
+      proBtn.style.border = '2px solid #1a1a18';
+      proBtn.style.background = '#f0efed';
+      proBtn.style.color = '#1a1a18';
       singleEl.style.display = 'block';
       compareEl.style.display = 'none';
-    } else {
+      proBanner.style.display = 'block';
+      // Update continue button label
+      const continueBtn = document.getElementById('continue-btn');
+      if (continueBtn) continueBtn.textContent = 'Continue — Professional →';
+    } else if (mode === 'compare') {
+      isProfessionalMode = false;
       compareBtn.style.border = '2px solid #4F6AF5';
       compareBtn.style.background = '#EEF0FE';
       compareBtn.style.color = '#4F6AF5';
-      singleBtn.style.border = '0.5px solid var(--border2)';
-      singleBtn.style.background = 'transparent';
-      singleBtn.style.color = 'var(--text2)';
       singleEl.style.display = 'none';
       compareEl.style.display = 'block';
+      proBanner.style.display = 'none';
+      const continueBtn = document.getElementById('continue-btn');
+      if (continueBtn) continueBtn.textContent = 'Continue →';
+    } else {
+      isProfessionalMode = false;
+      singleBtn.style.border = '2px solid var(--accent)';
+      singleBtn.style.background = 'var(--accent-light)';
+      singleBtn.style.color = 'var(--accent)';
+      singleEl.style.display = 'block';
+      compareEl.style.display = 'none';
+      proBanner.style.display = 'none';
+      const continueBtn = document.getElementById('continue-btn');
+      if (continueBtn) continueBtn.textContent = 'Continue →';
     }
   }
 
@@ -1256,7 +1294,7 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
         .select('id', { count: 'exact', head: true })
         .eq('user_id', session.user.id);
       if (count >= 1) {
-        showUpgradeWall('loggedin');
+        showUpgradeWall(isProfessionalMode ? 'loggedin-professional' : 'loggedin');
         return false;
       }
       return true;
@@ -1297,6 +1335,10 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       document.getElementById('upgrade-title').textContent = 'Compare up to 3 documents';
       document.getElementById('upgrade-sub').textContent = 'Get a full analysis of each document plus a side-by-side comparison with a clear recommendation.';
       if (compare) compare.style.display = 'flex';
+    } else if (type === 'loggedin-professional') {
+      document.getElementById('upgrade-title').textContent = 'Professional analysis — $24.99';
+      document.getElementById('upgrade-sub').textContent = 'Exhaustive clause review, risk score 0–100, replacement contract language, missing protections, and an executive summary.';
+      if (plans) plans.style.display = 'flex';
     } else if (type === 'loggedin') {
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
       document.getElementById('upgrade-sub').textContent = "Pay $3.99 to analyze this document. No subscription — your results save to your dashboard automatically.";
@@ -2343,7 +2385,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     } catch (err) {
       console.error('Checkout error:', err);
       if (btn) {
-        btn.textContent = plan === 'compare' ? 'Compare my documents — $7.99' : 'Analyze this document — $3.99';
+        btn.textContent = plan === 'compare' ? 'Compare my documents — $7.99' : plan === 'professional' ? 'Professional analysis — $24.99' : 'Analyze this document — $3.99';
         btn.disabled = false;
       }
       alert('Something went wrong. Please try again.');
@@ -2697,6 +2739,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 </div>
 </body>
 </html>
+
 
 
 
