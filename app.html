@@ -2142,6 +2142,9 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 
   // ─── EXPORT FULL PDF ─────────────────────────────────────────
   function exportFullPDF() {
+    // Show quick tip
+    showToast('Opening PDF — in the print dialog, set Headers & Footers to "None"');
+
     const docName = document.getElementById('result-doc-name')?.textContent || 'Analysis';
     const redCount = document.getElementById('count-red')?.textContent || '0';
     const amberCount = document.getElementById('count-amber')?.textContent || '0';
@@ -2160,55 +2163,165 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
   <meta charset="UTF-8"/>
   <title>FinePrintFix — ${docName}</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;padding:2rem;max-width:750px;margin:0 auto;font-size:13px;line-height:1.6;}
-    .header{border-bottom:2px solid #D85A30;padding-bottom:1rem;margin-bottom:1.5rem;}
-    .brand{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#D85A30;margin-bottom:4px;}
-    .doc-title{font-size:20px;font-weight:600;margin-bottom:4px;}
-    .doc-meta{font-size:11px;color:#6b6b67;}
-    .score-row{display:flex;gap:1rem;margin-bottom:1.5rem;}
-    .score-card{flex:1;border:0.5px solid #eee;border-radius:8px;padding:12px;text-align:center;}
-    .score-num{font-size:24px;font-weight:700;}
-    .score-label{font-size:10px;color:#6b6b67;text-transform:uppercase;letter-spacing:0.05em;}
-    .section-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#D85A30;border-bottom:0.5px solid #eee;padding-bottom:6px;margin:1.75rem 0 1rem;}
-    .flag-item{border:0.5px solid #eee;border-radius:8px;padding:10px 12px;margin-bottom:8px;}
-    .flag-item.red-flag{border-left:3px solid #D85A30;background:#FAECE7;}
-    .flag-item.amber-flag{border-left:3px solid #E89A18;background:#FAEEDA;}
-    .flag-item.green-flag{border-left:3px solid #3B6D11;background:#EAF3DE;}
-    table{width:100%;border-collapse:collapse;}
-    td{padding:8px 10px;border-bottom:0.5px solid #eee;font-size:12px;vertical-align:top;}
-    td:first-child{color:#6b6b67;width:160px;font-weight:500;}
-    .footer{border-top:0.5px solid #eee;margin-top:2rem;padding-top:1rem;font-size:10px;color:#6b6b67;text-align:center;}
-    @media print{
-      .section-title{page-break-before:always;}
-      .section-title:first-of-type{page-break-before:avoid;}
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+
+    @page {
+      margin: 0.75in 0.75in 0.75in 0.75in;
+      size: letter;
     }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      color: #1a1a18;
+      background: #fff;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ── */
+    .header { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 2px solid #D85A30; padding-bottom: 12px; margin-bottom: 20px; }
+    .header-left .brand { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #D85A30; margin-bottom: 3px; }
+    .header-left .doc-title { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+    .header-left .doc-meta { font-size: 10px; color: #6b6b67; }
+    .header-right { text-align: right; font-size: 10px; color: #6b6b67; line-height: 1.8; }
+
+    /* ── SCORE ROW ── */
+    .score-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .score-card { flex: 1; border: 0.5px solid #e5e5e3; border-radius: 8px; padding: 10px 12px; text-align: center; }
+    .score-num { font-size: 22px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+    .score-label { font-size: 9px; color: #6b6b67; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── SECTION HEADINGS ── */
+    .section-title {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;
+      color: #D85A30; border-bottom: 0.5px solid #e5e5e3;
+      padding-bottom: 5px; margin: 24px 0 12px;
+      page-break-before: always;
+    }
+    .section-title:first-of-type { page-break-before: avoid; }
+
+    /* ── SUMMARY ── */
+    .type-badge { display: inline-flex; align-items: center; gap: 6px; border: 0.5px solid #e5e5e3; border-radius: 20px; padding: 3px 10px; font-size: 11px; color: #6b6b67; margin-bottom: 10px; }
+    .risk-badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 500; margin-bottom: 10px; margin-left: 6px; }
+    .risk-low { background: #EAF3DE; color: #2A5009; }
+    .risk-medium { background: #FAEEDA; color: #633806; }
+    .risk-high { background: #FAECE7; color: #993C1D; }
+    .overview-text { font-size: 13px; line-height: 1.7; color: #2a2a28; margin-bottom: 12px; }
+    .insight-box { background: #EAF3DE; border-radius: 8px; padding: 10px 13px; font-size: 12px; color: #2A5009; line-height: 1.6; margin-bottom: 14px; }
+    .insight-box.amber { background: #FAEEDA; color: #633806; }
+    .insight-box.red { background: #FAECE7; color: #993C1D; }
+    .key-facts-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #6b6b67; margin-bottom: 8px; }
+    .key-facts table { width: 100%; border-collapse: collapse; }
+    .key-facts td { padding: 7px 10px; border-bottom: 0.5px solid #e5e5e3; font-size: 12px; vertical-align: top; }
+    .key-facts td:first-child { color: #6b6b67; width: 150px; font-weight: 500; white-space: nowrap; }
+
+    /* ── FLAGS ── */
+    .flags-group-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin: 12px 0 6px; }
+    .flag-item { border-radius: 8px; padding: 9px 12px; margin-bottom: 6px; }
+    .flag-item.red-flag, .flag-card.red { background: #FAECE7; border-left: 3px solid #D85A30; }
+    .flag-item.amber-flag, .flag-card.amber { background: #FAEEDA; border-left: 3px solid #E89A18; }
+    .flag-item.green-flag, .flag-card.green { background: #EAF3DE; border-left: 3px solid #3B6D11; }
+    .flag-badge-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+    .red-flag .flag-badge-label, .flag-card.red .flag-badge-label { color: #993C1D; }
+    .amber-flag .flag-badge-label, .flag-card.amber .flag-badge-label { color: #633806; }
+    .green-flag .flag-badge-label, .flag-card.green .flag-badge-label { color: #2A5009; }
+    .flag-title { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+    .flag-detail { font-size: 11px; color: #4a4a48; line-height: 1.55; }
+    .flag-section-ref { font-size: 10px; color: #8b8b87; margin-top: 3px; }
+
+    /* ── SECTIONS ── */
+    .section-block { border: 0.5px solid #e5e5e3; border-radius: 8px; margin-bottom: 7px; overflow: hidden; page-break-inside: avoid; }
+    .section-block-header { background: #f7f5f2; padding: 8px 12px; font-size: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
+    .section-block-body { padding: 9px 12px; font-size: 12px; color: #4a4a48; line-height: 1.6; }
+    .section-issue-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+    .section-issue-badge.issues { background: #FAEEDA; color: #633806; }
+    .section-issue-badge.standard { background: #f0f0ee; color: #6b6b67; }
+
+    /* ── QUESTIONS ── */
+    .question-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid #e5e5e3; page-break-inside: avoid; }
+    .question-num { color: #D85A30; font-weight: 600; font-size: 13px; flex-shrink: 0; width: 20px; }
+    .question-text { font-size: 12px; line-height: 1.6; font-style: italic; color: #2a2a28; }
+
+    /* ── MONEY ── */
+    .money-total { background: #f7f5f2; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: baseline; gap: 8px; }
+    .money-total-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #6b6b67; }
+    .money-total-value { font-size: 22px; font-weight: 700; color: #1a1a18; }
+    .money-section-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #6b6b67; margin: 12px 0 6px; }
+    .money-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 0.5px solid #e5e5e3; gap: 12px; }
+    .money-row-label { font-size: 12px; font-weight: 500; flex: 1; }
+    .money-row-amount { font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .money-row-desc { font-size: 11px; color: #6b6b67; line-height: 1.5; margin-top: 2px; }
+    .negotiable-badge { font-size: 9px; background: #EAF3DE; color: #2A5009; padding: 2px 6px; border-radius: 4px; font-weight: 500; }
+    .market-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid #e5e5e3; font-size: 12px; }
+    .market-label { color: #6b6b67; flex: 1; }
+    .market-value { font-weight: 500; }
+    .market-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-left: 8px; }
+    .at-market { background: #EAF3DE; color: #2A5009; }
+    .above-market { background: #FAECE7; color: #993C1D; }
+    .negotiation-item { border: 0.5px solid #e5e5e3; border-radius: 8px; padding: 11px 13px; margin-bottom: 8px; page-break-inside: avoid; }
+    .negotiation-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .negotiation-context { font-size: 11px; color: #6b6b67; margin-bottom: 8px; line-height: 1.5; }
+    .negotiation-current-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #993C1D; margin-bottom: 3px; }
+    .negotiation-current { font-size: 11px; color: #4a4a48; background: #FAECE7; border-radius: 5px; padding: 6px 8px; margin-bottom: 8px; line-height: 1.5; }
+    .negotiation-script-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #2A5009; margin-bottom: 3px; }
+    .negotiation-script { font-size: 11px; color: #2a2a28; background: #EAF3DE; border-radius: 5px; padding: 6px 8px; line-height: 1.55; font-style: italic; }
+    .restructure-item { border-left: 3px solid #4F6AF5; background: #F0F2FE; border-radius: 0 8px 8px 0; padding: 10px 13px; margin-bottom: 8px; page-break-inside: avoid; }
+    .restructure-title { font-size: 12px; font-weight: 600; color: #2C3E8C; margin-bottom: 4px; }
+    .restructure-body { font-size: 11px; color: #3a3a70; line-height: 1.55; }
+
+    /* ── FOOTER ── */
+    .doc-footer { border-top: 0.5px solid #e5e5e3; margin-top: 24px; padding-top: 10px; font-size: 10px; color: #9b9b97; text-align: center; line-height: 1.6; }
   </style>
 </head>
 <body>
+
   <div class="header">
-    <div class="brand">FinePrintFix — Document Analysis</div>
-    <div class="doc-title">${docName}</div>
-    <div class="doc-meta">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} · AI-powered analysis — not legal advice</div>
+    <div class="header-left">
+      <div class="brand">FinePrintFix — Document Analysis</div>
+      <div class="doc-title">${docName}</div>
+      <div class="doc-meta">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div>
+    </div>
+    <div class="header-right">
+      fineprintfix.com<br/>
+      AI analysis · Not legal advice
+    </div>
   </div>
+
   <div class="score-row">
     <div class="score-card"><div class="score-num" style="color:#D85A30">${redCount}</div><div class="score-label">Red flags</div></div>
     <div class="score-card"><div class="score-num" style="color:#BA7517">${amberCount}</div><div class="score-label">Worth asking</div></div>
     <div class="score-card"><div class="score-num" style="color:#3B6D11">${greenCount}</div><div class="score-label">Looks fine</div></div>
   </div>
-  <div class="section-title">Summary</div>
+
+  <div class="section-title" style="page-break-before:avoid;">Summary</div>
   <div>${summaryHTML}</div>
+
   <div class="section-title">Flags &amp; Risks</div>
   <div>${flagsHTML}</div>
+
   <div class="section-title">By Section</div>
   <div>${sectionsHTML}</div>
+
   <div class="section-title">Questions to Ask</div>
   <div>${questionsHTML}</div>
+
   <div class="section-title">Money &amp; Financials</div>
   <div>${moneyHTML}</div>
-  <div class="footer">FinePrintFix · fineprintfix.com · Not legal advice — consult a qualified attorney before making legal decisions.</div>
-  <script>window.onload=function(){setTimeout(function(){window.print();},800);};<\/script>
+
+  <div class="doc-footer">
+    FinePrintFix · fineprintfix.com · This analysis is for informational purposes only and does not constitute legal advice.<br/>
+    Consult a qualified attorney before making decisions based on this analysis.
+  </div>
+
+<script>
+  // Hide browser print headers/footers via CSS
+  window.onload = function() {
+    // Brief delay to let fonts load
+    setTimeout(function() { window.print(); }, 1200);
+  };
+<\/script>
 </body>
 </html>`);
     printWindow.document.close();
@@ -2221,6 +2334,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
