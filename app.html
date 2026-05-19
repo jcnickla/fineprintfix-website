@@ -1599,6 +1599,15 @@ Rules:
     {"clause": "Clause name", "issue": "Financial problem", "suggestion": "How to fix it", "impact": "Financial impact"}
   ]
 }
+
+CRITICAL RULES FOR NEGOTIATION SCRIPTS:
+- If price is below market rate: do NOT suggest negotiating the price down. Instead suggest locking in the price, getting it in writing, or protecting against scope creep.
+- If price is at market rate: negotiation scripts should focus on payment terms, milestones, or non-price protections — not price reduction.
+- If price is above market rate: negotiation scripts may suggest price reduction with specific justification.
+- Never recommend the user negotiate against their own financial interest.
+- Negotiation scripts should focus on TERMS, PROTECTIONS, and CLARITY — not just price. Things like payment schedules, change order caps, delay penalties, and warranty terms are always worth negotiating regardless of price.
+- potentialSaving should only be set when genuinely applicable, otherwise null.
+
 Keep responses concise. Max 3 items per array. Focus on the most financially significant items only. If no financial terms exist set hasFinancials to false and use empty arrays.`;
 
     return { systemPrompt, content: docContent };
@@ -2331,6 +2340,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
