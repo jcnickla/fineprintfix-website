@@ -11,6 +11,10 @@
     },
     "api/stripe-webhook.js": {
       "maxDuration": 15
+    },
+    "api/delete-account.js": {
+      "maxDuration": 15
     }
   }
 }
+
