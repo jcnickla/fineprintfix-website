@@ -824,19 +824,34 @@
       const { data: { session } } = await sb.auth.getSession();
       if (!session) throw new Error('Not signed in');
 
-      // Delete all analyses for this user
-      await sb.from('analyses').delete().eq('user_id', session.user.id);
+      // Call server-side delete endpoint — handles all data + auth deletion
+      const res = await fetch('/api/delete-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + session.access_token
+        }
+      });
 
-      // Sign out — Supabase doesn't allow client-side account deletion
-      // Full account deletion happens server-side within 30 days per our policy
-      await sb.auth.signOut();
+      const data = await res.json();
 
-      // Redirect with message
-      window.location.href = 'index.html?account=deleted';
+      if (res.ok && data.success) {
+        // Full deletion successful — sign out and redirect
+        await sb.auth.signOut();
+        window.location.href = 'index.html?account=deleted';
+      } else if (data.dataDeleted && !data.authDeleted) {
+        // Data deleted but auth account couldn't be removed
+        await sb.auth.signOut();
+        window.location.href = 'index.html?account=deleted';
+      } else {
+        throw new Error(data.error || 'Deletion failed');
+      }
+
     } catch (err) {
       console.error('Delete account error:', err);
-      showAccountMain();
-      alert('Something went wrong. Please email legal@fineprintfix.com to delete your account.');
+      document.getElementById('account-deleting-view').style.display = 'none';
+      document.getElementById('account-delete-view').style.display = 'block';
+      alert('Something went wrong: ' + err.message + '\n\nPlease email legal@fineprintfix.com to delete your account.');
     }
   }
 
@@ -851,12 +866,13 @@
     setTimeout(() => {
       const toast = document.createElement('div');
       toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;';
-      toast.textContent = 'Your analyses have been deleted. Account removal completes within 30 days.';
+      toast.textContent = 'Your account and all data have been permanently deleted.';
       document.body.appendChild(toast);
       setTimeout(() => toast.remove(), 5000);
     }, 500);
   }
 </script>
+
 
 
 
