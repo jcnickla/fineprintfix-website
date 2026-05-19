@@ -602,6 +602,28 @@
         </button>
       </div>
 
+      <!-- FOR ANONYMOUS USERS — PROFESSIONAL TIER -->
+      <div id="upgrade-professional-anon" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
+        <div style="background:#1a1a18;border-radius:var(--radius-lg);padding:1.1rem 1.25rem;margin-bottom:4px;">
+          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.5);margin-bottom:6px;">Professional analysis</div>
+          <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;">$24.99</div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px;">
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:11px;color:#C0DD97"></i> Every clause reviewed — no cap on flags</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:11px;color:#C0DD97"></i> Risk score 0–100 with breakdown</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:11px;color:#C0DD97"></i> Replacement contract language</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:6px;"><i class="ti ti-check" style="font-size:11px;color:#C0DD97"></i> Executive summary to share</div>
+          </div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:10px;">An account is required to save your Professional analysis to your dashboard.</div>
+        </div>
+        <a href="auth.html?next=professional" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#fff;color:#1a1a18;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;text-decoration:none;">
+          <i class="ti ti-user-plus"></i> Create an account to continue
+        </a>
+        <a href="auth.html?next=professional" style="display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:var(--text2);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;text-decoration:none;">
+          <i class="ti ti-login"></i> Already have an account? Sign in
+        </a>
+        <div style="font-size:11px;color:var(--text2);text-align:center;line-height:1.55;">After signing in, return here and your document will be ready to analyze.</div>
+      </div>
+
       <!-- FOR COMPARE PACK -->
       <div id="upgrade-compare" style="display:none;flex-direction:column;gap:10px;margin-bottom:1.5rem;">
         <div style="border:2px solid #4F6AF5;border-radius:var(--radius-lg);padding:1.1rem 1.25rem;position:relative;">
@@ -1277,6 +1299,18 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
   async function checkFreeTierGate(mode = 'single') {
     const { data: { session } } = await sb.auth.getSession();
 
+    // Professional tier always requires payment — no free analysis
+    if (isProfessionalMode) {
+      if (session) {
+        const credits = await getUserCredits(session.user.id);
+        if (credits > 0) { await consumeCredit(session.user.id); return true; }
+        showUpgradeWall('loggedin-professional');
+      } else {
+        showUpgradeWall('anonymous-professional');
+      }
+      return false;
+    }
+
     if (session) {
       // Check credits first
       const credits = await getUserCredits(session.user.id);
@@ -1329,8 +1363,9 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     const plans = document.getElementById('upgrade-plans');
     const anonPaid = document.getElementById('upgrade-anon-paid');
     const compare = document.getElementById('upgrade-compare');
+    const proAnon = document.getElementById('upgrade-professional-anon');
 
-    [anon, plans, anonPaid, compare].forEach(el => { if (el) el.style.display = 'none'; });
+    [anon, plans, anonPaid, compare, proAnon].forEach(el => { if (el) el.style.display = 'none'; });
 
     if (type === 'loggedin-compare') {
       document.getElementById('upgrade-title').textContent = 'Compare up to 3 documents';
@@ -1338,8 +1373,12 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       if (compare) compare.style.display = 'flex';
     } else if (type === 'loggedin-professional') {
       document.getElementById('upgrade-title').textContent = 'Professional analysis — $24.99';
-      document.getElementById('upgrade-sub').textContent = 'Exhaustive clause review, risk score 0–100, replacement contract language, missing protections, and an executive summary.';
+      document.getElementById('upgrade-sub').textContent = 'Exhaustive clause-by-clause review, risk score 0–100, replacement contract language, missing protections, and an executive summary.';
       if (plans) plans.style.display = 'flex';
+    } else if (type === 'anonymous-professional') {
+      document.getElementById('upgrade-title').textContent = 'Create an account for Professional';
+      document.getElementById('upgrade-sub').textContent = 'Professional analysis requires an account so your results can be saved to your dashboard.';
+      if (proAnon) proAnon.style.display = 'flex';
     } else if (type === 'loggedin') {
       document.getElementById('upgrade-title').textContent = "You've used your free analysis";
       document.getElementById('upgrade-sub').textContent = "Pay $3.99 to analyze this document. No subscription — your results save to your dashboard automatically.";
@@ -2631,6 +2670,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
