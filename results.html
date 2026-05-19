@@ -492,6 +492,15 @@
     const amberCount= document.querySelector('.score-card:nth-child(2) .score-num')?.textContent || '0';
     const greenCount= document.querySelector('.score-card:nth-child(3) .score-num')?.textContent || '0';
 
+    // Expand all collapsed accordion sections
+    const collapsedBodies = [];
+    document.querySelectorAll('[id^="sbody-"]').forEach(el => {
+      if (el.style.display === 'none') {
+        el.style.display = 'block';
+        collapsedBodies.push(el);
+      }
+    });
+
     // Make all panels visible temporarily to grab their HTML
     const panels = ['panel-summary','panel-flags','panel-sections','panel-questions','panel-money'];
     const savedDisplay = {};
@@ -506,7 +515,8 @@
     const questionsHTML = document.getElementById('panel-questions')?.innerHTML || '';
     const moneyHTML     = document.getElementById('panel-money')?.innerHTML || '';
 
-    // Restore panel visibility
+    // Restore collapsed sections and panel visibility
+    collapsedBodies.forEach(el => { el.style.display = 'none'; });
     panels.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.style.display = savedDisplay[id] || '';
@@ -603,6 +613,7 @@
 </footer>
 </body>
 </html>
+
 
 
 
