@@ -13,10 +13,15 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'user_id and user_email required' });
   }
 
-  // Use compare price ID for comparison pack, default for single doc
-  const priceId = plan === 'compare'
-    ? process.env.STRIPE_COMPARE_PRICE_ID
-    : process.env.STRIPE_PRICE_ID;
+  // Resolve price ID based on plan
+  let priceId;
+  if (plan === 'compare') {
+    priceId = process.env.STRIPE_COMPARE_PRICE_ID;
+  } else if (plan === 'professional') {
+    priceId = process.env.STRIPE_PROFESSIONAL_PRICE_ID;
+  } else {
+    priceId = process.env.STRIPE_PRICE_ID;
+  }
 
   if (!priceId) {
     return res.status(500).json({ error: `Missing price ID for plan: ${plan || 'single'}` });
@@ -39,3 +44,4 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 };
+
