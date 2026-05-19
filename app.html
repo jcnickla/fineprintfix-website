@@ -951,11 +951,11 @@
       const doc = docs[i];
       const pdfContent = { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: doc.base64 } };
       const prompts = [
-        { systemPrompt: flagsPrompt('').systemPrompt,    content: pdfContent },
-        { systemPrompt: sectionsPrompt('').systemPrompt,  content: pdfContent },
-        { systemPrompt: questionsPrompt('').systemPrompt, content: pdfContent },
-        { systemPrompt: summaryPrompt('').systemPrompt,   content: pdfContent },
-        { systemPrompt: moneyPrompt('').systemPrompt,     content: pdfContent },
+        { systemPrompt: flagsPrompt('').systemPrompt,    content: pdfContent, returnType: 'object' },
+        { systemPrompt: sectionsPrompt('').systemPrompt,  content: pdfContent, returnType: 'array' },
+        { systemPrompt: questionsPrompt('').systemPrompt, content: pdfContent, returnType: 'array' },
+        { systemPrompt: summaryPrompt('').systemPrompt,   content: pdfContent, returnType: 'object' },
+        { systemPrompt: moneyPrompt('').systemPrompt,     content: pdfContent, returnType: 'object' },
       ];
 
       const resultData = [];
@@ -1513,102 +1513,168 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
   }
 
   function flagsPrompt(docContent) {
-    const systemPrompt = `You are FinePrintFix, a tool that helps everyday people understand legal documents.
-Analyze the document and return ONLY a JSON object (no markdown, no preamble) with this structure:
+    const systemPrompt = `You are FinePrintFix, a tool that helps everyday people understand legal documents before signing.
+Analyze this document and return ONLY a JSON object — no markdown, no preamble, no trailing text:
 {
-  "red": [{"text": "plain English explanation", "clause": "Section X — Name"}],
-  "amber": [{"text": "plain English explanation", "clause": "Section X — Name"}],
-  "green": [{"text": "plain English explanation", "clause": "Section X — Name"}]
+  "red": [{"text": "plain English explanation of why this is harmful", "clause": "Section name or heading"}],
+  "amber": [{"text": "plain English explanation of what to watch or ask about", "clause": "Section name or heading"}],
+  "green": [{"text": "plain English explanation of why this clause protects the reader", "clause": "Section name or heading"}]
 }
+
+RED flags (serious — person must know before signing):
+- Clauses that heavily favor the other party with no reciprocity
+- Broad IP/work-for-hire grabs that claim ownership beyond the scope of work
+- Non-competes that are unusually long (>1 year), broad in geography, or cover unrelated fields
+- Mandatory arbitration that waives jury trial AND class action rights combined
+- Auto-renewal with short or buried cancellation windows
+- Unilateral right to change terms without notice
+- Penalties, liquidated damages, or fee structures that are disproportionate
+- Data selling or sharing with third parties for commercial purposes
+- Indemnification clauses where one party bears all risk
+
+AMBER flags (worth asking about or negotiating):
+- Standard but one-sided terms that may be negotiable
+- Vague language that could be interpreted against the reader
+- Unusual timelines, notice requirements, or deadlines
+- Clauses where the other party has sole discretion
+
+GREEN (reassure the reader — standard and fair):
+- Standard industry clauses that are normal and balanced
+- Protections that benefit the person signing
+- Clear, fair terms with mutual obligations
+
 Rules:
-- "red": serious issues the person must know about (unfair non-competes, IP grabs, forced arbitration, data selling, auto-renew traps)
-- "amber": unusual or negotiable clauses worth asking about
-- "green": clauses that are standard and fair — reassure the reader
-- Use plain, direct language. No legal jargon. Write as if explaining to a friend.
-- Be specific and actionable. Max 5 items per category.`;
+- Write as if explaining to a smart friend with no legal background
+- Be specific: name the actual clause, amount, timeframe, or party
+- Do not flag things as red just because they're standard legal language
+- Max 5 items per category. Only include what genuinely applies to this document.`;
 
     return { systemPrompt, content: docContent };
   }
 
   function sectionsPrompt(docContent) {
-    const systemPrompt = `You are FinePrintFix. Analyze this legal document and return ONLY a JSON array (no markdown) of the main sections:
+    const systemPrompt = `You are FinePrintFix. Analyze this legal document and return ONLY a JSON array — no markdown, no preamble:
 [
   {
-    "title": "Section name",
+    "title": "Section name (use the actual heading from the document)",
     "status": "warn" or "ok",
-    "issueCount": number,
-    "summary": "2-3 sentence plain English explanation of this section and any issues"
+    "issueCount": number (0 if status is ok),
+    "summary": "2-3 sentence plain English explanation of what this section says and why it matters"
   }
 ]
-Focus on: compensation, termination, IP/ownership, non-compete, privacy/data, arbitration, benefits, auto-renewal.
-Write for someone with zero legal background. Be direct and specific.`;
+
+Cover ALL major sections of the document. Prioritize these if present:
+- Payment / Compensation / Fees
+- Termination / Cancellation
+- Intellectual Property / Ownership / Work Product
+- Non-compete / Non-solicitation
+- Confidentiality / NDA
+- Liability / Indemnification
+- Arbitration / Dispute Resolution
+- Auto-renewal / Notice periods
+- Warranties / Guarantees
+- Governing Law
+
+Rules:
+- Use the actual section titles from the document, not generic names
+- status "warn" = has issues, ambiguity, or one-sided terms. status "ok" = standard and fair
+- issueCount should match the number of real issues in that section
+- Write for someone with zero legal background — no jargon
+- Include 5-8 sections maximum, focusing on what matters most`;
 
     return { systemPrompt, content: docContent };
   }
 
   function questionsPrompt(docContent) {
-    const systemPrompt = `You are FinePrintFix. Based on this legal document, return ONLY a JSON array of questions the person should ask before signing (no markdown, no preamble):
+    const systemPrompt = `You are FinePrintFix. Based on this legal document, return ONLY a JSON array of questions — no markdown, no preamble:
 ["Question 1?", "Question 2?", ...]
+
 Rules:
-- 5-7 specific, actionable questions
-- Phrase as if the person is asking the other party directly
-- Focus on red flags, negotiable terms, and anything unclear
-- Plain English, no legal jargon`;
+- 5-7 questions, specific to THIS document — not generic legal questions
+- Each question must reference an actual clause, term, amount, or situation found in the document
+- Phrase questions as if the reader is asking the other party directly (e.g. "What happens to my work if...")
+- Prioritize: red flag clauses, vague language, missing terms, one-sided provisions, and financial ambiguities
+- Include at least one question about what happens if things go wrong (termination, dispute, non-performance)
+- Plain English — no legal jargon
+- Do not ask questions about things that are already clearly defined in the document`;
 
     return { systemPrompt, content: docContent };
   }
 
   function summaryPrompt(docContent) {
-    const systemPrompt = `You are FinePrintFix. Analyze this legal document and return ONLY a JSON object (no markdown, no preamble) with this structure:
+    const systemPrompt = `You are FinePrintFix. Analyze this legal document and return ONLY a JSON object — no markdown, no preamble:
 {
-  "overview": "2-3 sentence plain English summary of what this document is and what it means for the person signing it",
-  "docType": "e.g. Employment Agreement, NDA, Lease, Terms of Service",
+  "overview": "2-3 sentence plain English summary: what is this document, who are the parties, and what is the person agreeing to",
+  "docType": "Specific document type e.g. Employment Agreement, Independent Contractor Agreement, Residential Lease, NDA, Severance Agreement, Service Contract, Subscription Agreement",
   "keyFacts": [
-    {"label": "Parties", "value": "e.g. Jane Smith and Acme Corp"},
-    {"label": "Start date", "value": "e.g. January 1, 2025"},
-    {"label": "Duration", "value": "e.g. 12 months"},
-    {"label": "Compensation", "value": "e.g. $120,000/year"},
-    {"label": "Notice period", "value": "e.g. 2 weeks"}
+    {"label": "Label", "value": "Value"}
   ],
   "overallRisk": "low" or "medium" or "high",
-  "riskReason": "One sentence explaining the overall risk level"
+  "riskReason": "One plain-English sentence explaining the risk level based on what was actually found"
 }
-Rules:
-- Only include key facts that are actually present in the document (max 6)
-- Use plain English, no legal jargon
-- overallRisk should reflect the seriousness of the red flags found`;
+
+Key facts rules — only include facts PRESENT in the document, max 7:
+- Parties (who is signing)
+- Date or effective date
+- Duration or term length
+- Primary financial amount (salary, rent, contract value, fee)
+- Payment schedule or due dates (if stated)
+- Notice period for termination or cancellation
+- Governing state/law
+- Any fact that is unusually important for this specific document type
+
+Risk level rules:
+- "low" = standard terms, balanced obligations, no major one-sided clauses
+- "medium" = some one-sided terms or unusual clauses, but not severely unfair
+- "high" = multiple red flags, heavily favors other party, significant risk to reader
+- Base risk on the actual content found — do not default to medium`;
 
     return { systemPrompt, content: docContent };
   }
 
   function moneyPrompt(docContent) {
-    const systemPrompt = `You are FinePrintFix. Analyze this document for financial implications. Return ONLY a valid JSON object (no markdown, no preamble, no trailing text):
+    const systemPrompt = `You are FinePrintFix. Analyze this document for financial implications. Return ONLY a valid JSON object — no markdown, no preamble, no trailing text:
 {
-  "hasFinancials": true,
-  "totalValue": "e.g. $120,000/year" or null,
+  "hasFinancials": true or false,
+  "totalValue": "Total contract value with period e.g. $17,909 one-time or $4,800/year" or null,
   "costs": [
-    {"label": "Cost name", "amount": "$X" or null, "description": "Plain English explanation", "severity": "high" or "medium" or "low", "negotiable": true or false}
+    {"label": "Cost name", "amount": "$X" or null, "description": "Plain English: what triggers this cost and who pays", "severity": "high" or "medium" or "low", "negotiable": true or false}
   ],
   "marketComparison": [
-    {"item": "What is compared", "contractValue": "What contract says", "marketRate": "Typical market rate", "gap": "Difference" or null, "assessment": "below_market" or "at_market" or "above_market"}
+    {"item": "What is being compared", "contractValue": "Rate with units and math shown", "marketRate": "Typical range", "gap": "Within market range or dollar difference", "assessment": "below_market" or "at_market" or "above_market"}
   ],
   "negotiationScripts": [
-    {"clause": "Clause name", "currentLanguage": "What it says now", "suggestedLanguage": "Exact script to use", "potentialSaving": "$X" or null}
+    {"clause": "Clause name", "currentLanguage": "Exact or paraphrased current text", "suggestedLanguage": "Word-for-word script to say or write", "potentialSaving": "$X range" or null}
   ],
   "restructuringSuggestions": [
-    {"clause": "Clause name", "issue": "Financial problem", "suggestion": "How to fix it", "impact": "Financial impact"}
+    {"clause": "Clause name", "issue": "What financial problem this creates", "suggestion": "Specific fix with example language", "impact": "Concrete financial impact"}
   ]
 }
 
-CRITICAL RULES FOR NEGOTIATION SCRIPTS:
-- If price is below market rate: do NOT suggest negotiating the price down. Instead suggest locking in the price, getting it in writing, or protecting against scope creep.
-- If price is at market rate: negotiation scripts should focus on payment terms, milestones, or non-price protections — not price reduction.
-- If price is above market rate: negotiation scripts may suggest price reduction with specific justification.
-- Never recommend the user negotiate against their own financial interest.
-- Negotiation scripts should focus on TERMS, PROTECTIONS, and CLARITY — not just price. Things like payment schedules, change order caps, delay penalties, and warranty terms are always worth negotiating regardless of price.
-- potentialSaving should only be set when genuinely applicable, otherwise null.
+MARKET COMPARISON RULES:
+- Show unit math explicitly: "$17,909 ÷ 21.06 squares = $851/sq" or "$85,000 ÷ 12 months = $7,083/mo"
+- For roofing: 1 square = 100 sq ft. Divide sq ft by 100 to get squares before calculating price per square.
+- Use broad, conservative market ranges. Never invent precise figures.
+- assessment is "at_market" if rate falls ANYWHERE within the market range
+- assessment is "above_market" ONLY if rate exceeds the TOP of the range
+- assessment is "below_market" ONLY if rate is below the BOTTOM of the range
+- If no meaningful market comparison applies, use empty array
 
-Keep responses concise. Max 3 items per array. Focus on the most financially significant items only. If no financial terms exist set hasFinancials to false and use empty arrays.`;
+NEGOTIATION SCRIPT RULES:
+- If price is below market: do NOT suggest negotiating price down. Focus on locking the price in writing, payment schedule, and scope protection.
+- If price is at market: focus on payment terms, milestone payments, change order caps, delay penalties — not price.
+- If price is above market: suggest price reduction with specific comparable justification.
+- Always include at least one script about TERMS rather than price (payment schedule, change order limits, cancellation terms).
+- potentialSaving: only set when a realistic dollar range applies, otherwise null.
+- suggestedLanguage must be word-for-word text the person can say or paste into an email.
+
+COSTS RULES:
+- Only include costs that are actually present or implied in the document
+- severity "high" = could cost thousands or significantly affect the reader
+- negotiable = true only if this type of cost is commonly negotiated in this contract type
+- If no financial terms exist, set hasFinancials to false and use empty arrays
+
+Max 3 items per array. Focus on the most financially significant items only.`;
 
     return { systemPrompt, content: docContent };
   }
@@ -1637,14 +1703,28 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 
   async function analyzeWithClaude(promptObj, outputId, redId, amberId, greenId) {
     const el = document.getElementById(outputId);
+
+    // Build messages — same logic for both paths
+    const messages = [];
+    if (promptObj.content.type === 'document') {
+      messages.push({
+        role: 'user',
+        content: [promptObj.content, { type: 'text', text: 'Analyze this document and return the JSON response.' }]
+      });
+    } else {
+      messages.push({
+        role: 'user',
+        content: 'Analyze this document and return the JSON response:\n\n' + (promptObj.content.text || '')
+      });
+    }
+    // Assistant prefill — forces model to start with JSON directly
+    // sections and questions return arrays, everything else returns objects
+    const isArrayResponse = outputId === 'sections-content' || outputId === 'questions-content' || promptObj.returnType === 'array';
+    const prefill = isArrayResponse ? '[' : '{';
+    messages.push({ role: 'assistant', content: prefill });
+
     if (!el) {
       try {
-        const messages = [];
-        if (promptObj.content.type === 'document') {
-          messages.push({ role: 'user', content: [promptObj.content, { type: 'text', text: 'Analyze this document.' }] });
-        } else {
-          messages.push({ role: 'user', content: 'Analyze this document:\n\n' + (promptObj.content.text || '') });
-        }
         const response = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1652,7 +1732,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
         });
         if (!response.ok) throw new Error('API error: ' + response.status);
         const data = await response.json();
-        const raw = data.content.map(b => b.text || '').join('');
+        const raw = prefill + data.content.map(b => b.text || '').join('');
         const result = extractJSON(raw);
         if (!result) throw new Error('Could not parse JSON from response');
         return result;
@@ -1663,32 +1743,16 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
     }
 
     try {
-      const messages = [];
-      if (promptObj.content.type === 'document') {
-        messages.push({
-          role: 'user',
-          content: [promptObj.content, { type: 'text', text: 'Analyze this document.' }]
-        });
-      } else {
-        messages.push({
-          role: 'user',
-          content: 'Analyze this document:\n\n' + promptObj.content.text
-        });
-      }
-
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system: promptObj.systemPrompt,
-          messages
-        })
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages })
       });
 
       if (!response.ok) throw new Error('API error: ' + response.status);
 
       const data = await response.json();
-      const raw = data.content.map(b => b.text || '').join('');
+      const raw = prefill + data.content.map(b => b.text || '').join('');
       const parsed = extractJSON(raw);
 
       // Render based on which tab this is
@@ -1702,7 +1766,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
         renderQuestions(parsed, el);
       }
 
-      return parsed; // return for saveAnalysis
+      return parsed;
 
     } catch (err) {
       el.className = 'error-box';
