@@ -1,27 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Subscription Agreement Review — FinePrintFix</title>
-  <meta name="description" content="Before you agree to any subscription service, SaaS platform, or auto-renewing membership, upload it to FinePrintFix. We flag auto-renewals, cancellation traps, data sharing, and hidden fees in plain English." />
-  <meta name="keywords" content="subscription agreement review, SaaS contract review, auto-renewal clause, subscription cancellation terms, hidden fees subscription" />
-  <link rel="canonical" href="https://www.fineprintfix.com/subscription-agreements.html" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terms of Service & Subscription Review — FinePrintFix</title>
+  <meta name="description" content="Most people click 'I agree' without reading. FinePrintFix tells you what you're actually agreeing to — auto-renewals, data selling, arbitration waivers, cancellation traps — in plain English."/>
+  <meta name="keywords" content="terms of service review, subscription agreement analysis, auto-renewal trap, terms and conditions explained, privacy policy review, what am I agreeing to"/>
+  <link rel="canonical" href="https://www.fineprintfix.com/subscription-agreements.html"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL='https://pjtxghrbteathhxurqbk.supabase.co',SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqdHhnaHJidGVhdGhoeHVycWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzYzNjUsImV4cCI6MjA5NDExMjM2NX0.VFp_yTlPscnGJp1pQakclC1OZIyHybsfhacow_lG3FY';
-    window.addEventListener('DOMContentLoaded',()=>{const{createClient}=supabase;const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);sb.auth.getSession().then(({data:{session}})=>{if(session){document.getElementById('nav-login-li').style.display='none';const cta=document.getElementById('nav-cta');cta.href='dashboard.html';cta.innerHTML='<i class="ti ti-layout-dashboard"></i> Dashboard';}});});
+    window.addEventListener('DOMContentLoaded',()=>{
+      const{createClient}=supabase;const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+      sb.auth.getSession().then(({data:{session}})=>{
+        if(session){document.getElementById('nav-login-li').style.display='none';const cta=document.getElementById('nav-cta');cta.href='dashboard.html';cta.innerHTML='<i class="ti ti-layout-dashboard"></i> Dashboard';}
+      });
+    });
   </script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--bg:#fff;--bg2:#f7f5f2;--text:#1a1a18;--text2:#6b6b67;--border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);--accent:#D85A30;--accent-light:#FAECE7;--accent-mid:#F0997B;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#633806;--amber-bg:#FAEEDA;--red:#993C1D;--red-bg:#FAECE7;--radius:8px;--radius-lg:14px;}
+    :root{--bg:#fff;--bg2:#f7f5f2;--text:#1a1a18;--text2:#6b6b67;--border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.16);--accent:#D85A30;--accent-light:#FAECE7;--green:#3B6D11;--green-bg:#EAF3DE;--amber:#633806;--amber-bg:#FAEEDA;--red:#993C1D;--red-bg:#FAECE7;--radius:8px;--radius-lg:14px;}
     html{scroll-behavior:smooth;}body{font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);overflow-x:hidden;}
     nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 2rem;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(255,255,255,0.96);backdrop-filter:blur(10px);z-index:100;flex-wrap:wrap;gap:10px;}
     .logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;text-decoration:none;color:var(--text);}.logo span{color:var(--accent);}
-    .nav-links{display:flex;align-items:center;gap:18px;font-size:12px;list-style:none;flex-wrap:wrap;}.nav-links a{color:var(--text2);text-decoration:none;}
-    .btn-nav{background:var(--accent);color:#fff;border:none;padding:7px 16px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:5px;}
+    .nav-links{display:flex;align-items:center;gap:6px;font-size:13px;list-style:none;}
+    .nav-links > li > a{color:var(--text2);text-decoration:none;padding:7px 11px;border-radius:var(--radius);transition:color 0.12s,background 0.12s;display:flex;align-items:center;gap:4px;}
+    .nav-links > li > a:hover{color:var(--text);background:var(--bg2);}
+    .has-dropdown{position:relative;}.dropdown-toggle{cursor:pointer;user-select:none;}
+    .dropdown-toggle .ti-chevron-down{font-size:11px;transition:transform 0.15s;}
+    .has-dropdown:hover .ti-chevron-down{transform:rotate(180deg);}
+    .dropdown-menu{display:none;position:absolute;top:100%;left:-12px;background:transparent;padding-top:8px;min-width:244px;z-index:200;}
+    .has-dropdown:hover .dropdown-menu{display:block;}
+    .dropdown-menu-inner{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:8px;box-shadow:0 8px 30px rgba(0,0,0,0.1);}
+    .dropdown-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);padding:4px 10px 6px;}
+    .mobile-dropdown-links{display:none !important;padding-left:1rem;}
+    .dropdown-menu-inner a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);font-size:13px;color:var(--text2);text-decoration:none;}
+    .dropdown-menu-inner a:hover{background:var(--bg2);color:var(--text);}
+    .dropdown-menu-inner a i{font-size:15px;color:var(--accent);width:18px;flex-shrink:0;}
+    .btn-nav{background:var(--accent);color:#fff;border:none;padding:8px 18px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;background:none;border:none;}
+    .hamburger span{display:block;width:20px;height:1.5px;background:var(--text);border-radius:2px;}
     .eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);padding:5px 11px;border-radius:20px;margin-bottom:1.25rem;}
     .hero{display:grid;grid-template-columns:1fr 1fr;gap:3rem;padding:4rem 2rem 3rem;align-items:center;max-width:1000px;margin:0 auto;}
     h1{font-family:'Playfair Display',serif;font-size:44px;line-height:1.1;font-weight:700;letter-spacing:-0.5px;margin-bottom:1rem;}h1 em{font-style:italic;color:var(--accent);}
@@ -34,9 +54,9 @@
     .mock-header{display:flex;align-items:center;gap:8px;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:0.5px solid var(--border);}
     .mock-icon{width:28px;height:28px;background:var(--accent-light);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:14px;}
     .mock-flag{display:flex;align-items:flex-start;gap:7px;padding:7px 10px;border-radius:var(--radius);margin-bottom:6px;font-size:11px;line-height:1.45;}
-    .mock-flag.red{background:var(--red-bg);color:var(--red);}.mock-flag.amber{background:var(--amber-bg);color:var(--amber);}.mock-flag.green{background:var(--green-bg);color:var(--green);}
+    .mock-flag.red{background:var(--red-bg);color:var(--red);}.mock-flag.amber{background:var(--amber-bg);color:var(--amber);}
     .mock-badge{font-size:9px;font-weight:500;padding:2px 6px;border-radius:8px;white-space:nowrap;flex-shrink:0;}
-    .mock-badge.red{background:#F5C4B3;color:var(--red);}.mock-badge.amber{background:#FAC775;color:var(--amber);}.mock-badge.green{background:#C0DD97;color:var(--green);}
+    .mock-badge.red{background:#F5C4B3;color:var(--red);}.mock-badge.amber{background:#FAC775;color:var(--amber);}
     hr{border:none;border-top:0.5px solid var(--border);margin:0 2rem;}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);max-width:1000px;margin:0 auto;padding:2rem;}
     .stat{padding:1rem 1.5rem;border-right:0.5px solid var(--border);}.stat:last-child{border-right:none;}
@@ -48,200 +68,247 @@
     h2{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;margin-bottom:1.5rem;line-height:1.2;}
     .flags-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;}
     .flag-card{display:flex;align-items:flex-start;gap:12px;padding:1rem 1.25rem;border-radius:var(--radius-lg);background:var(--bg);border:0.5px solid var(--border);}
-    .flag-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
-    .flag-icon.red{background:var(--red-bg);color:var(--accent);}.flag-icon.amber{background:var(--amber-bg);color:#BA7517;}.flag-icon.green{background:var(--green-bg);color:var(--green);}
-    .flag-name{font-size:13px;font-weight:500;margin-bottom:3px;}.flag-desc{font-size:11px;color:var(--text2);line-height:1.5;}
-    .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
-    .step{padding:1.25rem;border:0.5px solid var(--border);border-radius:var(--radius-lg);}
-    .step-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--accent-mid);line-height:1;margin-bottom:0.75rem;}
-    .step-title{font-size:14px;font-weight:500;margin-bottom:0.5rem;}.step-desc{font-size:12px;color:var(--text2);line-height:1.6;}
-    .questions-list{display:flex;flex-direction:column;gap:8px;}
-    .question-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:0.5px solid var(--border);border-radius:var(--radius-lg);font-size:13px;line-height:1.55;background:var(--bg);}
-    .q-num{width:22px;height:22px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .flag-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;}
+    .flag-icon.red{background:var(--red-bg);color:var(--red);}.flag-icon.amber{background:var(--amber-bg);color:var(--amber);}
+    .flag-title{font-size:13px;font-weight:500;margin-bottom:3px;}.flag-desc{font-size:12px;color:var(--text2);line-height:1.55;}
     .pricing-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
-    .price-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}.price-card.featured{border:2px solid var(--accent);}
-    .price-tier{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--text2);margin-bottom:8px;}
-    .price-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);margin-bottom:4px;}
-    .price-feature{display:flex;align-items:center;gap:7px;font-size:12px;margin-bottom:6px;}
-    .cta-section{text-align:center;padding:4rem 2rem;max-width:600px;margin:0 auto;}
-    .cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:1.5rem;}
-    footer{border-top:0.5px solid var(--border);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text2);flex-wrap:wrap;gap:8px;}footer a{color:var(--text2);text-decoration:none;}
+    .price-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+    .price-tier{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;}
+    .price-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;margin-bottom:2px;}
+    .price-sub{font-size:12px;color:var(--text2);margin-bottom:1rem;}
+    .price-feature{display:flex;align-items:flex-start;gap:7px;font-size:12px;margin-bottom:6px;line-height:1.4;}
+    .truth-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;}
+    .truth-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;background:var(--bg);}
+    .truth-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+    .truth-label.before{color:var(--red);}.truth-label.after{color:var(--green);}
+    .exit-item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:0.5px solid var(--border);border-radius:var(--radius-lg);background:var(--bg);margin-bottom:8px;}
+    .exit-num{width:24px;height:24px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .exit-title{font-size:13px;font-weight:500;margin-bottom:2px;}.exit-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+    footer{border-top:0.5px solid var(--border);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text2);flex-wrap:wrap;gap:8px;}
+    footer a{color:var(--text2);text-decoration:none;}
+
     @media(max-width:720px){
-      .hamburger{display:flex;}
+      .hamburger{display:flex !important;}
+      .hero{grid-template-columns:1fr;gap:1.5rem;padding:2rem 1.25rem;}
+      h1{font-size:30px;}
+      .hero-mockup{display:none !important;}
+      .stats{grid-template-columns:repeat(2,1fr);}
+      .stat:nth-child(2){border-right:none;}
+      .stat:nth-child(3){border-top:0.5px solid var(--border);}
+      .flags-grid{grid-template-columns:1fr;}
+      .pricing-row{grid-template-columns:1fr;}
+      .truth-grid{grid-template-columns:1fr;}
+      .section,.alt-inner{padding:2rem 1.25rem;}
+      .cta-row{flex-direction:column;gap:8px;}
+      .btn-lg,.btn-ghost{width:100%;justify-content:center;}
+      nav{padding:1rem 1.25rem;}
       .nav-links{display:none;width:100%;flex-direction:column;gap:0;border-top:0.5px solid var(--border);padding-top:10px;}
       .nav-links.open{display:flex;}
       .nav-links > li > a{padding:10px 4px;border-radius:0;background:none !important;border-bottom:0.5px solid var(--border);width:100%;}
+      .nav-links > li:last-child > a{border-bottom:none;}
       .dropdown-menu{display:none !important;}
       .mobile-dropdown-links{display:none !important;}
       .mobile-dropdown-links.open{display:flex !important;flex-direction:column;}
-      .mobile-dropdown-links a{padding:8px 4px;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--border);}.hero{grid-template-columns:1fr;gap:2rem;padding:2rem 1.25rem;}h1{font-size:32px;}.how-grid,.flags-grid,.pricing-row{grid-template-columns:1fr;}.stats{grid-template-columns:repeat(2,1fr);}.stat:nth-child(2){border-right:none;}.stat:nth-child(3){border-top:0.5px solid var(--border);}.section,.alt-inner{padding:2.5rem 1.25rem;}footer{flex-direction:column;}}
-
-    .has-dropdown{position:relative;}.dropdown-toggle{cursor:pointer;user-select:none;}
-    .dropdown-toggle .ti-chevron-down{font-size:11px;transition:transform 0.15s;}
-    .has-dropdown:hover .ti-chevron-down{transform:rotate(180deg);}
-    .dropdown-menu{display:none;position:absolute;top:100%;left:-12px;background:transparent;padding-top:8px;min-width:244px;z-index:200;}
-    .has-dropdown:hover .dropdown-menu{display:block;}
-    .dropdown-menu-inner{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:8px;box-shadow:0 8px 30px rgba(0,0,0,0.1);}
-    .dropdown-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);padding:4px 10px 6px;}
-    .dropdown-menu-inner a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);font-size:13px;color:var(--text2);text-decoration:none;}
-    .dropdown-menu-inner a:hover{background:var(--bg2);color:var(--text);}
-    .dropdown-menu-inner a i{font-size:15px;color:var(--accent);width:18px;flex-shrink:0;}
-    .mobile-dropdown-links{display:none !important;padding-left:1rem;}
-    .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:4px;background:none;border:none;}
-    .hamburger span{display:block;width:20px;height:1.5px;background:var(--text);border-radius:2px;}
+      .mobile-dropdown-links a{padding:8px 4px;font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--border);}
+      .mobile-dropdown-links a i{font-size:13px;color:var(--accent);}
+      div[style*="grid-template-columns:repeat(3,1fr)"]{grid-template-columns:1fr 1fr !important;}
+    }
   </style>
 </head>
 <body>
+
 <nav>
   <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
-  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu"><span></span><span></span><span></span></button>
   <ul class="nav-links" id="main-nav">
     <li class="has-dropdown">
-      <a class="dropdown-toggle" href="#" onclick="toggleMobileDocs(event)">
-        Contract types <i class="ti ti-chevron-down"></i>
-      </a>
-      <div class="dropdown-menu"><div class="dropdown-menu-inner"><div class="dropdown-label">By document type</div>
+      <a class="dropdown-toggle" href="#" onclick="toggleMobileDocs(event)">Contract types <i class="ti ti-chevron-down"></i></a>
+      <div class="dropdown-menu"><div class="dropdown-menu-inner">
+        <div class="dropdown-label">By document type</div>
         <a href="contractor-agreements.html"><i class="ti ti-tool"></i> Contractor agreements</a>
         <a href="employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
         <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
         <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
         <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
-        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
+        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Terms &amp; subscriptions</a>
         <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
-</div>
-      </div>
+      </div></div>
       <div class="mobile-dropdown-links" id="mobile-docs">
         <a href="contractor-agreements.html"><i class="ti ti-tool"></i> Contractor agreements</a>
         <a href="employment-contracts.html"><i class="ti ti-briefcase"></i> Employment contracts</a>
         <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
         <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
         <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
-        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
+        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Terms &amp; subscriptions</a>
         <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
-</div>
       </div>
     </li>
     <li><a href="blog/index.html">Guides</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li id="nav-login-li"><a href="auth.html" id="nav-login">Log in</a></li>
-    <li id="nav-cta-li"><a href="app.html" class="btn-nav" id="nav-cta"><i class="ti ti-upload"></i> Try for free</a></li>
+    <li><a href="app.html" class="btn-nav" id="nav-cta"><i class="ti ti-upload"></i> Try for free</a></li>
   </ul>
 </nav>
-<script>
-  function toggleMobileNav() { document.getElementById('main-nav').classList.toggle('open'); }
-  function toggleMobileDocs(e) { if (window.innerWidth <= 720) { e.preventDefault(); document.getElementById('mobile-docs').classList.toggle('open'); } }
-</script>
 
-<section class="hero">
+<!-- HERO -->
+<div class="hero">
   <div>
-    <div class="eyebrow"><i class="ti ti-refresh"></i> Subscription agreement review</div>
-    <h1>Before you agree to that <em>subscription</em></h1>
-    <p class="hero-sub">SaaS platforms, annual memberships, software licenses — subscription agreements are designed to lock you in and make it hard to leave. Upload yours and we'll flag every trap in plain English.</p>
+    <div class="eyebrow"><i class="ti ti-click"></i> Terms &amp; subscription review</div>
+    <h1>You clicked "I agree." <em>But did you?</em></h1>
+    <p class="hero-sub">Most terms of service are non-negotiable — but that doesn't mean you shouldn't know what you agreed to. FinePrintFix tells you exactly what you signed away: your data, your right to sue, your ability to cancel, and what they can charge you next year.</p>
     <div class="cta-row">
-      <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload your agreement free</a>
-      <a href="#flags" class="btn-ghost"><i class="ti ti-alert-triangle"></i> See what we flag</a>
+      <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload your terms free</a>
+      <a href="#what-we-flag" class="btn-ghost"><i class="ti ti-eye"></i> See what we find</a>
     </div>
-    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:1.25rem;">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:1rem;">
       <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><i class="ti ti-shield-check" style="color:var(--green);font-size:13px"></i> Documents never stored</div>
       <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><i class="ti ti-eye-off" style="color:var(--green);font-size:13px"></i> Data never sold</div>
       <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);"><i class="ti ti-cpu-off" style="color:var(--green);font-size:13px"></i> Not used to train AI</div>
     </div>
-    <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;"><i class="ti ti-shield-check" style="color:var(--green)"></i> First analysis free — no account, no credit card</div>
+    <div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;"><i class="ti ti-lock-open" style="font-size:13px"></i> First analysis free — no account, no credit card</div>
   </div>
   <div class="hero-mockup">
-    <div class="scan-badge"><i class="ti ti-scan" style="font-size:11px"></i> Analyzing...</div>
+    <div class="scan-badge"><i class="ti ti-scan"></i> Analyzing...</div>
     <div class="mock-header">
       <div class="mock-icon"><i class="ti ti-file-text"></i></div>
       <div>
-        <div style="font-size:12px;font-weight:500">CloudStack_Subscription_Agreement.pdf</div>
-        <div style="font-size:11px;color:var(--text2)">$299/mo · CloudStack Pro · Annual billing</div>
+        <div style="font-size:12px;font-weight:500;">CloudStream_ToS.pdf</div>
+        <div style="font-size:10px;color:var(--text2);">Terms of Service · 47 pages</div>
       </div>
     </div>
-    <div style="display:flex;gap:6px;margin-bottom:8px;"><span style="background:var(--red-bg);color:var(--red);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;display:inline-flex;align-items:center;gap:3px;"><i class="ti ti-alert-triangle" style="font-size:9px"></i> High risk</span></div>
-    <div class="mock-flag red"><span class="mock-badge red">Red flag</span> Auto-renews annually — 60-day cancellation window. Miss it and you owe another full year.</div>
-    <div class="mock-flag red"><span class="mock-badge red">Red flag</span> Early termination fee: 50% of remaining annual contract value if you cancel before year end.</div>
-    <div class="mock-flag red"><span class="mock-badge red">Red flag</span> Data shared with third-party partners for marketing and analytics — opt-out required.</div>
-    <div class="mock-flag amber"><span class="mock-badge amber">Ask about</span> No refunds on any payments — even if you cancel the day after your annual renewal.</div>
-    <div class="mock-flag green"><span class="mock-badge green">Looks fine</span> 99.5% uptime SLA with service credits for downtime is standard and enforceable.</div>
+    <div class="mock-flag red"><span class="mock-badge red">Watch out</span> They can sell your viewing history and behavioral data to advertising partners at any time without additional notice.</div>
+    <div class="mock-flag red"><span class="mock-badge red">Watch out</span> You waive your right to sue in court and join class actions. All disputes go to private arbitration only.</div>
+    <div class="mock-flag red"><span class="mock-badge red">Watch out</span> Price can increase at any time with 30 days notice — you can cancel, but won't get a refund for the current period.</div>
+    <div class="mock-flag amber"><span class="mock-badge amber">Know this</span> Auto-renews annually. Must cancel at least 7 days before renewal or you're charged the full next year.</div>
+    <div class="mock-flag amber"><span class="mock-badge amber">Know this</span> Content library not guaranteed — what you pay for today may not be there tomorrow.</div>
   </div>
-</section>
+</div>
 
-<hr />
+<!-- STATS -->
+<hr/>
 <div class="stats">
-  <div class="stat"><div class="stat-num">$273</div><div class="stat-label">average monthly spend on subscriptions per US household — most are forgotten</div></div>
-  <div class="stat"><div class="stat-num">42%</div><div class="stat-label">of people have been charged for a subscription they forgot to cancel</div></div>
-  <div class="stat"><div class="stat-num">&lt;90s</div><div class="stat-label">to get a full plain-English analysis of your subscription terms</div></div>
-  <div class="stat"><div class="stat-num">$3.99</div><div class="stat-label">before committing to an annual contract you can't easily exit</div></div>
+  <div class="stat"><div class="stat-num">91%</div><div class="stat-label">of people never read terms of service before agreeing</div></div>
+  <div class="stat"><div class="stat-num">250hrs</div><div class="stat-label">estimated time to read every ToS you've agreed to in your life</div></div>
+  <div class="stat"><div class="stat-num">$329</div><div class="stat-label">average annual spend on subscriptions people forgot they had</div></div>
+  <div class="stat"><div class="stat-num">&lt;90s</div><div class="stat-label">to get a full plain-English breakdown of any terms document</div></div>
 </div>
-<hr />
+<hr/>
 
-<div class="alt-bg" id="flags">
+<!-- HONEST TRUTH -->
+<div class="alt-bg">
   <div class="alt-inner">
-    <div class="section-label">What we flag</div>
-    <h2 style="margin-bottom:1.5rem">Subscription traps that cost businesses and consumers thousands</h2>
-    <div class="flags-grid">
-      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-refresh"></i></div><div><div class="flag-name">Auto-renewal terms</div><div class="flag-desc">How far in advance you must cancel, what the renewal price is, and whether they're required to notify you before it happens.</div></div></div>
-      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-door-exit"></i></div><div><div class="flag-name">Early termination fees</div><div class="flag-desc">What it costs to leave before your contract ends — some charge 50-100% of remaining contract value.</div></div></div>
-      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-eye"></i></div><div><div class="flag-name">Data sharing clauses</div><div class="flag-desc">What they can collect, share, or sell about your usage — and whether you can opt out.</div></div></div>
-      <div class="flag-card"><div class="flag-icon red"><i class="ti ti-cash-off"></i></div><div><div class="flag-name">No-refund policies</div><div class="flag-desc">Whether any payments are refundable and under what circumstances — including after accidental renewal.</div></div></div>
-      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-trending-up"></i></div><div><div class="flag-name">Price increase rights</div><div class="flag-desc">Whether the vendor can raise prices at renewal and how much notice they must give you.</div></div></div>
-      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-adjustments"></i></div><div><div class="flag-name">Feature modification rights</div><div class="flag-desc">Whether they can remove features or change the service during your contract term without your consent.</div></div></div>
-      <div class="flag-card"><div class="flag-icon amber"><i class="ti ti-gavel"></i></div><div><div class="flag-name">Arbitration clauses</div><div class="flag-desc">Whether disputes must go to arbitration rather than courts — and who pays the filing fees.</div></div></div>
-      <div class="flag-card"><div class="flag-icon green"><i class="ti ti-checklist"></i></div><div><div class="flag-name">What's standard and fair</div><div class="flag-desc">We tell you which clauses are normal so you know exactly what's worth pushing back on.</div></div></div>
+    <div class="section-label">The honest truth about ToS</div>
+    <h2>You can't negotiate it. <em>But you can understand it.</em></h2>
+    <p style="font-size:14px;color:var(--text2);line-height:1.7;max-width:620px;margin-bottom:2rem;">Most terms of service are take-it-or-leave-it. You're not going to negotiate with Netflix or your gym. But knowing what you agreed to — before or after clicking accept — still matters. It affects your data rights, your ability to cancel, and what happens when something goes wrong.</p>
+    <div class="truth-grid">
+      <div class="truth-card">
+        <div class="truth-label before">Without FinePrintFix</div>
+        <p style="font-size:12px;color:var(--text2);line-height:1.65;font-style:italic;">"Terms of Service — I agree."<br/><br/>You find out 14 months later that they've been auto-renewing at a higher price, sold your data to advertising partners, and that you can't sue them — because you agreed to binding arbitration on page 34.</p>
+      </div>
+      <div class="truth-card" style="border-color:var(--green);background:var(--green-bg);">
+        <div class="truth-label after">With FinePrintFix</div>
+        <p style="font-size:12px;color:#2A5009;line-height:1.65;">"This service auto-renews annually on March 12. Cancel by March 5 to avoid the next charge. They share behavioral data with 14 ad partners. You've waived your right to sue — disputes go to private arbitration. Content library is not guaranteed."<br/><br/><strong>Now you decide with full information.</strong></p>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="alt-bg">
-  <div class="alt-inner">
-    <div class="section-label">Negotiation scripts</div>
-    <h2 style="margin-bottom:0.5rem">Questions to ask before you commit</h2>
-    <p style="font-size:14px;color:var(--text2);line-height:1.65;margin-bottom:1.5rem;">More is negotiable than most people realize — especially for annual or multi-year commitments.</p>
-    <div class="questions-list">
-      <div class="question-item"><div class="q-num">1</div><div>"Can we change the auto-renewal cancellation window from 60 days to 30 days, and require a written reminder 45 days before renewal?"</div></div>
-      <div class="question-item"><div class="q-num">2</div><div>"Can we cap the early termination fee at unused months only, rather than 50% of the remaining contract value?"</div></div>
-      <div class="question-item"><div class="q-num">3</div><div>"Can you confirm that our usage data will not be shared with third-party advertising or analytics partners?"</div></div>
-      <div class="question-item"><div class="q-num">4</div><div>"Can we add a 30-day refund window for accidental renewals, provided we haven't used the service after renewal?"</div></div>
-      <div class="question-item"><div class="q-num">5</div><div>"Can we add a price lock clause — no increases during the initial contract term?"</div></div>
+<!-- WHAT WE FLAG -->
+<div class="section" id="what-we-flag">
+  <div class="section-label">What we flag</div>
+  <h2>The things buried on page 34</h2>
+  <p style="font-size:14px;color:var(--text2);line-height:1.7;max-width:560px;margin-bottom:2rem;">These aren't edge cases. They appear in the terms of almost every major subscription service, app, and platform you use.</p>
+  <div class="flags-grid">
+    <div class="flag-card">
+      <div class="flag-icon red"><i class="ti ti-refresh"></i></div>
+      <div><div class="flag-title">Auto-renewal traps</div><div class="flag-desc">When it renews, how much notice you need to cancel, and whether you get a refund if you miss the window. Many services make cancellation intentionally difficult.</div></div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon red"><i class="ti ti-gavel"></i></div>
+      <div><div class="flag-title">Arbitration clauses</div><div class="flag-desc">Most ToS waive your right to sue in court and participate in class action lawsuits. This is a significant legal rights waiver most people don't realize they've made.</div></div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon red"><i class="ti ti-database-export"></i></div>
+      <div><div class="flag-title">Data selling &amp; sharing</div><div class="flag-desc">Whether your personal data, browsing behavior, or usage patterns can be sold or shared with third parties — including advertising networks and data brokers.</div></div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon red"><i class="ti ti-trending-up"></i></div>
+      <div><div class="flag-title">Unilateral price increases</div><div class="flag-desc">Whether they can raise prices without your active consent, and how much notice they're required to give before your next billing date.</div></div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon amber"><i class="ti ti-edit"></i></div>
+      <div><div class="flag-title">Terms can change anytime</div><div class="flag-desc">Most services can change their terms at any time, with continued use constituting acceptance. You may be agreeing to future terms you haven't seen yet.</div></div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon amber"><i class="ti ti-logout"></i></div>
+      <div><div class="flag-title">Account termination rights</div><div class="flag-desc">Under what circumstances they can terminate your account, whether you get a refund, and what happens to your data and content if they do.</div></div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon amber"><i class="ti ti-license"></i></div>
+      <div><div class="flag-title">Content &amp; IP rights</div><div class="flag-desc">For platforms where you upload content, what license you're granting the company to use, distribute, or modify what you create.</div></div>
+    </div>
+    <div class="flag-card">
+      <div class="flag-icon amber"><i class="ti ti-map-pin"></i></div>
+      <div><div class="flag-title">Governing law</div><div class="flag-desc">Which state or country's laws apply and where disputes must be resolved. This affects what consumer protections you actually have.</div></div>
     </div>
   </div>
 </div>
 
-<section class="section">
-  <div class="section-label">How it works</div>
-  <h2>Three steps before you commit to a subscription</h2>
-  <div class="how-grid">
-    <div class="step"><div class="step-num">01</div><div class="step-title">Upload your agreement</div><div class="step-desc">Drop in the PDF or paste the terms. Works with SaaS contracts, annual memberships, software licenses, and any auto-renewing service agreement.</div></div>
-    <div class="step"><div class="step-num">02</div><div class="step-title">Get your analysis</div><div class="step-desc">In under 90 seconds — auto-renewal terms, cancellation costs, data rights, and every financial risk explained in plain English.</div></div>
-    <div class="step"><div class="step-num">03</div><div class="step-title">Negotiate better terms</div><div class="step-desc">Annual contracts especially are negotiable. Know what to ask for before you sign — shorter cancellation windows, price locks, and refund policies.</div></div>
-  </div>
-</section>
-
+<!-- EXIT AWARENESS -->
 <div class="alt-bg">
+  <div class="alt-inner">
+    <div class="section-label">Exit awareness</div>
+    <h2>Know how to leave before you need to</h2>
+    <p style="font-size:14px;color:var(--text2);line-height:1.7;max-width:580px;margin-bottom:2rem;">FinePrintFix extracts the cancellation and exit terms so you always know the answers to these questions before you're scrambling to find them.</p>
+    <div class="exit-item"><div class="exit-num">1</div><div><div class="exit-title">When does it renew?</div><div class="exit-desc">Exact renewal date, whether monthly or annual, and whether the price can change at renewal.</div></div></div>
+    <div class="exit-item"><div class="exit-num">2</div><div><div class="exit-title">How do you cancel?</div><div class="exit-desc">The specific steps required — whether it's a button in settings, a phone call, or something designed to be hard to find.</div></div></div>
+    <div class="exit-item"><div class="exit-num">3</div><div><div class="exit-title">What's the cancellation deadline?</div><div class="exit-desc">How many days before renewal you need to cancel to avoid being charged for the next period.</div></div></div>
+    <div class="exit-item"><div class="exit-num">4</div><div><div class="exit-title">Will you get a refund?</div><div class="exit-desc">Whether partial refunds exist, under what conditions, and what the actual refund process looks like.</div></div></div>
+    <div class="exit-item"><div class="exit-num">5</div><div><div class="exit-title">What happens to your data?</div><div class="exit-desc">Whether your data is deleted after cancellation, how long they retain it, and how to request deletion under CCPA or GDPR.</div></div></div>
+  </div>
+</div>
+
+<!-- DOCUMENT TYPES -->
+<div class="section">
+  <div class="section-label">What we analyze</div>
+  <h2>More than just subscriptions</h2>
+  <p style="font-size:14px;color:var(--text2);line-height:1.7;max-width:560px;margin-bottom:2rem;">Any document where the other party wrote the terms and you're being asked to agree. We read all of them.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+    <div style="padding:14px 16px;border:0.5px solid var(--border);border-radius:var(--radius-lg);font-size:13px;"><div style="font-size:18px;margin-bottom:6px;">📱</div><div style="font-weight:500;margin-bottom:3px;">App &amp; software ToS</div><div style="font-size:12px;color:var(--text2);">Any app or platform you use</div></div>
+    <div style="padding:14px 16px;border:0.5px solid var(--border);border-radius:var(--radius-lg);font-size:13px;"><div style="font-size:18px;margin-bottom:6px;">🎬</div><div style="font-weight:500;margin-bottom:3px;">Streaming services</div><div style="font-size:12px;color:var(--text2);">Video, music, and gaming platforms</div></div>
+    <div style="padding:14px 16px;border:0.5px solid var(--border);border-radius:var(--radius-lg);font-size:13px;"><div style="font-size:18px;margin-bottom:6px;">📦</div><div style="font-weight:500;margin-bottom:3px;">Subscription boxes</div><div style="font-size:12px;color:var(--text2);">Physical product auto-ship subscriptions</div></div>
+    <div style="padding:14px 16px;border:0.5px solid var(--border);border-radius:var(--radius-lg);font-size:13px;"><div style="font-size:18px;margin-bottom:6px;">💼</div><div style="font-weight:500;margin-bottom:3px;">SaaS &amp; business tools</div><div style="font-size:12px;color:var(--text2);">Business software and productivity tools</div></div>
+    <div style="padding:14px 16px;border:0.5px solid var(--border);border-radius:var(--radius-lg);font-size:13px;"><div style="font-size:18px;margin-bottom:6px;">🏋️</div><div style="font-weight:500;margin-bottom:3px;">Gym &amp; wellness memberships</div><div style="font-size:12px;color:var(--text2);">Fitness clubs and wellness apps</div></div>
+    <div style="padding:14px 16px;border:0.5px solid var(--border);border-radius:var(--radius-lg);font-size:13px;"><div style="font-size:18px;margin-bottom:6px;">🔒</div><div style="font-weight:500;margin-bottom:3px;">Privacy policies</div><div style="font-size:12px;color:var(--text2);">What companies actually do with your data</div></div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="alt-bg" id="pricing">
   <div class="alt-inner">
     <div class="section-label">Pricing</div>
-    <h2 style="margin-bottom:0.5rem">Simple, honest pricing</h2>
-    <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65">No subscription. Pay only when you need an analysis. (Yes, we're aware of the irony.)</p>
+    <h2>Simple, honest pricing</h2>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:2rem;line-height:1.65;">No subscription. Pay only when you need an analysis — and your first one is always free.</p>
     <div class="pricing-row">
       <div class="price-card">
-        <div class="price-tier">Free</div><div class="price-num">$0</div><div class="price-sub">No credit card needed</div>
+        <div class="price-tier">Free</div>
+        <div class="price-num">$0</div>
+        <div class="price-sub">No credit card needed</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> 1 free analysis</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> No account required</div>
         <div style="margin-top:1rem;"><a href="app.html" style="display:block;text-align:center;background:var(--bg2);color:var(--text);border:0.5px solid var(--border2);padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Try free →</a></div>
       </div>
-      <div class="price-card featured">
-        <div class="price-tier" style="color:var(--accent)">Pay per document</div><div class="price-num" style="color:var(--accent)">$3.99</div><div class="price-sub">One-off, no subscription</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
+      <div class="price-card" style="border:2px solid var(--accent);position:relative;">
+        <div style="position:absolute;top:-10px;left:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Most popular</div>
+        <div class="price-tier" style="color:var(--accent)">Pay per document</div>
+        <div class="price-num" style="color:var(--accent)">$3.99</div>
+        <div class="price-sub">One-off, no subscription</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Full analysis, all 5 tabs</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Saved to your dashboard</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Negotiation scripts</div>
-        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Full financial exposure breakdown</div>
+        <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Exit &amp; cancellation guide</div>
         <div style="margin-top:1rem;"><a href="app.html" style="display:block;text-align:center;background:var(--accent);color:#fff;padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Get started →</a></div>
       </div>
-  
-      <!-- COMPARISON PACK -->
       <div class="price-card" style="border:2px solid #4F6AF5;position:relative;">
         <div style="position:absolute;top:-10px;left:12px;background:#4F6AF5;color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Best value</div>
         <div class="price-tier" style="color:#4F6AF5">Comparison pack</div>
@@ -256,22 +323,30 @@
   </div>
 </div>
 
-<section class="cta-section">
-  <div class="eyebrow" style="margin-bottom:1rem"><i class="ti ti-shield-check"></i> Free to start</div>
-  <h2 style="margin-bottom:0.75rem">Know what you're agreeing to before you commit</h2>
-  <p style="font-size:14px;color:var(--text2);line-height:1.7">Upload your subscription agreement free. Full analysis in under 90 seconds.</p>
-  <div class="cta-btns">
-    <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload your agreement free</a>
+<!-- BOTTOM CTA -->
+<div class="section" style="text-align:center;max-width:600px;">
+  <div class="eyebrow"><i class="ti ti-click"></i> Free to start</div>
+  <h2>Know what you agreed to</h2>
+  <p style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:2rem;">Upload any terms of service, subscription agreement, or privacy policy. We'll tell you what you're actually agreeing to in plain English — in under 90 seconds.</p>
+  <div class="cta-row" style="justify-content:center;">
+    <a href="app.html" class="btn-lg"><i class="ti ti-upload"></i> Upload your terms free</a>
   </div>
-</section>
+  <div style="font-size:12px;color:var(--text2);margin-top:1rem;">AI-powered analysis for informational purposes only — not legal advice.</div>
+</div>
 
 <footer>
   <a href="index.html" class="logo" style="font-size:14px">Fine<span>Print</span>Fix</a>
-  <span>AI-powered analysis for informational purposes only — not legal advice.</span>
+  <span>AI-powered analysis — not legal advice.</span>
   <span><a href="legal.html">Terms &amp; Disclaimer</a> · <a href="legal.html#privacy">Privacy</a></span>
 </footer>
+
+<script>
+  function toggleMobileNav(){document.getElementById('main-nav').classList.toggle('open');}
+  function toggleMobileDocs(e){if(window.innerWidth<=720){e.preventDefault();document.getElementById('mobile-docs').classList.toggle('open');}}
+</script>
 </body>
 </html>
+
 
 
 
