@@ -2220,11 +2220,37 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     const amberCount = document.getElementById('count-amber')?.textContent || '0';
     const greenCount = document.getElementById('count-green')?.textContent || '0';
 
+    // Expand all collapsed accordion sections before capturing HTML
+    const collapsedBodies = [];
+    document.querySelectorAll('[id^="sbody-"]').forEach(el => {
+      if (el.style.display === 'none') {
+        el.style.display = 'block';
+        collapsedBodies.push(el);
+      }
+    });
+
+    // Make all panels visible temporarily
+    const panels = ['panel-summary','panel-flags','panel-sections','panel-questions','panel-money'];
+    const savedDisplay = {};
+    panels.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { savedDisplay[id] = el.style.display; el.style.display = 'block'; }
+    });
+
     const summaryHTML   = document.getElementById('summary-content')?.innerHTML || '<p>Not available</p>';
     const flagsHTML     = document.getElementById('flags-content')?.innerHTML || '<p>Not available</p>';
     const sectionsHTML  = document.getElementById('sections-content')?.innerHTML || '<p>Not available</p>';
     const questionsHTML = document.getElementById('questions-content')?.innerHTML || '<p>Not available</p>';
     const moneyHTML     = document.getElementById('money-content')?.innerHTML || '<p>Not available</p>';
+
+    // Restore collapsed sections
+    collapsedBodies.forEach(el => { el.style.display = 'none'; });
+
+    // Restore panel visibility
+    panels.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = savedDisplay[id] || '';
+    });
 
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`<!DOCTYPE html>
@@ -2404,6 +2430,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 </div>
 </body>
 </html>
+
 
 
 
