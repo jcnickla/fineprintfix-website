@@ -703,7 +703,7 @@
       <a href="index.html" class="logo">Fine<span>Print</span>Fix</a>
       <div class="top-actions">
         <a href="dashboard.html" class="icon-btn"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
-        <button class="icon-btn" onclick="window.print()"><i class="ti ti-download"></i> Save</button>
+        <button class="icon-btn" onclick="exportFullPDF()"><i class="ti ti-download"></i> Save PDF</button>
         <button class="icon-btn" onclick="navigator.share && navigator.share({title:'FinePrintFix Analysis', url: window.location.href})"><i class="ti ti-share"></i> Share</button>
       </div>
     </div>
@@ -1407,19 +1407,26 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
   async function runAnalysis() {
     const docContent = buildDocContent();
 
-    // Run all five analyses in parallel
-    const [flagsData, sectionsData, questionsData, summaryData, moneyData] = await Promise.all([
-      analyzeWithClaude(flagsPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green'),
-      analyzeWithClaude(sectionsPrompt(docContent), 'sections-content'),
-      analyzeWithClaude(questionsPrompt(docContent), 'questions-content'),
-      fetchSummary(docContent),
-      fetchMoney(docContent),
-    ]);
+    // Run analyses sequentially to avoid rate limiting
+    const delay = ms => new Promise(r => setTimeout(r, ms));
+
+    const flagsData     = await analyzeWithClaude(flagsPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green');
+    await delay(400);
+    const sectionsData  = await analyzeWithClaude(sectionsPrompt(docContent), 'sections-content');
+    await delay(400);
+    const questionsData = await analyzeWithClaude(questionsPrompt(docContent), 'questions-content');
+    await delay(400);
+    const summaryData   = await fetchSummary(docContent);
+    await delay(400);
+    const moneyData     = await fetchMoney(docContent);
 
     // Render summary
     if (summaryData) {
       const el = document.getElementById('summary-content');
       if (el) renderSummary(summaryData, el);
+    } else {
+      const el = document.getElementById('summary-content');
+      if (el) el.innerHTML = '<p style="color:var(--text2);font-size:13px;">Summary could not be generated. Try re-analyzing the document.</p>';
     }
 
     // Render money
@@ -1429,8 +1436,8 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     }
 
     // Save everything to Supabase
-    if (flagsData && sectionsData && questionsData) {
-      saveAnalysis(flagsData, sectionsData, questionsData, summaryData || {}, moneyData || {});
+    if (flagsData || sectionsData || questionsData) {
+      saveAnalysis(flagsData || {}, sectionsData || [], questionsData || [], summaryData || {}, moneyData || {});
     }
   }
 
@@ -1691,7 +1698,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
     } catch (err) {
       el.className = 'error-box';
       el.style.display = 'block';
-      el.textContent = 'Could not analyze this document. Please check your API key is configured, or try again.';
+      el.innerHTML = '<div style="background:#FAECE7;border:0.5px solid #F5C4B3;border-radius:8px;padding:12px 14px;font-size:13px;color:#993C1D;">This section could not be loaded. <a href="javascript:location.reload()" style="color:#D85A30;font-weight:500;">Try again</a> or use a different document.</div>';
       console.error(err);
     }
   }
@@ -2132,6 +2139,81 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
     showScreen('screen-upload');
     switchUploadTab('pdf');
   }
+
+  // ─── EXPORT FULL PDF ─────────────────────────────────────────
+  function exportFullPDF() {
+    const docName = document.getElementById('result-doc-name')?.textContent || 'Analysis';
+    const redCount = document.getElementById('count-red')?.textContent || '0';
+    const amberCount = document.getElementById('count-amber')?.textContent || '0';
+    const greenCount = document.getElementById('count-green')?.textContent || '0';
+
+    const summaryHTML   = document.getElementById('summary-content')?.innerHTML || '<p>Not available</p>';
+    const flagsHTML     = document.getElementById('flags-content')?.innerHTML || '<p>Not available</p>';
+    const sectionsHTML  = document.getElementById('sections-content')?.innerHTML || '<p>Not available</p>';
+    const questionsHTML = document.getElementById('questions-content')?.innerHTML || '<p>Not available</p>';
+    const moneyHTML     = document.getElementById('money-content')?.innerHTML || '<p>Not available</p>';
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>FinePrintFix — ${docName}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;padding:2rem;max-width:750px;margin:0 auto;font-size:13px;line-height:1.6;}
+    .header{border-bottom:2px solid #D85A30;padding-bottom:1rem;margin-bottom:1.5rem;}
+    .brand{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#D85A30;margin-bottom:4px;}
+    .doc-title{font-size:20px;font-weight:600;margin-bottom:4px;}
+    .doc-meta{font-size:11px;color:#6b6b67;}
+    .score-row{display:flex;gap:1rem;margin-bottom:1.5rem;}
+    .score-card{flex:1;border:0.5px solid #eee;border-radius:8px;padding:12px;text-align:center;}
+    .score-num{font-size:24px;font-weight:700;}
+    .score-label{font-size:10px;color:#6b6b67;text-transform:uppercase;letter-spacing:0.05em;}
+    .section-title{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#D85A30;border-bottom:0.5px solid #eee;padding-bottom:6px;margin:1.75rem 0 1rem;}
+    .flag-item{border:0.5px solid #eee;border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+    .flag-item.red-flag{border-left:3px solid #D85A30;background:#FAECE7;}
+    .flag-item.amber-flag{border-left:3px solid #E89A18;background:#FAEEDA;}
+    .flag-item.green-flag{border-left:3px solid #3B6D11;background:#EAF3DE;}
+    table{width:100%;border-collapse:collapse;}
+    td{padding:8px 10px;border-bottom:0.5px solid #eee;font-size:12px;vertical-align:top;}
+    td:first-child{color:#6b6b67;width:160px;font-weight:500;}
+    .footer{border-top:0.5px solid #eee;margin-top:2rem;padding-top:1rem;font-size:10px;color:#6b6b67;text-align:center;}
+    @media print{
+      .section-title{page-break-before:always;}
+      .section-title:first-of-type{page-break-before:avoid;}
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">FinePrintFix — Document Analysis</div>
+    <div class="doc-title">${docName}</div>
+    <div class="doc-meta">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} · AI-powered analysis — not legal advice</div>
+  </div>
+  <div class="score-row">
+    <div class="score-card"><div class="score-num" style="color:#D85A30">${redCount}</div><div class="score-label">Red flags</div></div>
+    <div class="score-card"><div class="score-num" style="color:#BA7517">${amberCount}</div><div class="score-label">Worth asking</div></div>
+    <div class="score-card"><div class="score-num" style="color:#3B6D11">${greenCount}</div><div class="score-label">Looks fine</div></div>
+  </div>
+  <div class="section-title">Summary</div>
+  <div>${summaryHTML}</div>
+  <div class="section-title">Flags &amp; Risks</div>
+  <div>${flagsHTML}</div>
+  <div class="section-title">By Section</div>
+  <div>${sectionsHTML}</div>
+  <div class="section-title">Questions to Ask</div>
+  <div>${questionsHTML}</div>
+  <div class="section-title">Money &amp; Financials</div>
+  <div>${moneyHTML}</div>
+  <div class="footer">FinePrintFix · fineprintfix.com · Not legal advice — consult a qualified attorney before making legal decisions.</div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},800);};<\/script>
+</body>
+</html>`);
+    printWindow.document.close();
+  }
+
 </script>
 <div style="border-top:0.5px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text2);flex-wrap:wrap;gap:6px;margin-top:1rem;width:100%;max-width:560px;">
   <span>AI-powered analysis for informational purposes only — not legal advice.</span>
@@ -2139,6 +2221,7 @@ Keep responses concise. Max 3 items per array. Focus on the most financially sig
 </div>
 </body>
 </html>
+
 
 
 
