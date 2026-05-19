@@ -128,8 +128,8 @@ module.exports = async function handler(req, res) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 8000,  // Higher limit supports Professional exhaustive analysis
+        model: req.body.model || 'claude-haiku-4-5-20251001',
+        max_tokens: req.body.max_tokens || 8000,
         temperature: 0.2,
         system,
         messages,
@@ -149,6 +149,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 
 
