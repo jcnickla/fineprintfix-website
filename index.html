@@ -215,7 +215,7 @@
       .hero-mockup { display: none !important; }
       .how-grid { grid-template-columns: 1fr; }
       .flags-grid { grid-template-columns: 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr !important; }
       #pricing .price-grid-3 { grid-template-columns: 1fr !important; }
       .stats { grid-template-columns: repeat(2,1fr); }
       .stat:nth-child(2) { border-right: none; }
@@ -264,7 +264,7 @@
         <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
         <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
         <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
-        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
+        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Terms &amp; subscriptions</a>
         <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
 </div>
       </div>
@@ -274,7 +274,7 @@
         <a href="lease-agreements.html"><i class="ti ti-building"></i> Lease agreements</a>
         <a href="freelance-contracts.html"><i class="ti ti-pencil"></i> Freelance contracts</a>
         <a href="nda-agreements.html"><i class="ti ti-lock"></i> NDAs</a>
-        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Subscription agreements</a>
+        <a href="subscription-agreements.html"><i class="ti ti-refresh"></i> Terms &amp; subscriptions</a>
         <a href="severance-agreements.html"><i class="ti ti-door-exit"></i> Severance agreements</a>
 </div>
       </div>
@@ -549,7 +549,7 @@
     <h2 style="margin-bottom:0.5rem">Simple, honest pricing</h2>
     <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65;max-width:520px">No subscription. No monthly fee. Pay only when you need an analysis — and your first one is always free.</p>
 
-    <div class="pricing-grid">
+    <div class="pricing-grid" style="grid-template-columns:repeat(4,1fr);">
 
       <!-- FREE -->
       <div class="price-card">
@@ -564,10 +564,10 @@
         </div>
       </div>
 
-      <!-- PAY PER DOC -->
+      <!-- STANDARD -->
       <div class="price-card featured" style="border:2px solid var(--accent);position:relative;">
         <div style="position:absolute;top:-10px;left:12px;background:var(--accent);color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">Most popular</div>
-        <div class="price-tier" style="color:var(--accent)">Pay per document</div>
+        <div class="price-tier" style="color:var(--accent)">Standard</div>
         <div class="price-num" style="color:var(--accent)">$3.99</div>
         <div class="price-sub">One-off, no subscription</div>
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> All 5 analysis tabs</div>
@@ -575,6 +575,20 @@
         <div class="price-feature"><i class="ti ti-check" style="font-size:14px;color:var(--green)"></i> Negotiation scripts</div>
         <div style="margin-top:1rem;">
           <a href="app.html" style="display:block;text-align:center;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Get started →</a>
+        </div>
+      </div>
+
+      <!-- PROFESSIONAL -->
+      <div class="price-card" style="border:2px solid #1a1a18;position:relative;background:#1a1a18;">
+        <div style="position:absolute;top:-10px;left:12px;background:#1a1a18;color:#fff;font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;">High-stakes docs</div>
+        <div class="price-tier" style="color:rgba(255,255,255,0.6)">Professional</div>
+        <div class="price-num" style="color:#fff;">$24.99</div>
+        <div class="price-sub" style="color:rgba(255,255,255,0.6)">For documents worth negotiating</div>
+        <div class="price-feature" style="color:rgba(255,255,255,0.85)"><i class="ti ti-check" style="font-size:14px;color:#C0DD97"></i> Exhaustive clause review</div>
+        <div class="price-feature" style="color:rgba(255,255,255,0.85)"><i class="ti ti-check" style="font-size:14px;color:#C0DD97"></i> Risk score out of 100</div>
+        <div class="price-feature" style="color:rgba(255,255,255,0.85)"><i class="ti ti-check" style="font-size:14px;color:#C0DD97"></i> Replacement clause language</div>
+        <div style="margin-top:1rem;">
+          <a href="app.html" style="display:block;text-align:center;background:#fff;color:#1a1a18;border:none;padding:10px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">Professional analysis →</a>
         </div>
       </div>
 
@@ -594,7 +608,7 @@
 
     </div>
 
-    <!-- COMPARISON NOTE -->
+    <!-- PRICING NOTE -->
     <div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:10px;">
       <i class="ti ti-info-circle" style="color:var(--accent);font-size:18px;flex-shrink:0;margin-top:1px"></i>
       <div>
@@ -634,7 +648,7 @@
         <a href="lease-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Lease agreements</a>
         <a href="freelance-contracts.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Freelance contracts</a>
         <a href="nda-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">NDAs</a>
-        <a href="subscription-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Subscription agreements</a>
+        <a href="subscription-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Terms &amp; subscriptions</a>
         <a href="severance-agreements.html" style="color:var(--text2);text-decoration:none;font-size:12px;">Severance agreements</a>
       </div>
     </div>
@@ -713,6 +727,7 @@
 </script>
 </body>
 </html>
+
 
 
 
