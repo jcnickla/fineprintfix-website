@@ -11,7 +11,16 @@ async function writeAuditLog(sb, event) {
 }
 
 async function sendDeletionConfirmationEmail(userEmail, deletionDetails) {
-  if (!process.env.RESEND_API_KEY || !userEmail) return;
+  if (!process.env.RESEND_API_KEY) {
+    console.error('Deletion email skipped: RESEND_API_KEY not set');
+    return;
+  }
+  if (!userEmail) {
+    console.error('Deletion email skipped: no email address');
+    return;
+  }
+
+  console.log(`Sending deletion confirmation email to ${userEmail}...`);
 
   const deletedAt = new Date().toLocaleString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -24,77 +33,87 @@ async function sendDeletionConfirmationEmail(userEmail, deletionDetails) {
 <head><meta charset="UTF-8"/></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#1a1a18;background:#f7f5f2;margin:0;padding:0;">
   <div style="max-width:520px;margin:40px auto;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.09);">
-
     <div style="background:#D85A30;padding:24px 32px;">
       <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:#fff;">FinePrintFix</div>
     </div>
-
     <div style="padding:32px;">
-      <div style="width:48px;height:48px;border-radius:50%;background:#EAF3DE;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
-        <span style="font-size:22px;">✓</span>
-      </div>
-
       <h1 style="font-family:Georgia,serif;font-size:22px;font-weight:700;margin:0 0 8px;">Your account has been deleted</h1>
-      <p style="font-size:14px;color:#6b6b67;line-height:1.65;margin:0 0 24px;">As requested, your FinePrintFix account and all associated data have been permanently deleted. This action cannot be undone.</p>
-
+      <p style="font-size:14px;color:#6b6b67;line-height:1.65;margin:0 0 24px;">As requested, your FinePrintFix account and all associated data have been permanently deleted.</p>
       <div style="background:#f7f5f2;border-radius:10px;padding:20px;margin-bottom:24px;">
         <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#6b6b67;margin-bottom:12px;">What was deleted</div>
-        <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="padding:6px 0;font-size:13px;border-bottom:0.5px solid rgba(0,0,0,0.06);">✓ &nbsp;All saved document analyses</td></tr>
-          <tr><td style="padding:6px 0;font-size:13px;border-bottom:0.5px solid rgba(0,0,0,0.06);">✓ &nbsp;Account credentials (email &amp; password)</td></tr>
-          <tr><td style="padding:6px 0;font-size:13px;border-bottom:0.5px solid rgba(0,0,0,0.06);">✓ &nbsp;Payment history records</td></tr>
-          <tr><td style="padding:6px 0;font-size:13px;">✓ &nbsp;Usage data and credits</td></tr>
-        </table>
+        <div style="font-size:13px;line-height:2;">
+          ✓ &nbsp;All saved document analyses (${deletionDetails.analysesCount || 0})<br/>
+          ✓ &nbsp;Account credentials (email &amp; password)<br/>
+          ✓ &nbsp;Payment history records<br/>
+          ✓ &nbsp;Usage data and credits
+        </div>
       </div>
-
       <div style="background:#f7f5f2;border-radius:10px;padding:16px 20px;margin-bottom:24px;">
         <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#6b6b67;margin-bottom:8px;">Deletion details</div>
         <div style="font-size:13px;color:#4a4a48;line-height:1.7;">
           <strong>Account:</strong> ${userEmail}<br/>
-          <strong>Deleted at:</strong> ${deletedAt}<br/>
-          <strong>Analyses removed:</strong> ${deletionDetails.analysesCount || 0}
+          <strong>Deleted at:</strong> ${deletedAt}
         </div>
       </div>
-
-      <p style="font-size:13px;color:#6b6b67;line-height:1.65;margin:0 0 8px;">Note that original documents you uploaded were never stored by FinePrintFix — only the analysis results were saved, and those have now been removed.</p>
-
-      <p style="font-size:13px;color:#6b6b67;line-height:1.65;margin:0 0 24px;">If you have any questions or believe this deletion was made in error, please contact us at <a href="mailto:legal@fineprintfix.com" style="color:#D85A30;">legal@fineprintfix.com</a> as soon as possible.</p>
-
+      <p style="font-size:13px;color:#6b6b67;line-height:1.65;margin:0 0 8px;">Your original documents were never stored by FinePrintFix — only the analysis results were saved, and those have now been removed.</p>
+      <p style="font-size:13px;color:#6b6b67;line-height:1.65;margin:0 0 24px;">If this was a mistake, contact us at <a href="mailto:legal@fineprintfix.com" style="color:#D85A30;">legal@fineprintfix.com</a> as soon as possible.</p>
       <a href="https://www.fineprintfix.com" style="display:inline-block;background:#D85A30;color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;text-decoration:none;">Visit FinePrintFix</a>
     </div>
-
     <div style="border-top:0.5px solid rgba(0,0,0,0.09);padding:16px 32px;font-size:11px;color:#9b9b97;line-height:1.6;">
       FinePrintFix · fineprintfix.com<br/>
-      This email was sent to ${userEmail} because you requested account deletion.<br/>
-      AI-powered analysis for informational purposes only — not legal advice.
+      This email was sent to ${userEmail} because you requested account deletion.
     </div>
   </div>
 </body>
 </html>`;
 
   try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: 'FinePrintFix <hello@fineprintfix.com>',
-        to: userEmail,
-        subject: 'Your FinePrintFix account has been deleted',
-        html,
-      }),
+    const payload = JSON.stringify({
+      from: 'FinePrintFix <hello@fineprintfix.com>',
+      to: [userEmail],
+      subject: 'Your FinePrintFix account has been deleted',
+      html,
     });
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error('Failed to send deletion email:', err);
-    } else {
-      console.log(`✓ Deletion confirmation email sent to ${userEmail}`);
-    }
+    console.log('Calling Resend API...');
+
+    const https = require('https');
+    const url = new URL('https://api.resend.com/emails');
+
+    const responseBody = await new Promise((resolve, reject) => {
+      const reqOptions = {
+        hostname: url.hostname,
+        path: url.pathname,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Length': Buffer.byteLength(payload),
+        },
+      };
+
+      const req = https.request(reqOptions, (res) => {
+        let data = '';
+        res.on('data', chunk => { data += chunk; });
+        res.on('end', () => {
+          console.log(`Resend response status: ${res.statusCode}`);
+          console.log(`Resend response body: ${data}`);
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(data);
+          } else {
+            reject(new Error(`Resend returned ${res.statusCode}: ${data}`));
+          }
+        });
+      });
+
+      req.on('error', reject);
+      req.write(payload);
+      req.end();
+    });
+
+    console.log(`✓ Deletion confirmation email sent to ${userEmail}`);
   } catch (e) {
-    console.error('Deletion email exception:', e.message);
+    console.error('Deletion email failed:', e.message);
   }
 }
 
@@ -383,4 +402,5 @@ module.exports = async function handler(req, res) {
     authDeleted: true,
   });
 };
+
 
