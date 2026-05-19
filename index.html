@@ -181,7 +181,8 @@
     .step-title { font-size: 14px; font-weight: 500; margin-bottom: 0.5rem; }
     .step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
 
-    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.5rem; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 2rem; }
     .price-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; position: relative; }
     .price-card.featured { border: 2px solid var(--accent); }
     .coming-soon-badge { position: absolute; top: -10px; left: 14px; font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
@@ -548,7 +549,7 @@
     <h2 style="margin-bottom:0.5rem">Simple, honest pricing</h2>
     <p style="font-size:14px;color:var(--text2);margin-bottom:1.5rem;line-height:1.65;max-width:520px">No subscription. No monthly fee. Pay only when you need an analysis — and your first one is always free.</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+    <div class="pricing-grid">
 
       <!-- FREE -->
       <div class="price-card">
@@ -616,7 +617,7 @@
 </section>
 
 <footer style="border-top:0.5px solid var(--border);padding:2.5rem 2rem 1.5rem;font-size:12px;color:var(--text2);">
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:2rem;max-width:1000px;margin:0 auto;align-items:start;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;" class="footer-grid">
+  <div class="footer-grid" style="max-width:1000px;margin:0 auto;align-items:start;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;">
 
     <!-- Logo + tagline -->
     <div>
@@ -712,6 +713,7 @@
 </script>
 </body>
 </html>
+
 
 
 
