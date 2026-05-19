@@ -3,9 +3,9 @@
 // Compare mode (3 docs) = 15 API calls sequentially + 1 comparison = 16 total
 // Limits below are per IP address
 const LIMITS = {
-  PER_MINUTE:  20,   // max 20 calls/min — accommodates compare mode
-  PER_HOUR:   100,   // max 100 calls/hour
-  PER_DAY:    300,   // max 300 calls/day
+  PER_MINUTE:  30,   // max 30 calls/min — handles sequential single doc (5 calls) + compare mode
+  PER_HOUR:   150,   // max 150 calls/hour
+  PER_DAY:    500,   // max 500 calls/day
 };
 
 // In-memory store (resets on cold start — fine for basic protection)
@@ -130,6 +130,7 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 4000,
+        temperature: 0.2,  // Low temperature = consistent, deterministic JSON output
         system,
         messages,
       }),
@@ -148,6 +149,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 
 
