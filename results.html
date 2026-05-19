@@ -155,7 +155,7 @@
     <a href="dashboard.html" class="back-btn">
       <i class="ti ti-arrow-left"></i> Dashboard
     </a>
-    <button class="icon-btn" onclick="window.print()">
+    <button class="icon-btn" onclick="exportFullPDF()">
       <i class="ti ti-download"></i> Save PDF
     </button>
   </div>
@@ -485,6 +485,111 @@
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  function exportFullPDF() {
+    // Get data from rendered DOM panels
+    const docName   = document.querySelector('.rdb-name')?.textContent || 'Analysis';
+    const redCount  = document.querySelector('.score-card:nth-child(1) .score-num')?.textContent || '0';
+    const amberCount= document.querySelector('.score-card:nth-child(2) .score-num')?.textContent || '0';
+    const greenCount= document.querySelector('.score-card:nth-child(3) .score-num')?.textContent || '0';
+
+    // Make all panels visible temporarily to grab their HTML
+    const panels = ['panel-summary','panel-flags','panel-sections','panel-questions','panel-money'];
+    const savedDisplay = {};
+    panels.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { savedDisplay[id] = el.style.display; el.style.display = 'block'; }
+    });
+
+    const summaryHTML   = document.getElementById('panel-summary')?.innerHTML || '';
+    const flagsHTML     = document.getElementById('panel-flags')?.innerHTML || '';
+    const sectionsHTML  = document.getElementById('panel-sections')?.innerHTML || '';
+    const questionsHTML = document.getElementById('panel-questions')?.innerHTML || '';
+    const moneyHTML     = document.getElementById('panel-money')?.innerHTML || '';
+
+    // Restore panel visibility
+    panels.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = savedDisplay[id] || '';
+    });
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>FinePrintFix — ${docName}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+    @page { margin: 0.75in; size: letter; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { font-family: 'DM Sans', sans-serif; color: #1a1a18; background: #fff; font-size: 12px; line-height: 1.6; }
+    .header { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 2px solid #D85A30; padding-bottom: 12px; margin-bottom: 20px; }
+    .brand { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #D85A30; margin-bottom: 3px; }
+    .doc-title { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+    .doc-meta { font-size: 10px; color: #6b6b67; }
+    .score-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .score-card { flex: 1; border: 0.5px solid #e5e5e3; border-radius: 8px; padding: 10px 12px; text-align: center; }
+    .score-num { font-size: 22px; font-weight: 700; line-height: 1; margin-bottom: 3px; }
+    .score-label { font-size: 9px; color: #6b6b67; text-transform: uppercase; letter-spacing: 0.06em; }
+    .section-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #D85A30; border-bottom: 0.5px solid #e5e5e3; padding-bottom: 5px; margin: 24px 0 12px; page-break-before: always; }
+    .section-title:first-of-type { page-break-before: avoid; }
+    /* Pass through all app styles for flags, sections, money etc */
+    .flag-item { border-radius: 8px; padding: 9px 12px; margin-bottom: 6px; border: 0.5px solid #e5e5e3; }
+    .flag-item.red { background: #FAECE7; border-left: 3px solid #D85A30; }
+    .flag-item.amber { background: #FAEEDA; border-left: 3px solid #E89A18; }
+    .flag-item.green { background: #EAF3DE; border-left: 3px solid #3B6D11; }
+    .flag-badge { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 20px; margin-bottom: 4px; }
+    .flag-badge.red { background: #F5C4B3; color: #712B13; }
+    .flag-badge.amber { background: #FAC775; color: #633806; }
+    .flag-badge.green { background: #C0DD97; color: #27500A; }
+    .flag-title { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+    .flag-detail { font-size: 11px; color: #4a4a48; line-height: 1.55; }
+    .section-block { border: 0.5px solid #e5e5e3; border-radius: 8px; margin-bottom: 7px; overflow: hidden; page-break-inside: avoid; }
+    .section-block-header { background: #f7f5f2; padding: 8px 12px; font-size: 12px; font-weight: 500; }
+    .section-block-body { padding: 9px 12px; font-size: 12px; color: #4a4a48; line-height: 1.6; }
+    .summary-box { background: #f7f5f2; border-radius: 8px; padding: 10px 13px; margin-bottom: 10px; font-size: 12px; line-height: 1.65; }
+    table { width: 100%; border-collapse: collapse; }
+    td { padding: 7px 10px; border-bottom: 0.5px solid #e5e5e3; font-size: 12px; vertical-align: top; }
+    td:first-child { color: #6b6b67; width: 150px; font-weight: 500; }
+    .question-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 0.5px solid #e5e5e3; page-break-inside: avoid; }
+    .question-num { color: #D85A30; font-weight: 600; font-size: 13px; flex-shrink: 0; width: 20px; }
+    .doc-footer { border-top: 0.5px solid #e5e5e3; margin-top: 24px; padding-top: 10px; font-size: 10px; color: #9b9b97; text-align: center; }
+    /* Hide tab buttons in print */
+    .rtab, button, .new-doc-btn { display: none !important; }
+    .rtab-panel { display: block !important; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div class="brand">FinePrintFix — Document Analysis</div>
+      <div class="doc-title">${docName}</div>
+      <div class="doc-meta">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}</div>
+    </div>
+    <div style="text-align:right;font-size:10px;color:#6b6b67;">fineprintfix.com<br/>AI analysis · Not legal advice</div>
+  </div>
+  <div class="score-row">
+    <div class="score-card"><div class="score-num" style="color:#D85A30">${redCount}</div><div class="score-label">Red flags</div></div>
+    <div class="score-card"><div class="score-num" style="color:#BA7517">${amberCount}</div><div class="score-label">Worth asking</div></div>
+    <div class="score-card"><div class="score-num" style="color:#3B6D11">${greenCount}</div><div class="score-label">Looks fine</div></div>
+  </div>
+  <div class="section-title" style="page-break-before:avoid">Summary</div>
+  <div>${summaryHTML}</div>
+  <div class="section-title">Flags &amp; Risks</div>
+  <div>${flagsHTML}</div>
+  <div class="section-title">By Section</div>
+  <div>${sectionsHTML}</div>
+  <div class="section-title">Questions to Ask</div>
+  <div>${questionsHTML}</div>
+  <div class="section-title">Money &amp; Financials</div>
+  <div>${moneyHTML}</div>
+  <div class="doc-footer">FinePrintFix · fineprintfix.com · Not legal advice — consult a qualified attorney before making legal decisions.</div>
+  <script>window.onload=function(){setTimeout(function(){window.print();},1000);};<\/script>
+</body>
+</html>`);
+    printWindow.document.close();
+  }
+
   init();
 </script>
 <style>
@@ -498,5 +603,6 @@
 </footer>
 </body>
 </html>
+
 
 
