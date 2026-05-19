@@ -707,43 +707,46 @@
     <div class="screen-body">
       <div class="analyzing-wrap">
         <div class="pulse-ring"><i class="ti ti-scan"></i></div>
-        <div class="analyzing-title" id="analyzing-title">Reading your document...</div>
+        <div class="analyzing-title" id="analyzing-title">Analyzing your document...</div>
         <div class="analyzing-sub" id="analyzing-sub">This usually takes under 90 seconds</div>
 
-        <!-- SINGLE DOC STEPS -->
-        <div class="progress-steps" id="progress-single">
-          <div class="prog-step">
-            <div class="prog-dot done" id="dot1"><i class="ti ti-check" style="font-size:10px"></i></div>
-            <span>Document received</span>
+        <!-- UNIFIED STEPS — used by all tiers, labels swapped by JS -->
+        <div id="progress-steps-unified" style="width:100%;max-width:320px;margin:0 auto;">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem;">
+            <div class="prog-step">
+              <div class="prog-dot active" id="ustep-dot-1"><i class="ti ti-brain" style="font-size:10px"></i></div>
+              <span id="ustep-label-1">Identifying flags &amp; risks</span>
+            </div>
+            <div class="prog-step">
+              <div class="prog-dot pending" id="ustep-dot-2"><i class="ti ti-dots" style="font-size:10px"></i></div>
+              <span id="ustep-label-2">Building section breakdown</span>
+            </div>
+            <div class="prog-step">
+              <div class="prog-dot pending" id="ustep-dot-3"><i class="ti ti-dots" style="font-size:10px"></i></div>
+              <span id="ustep-label-3">Generating questions to ask</span>
+            </div>
+            <div class="prog-step">
+              <div class="prog-dot pending" id="ustep-dot-4"><i class="ti ti-dots" style="font-size:10px"></i></div>
+              <span id="ustep-label-4">Writing plain-English summary</span>
+            </div>
+            <div class="prog-step">
+              <div class="prog-dot pending" id="ustep-dot-5"><i class="ti ti-dots" style="font-size:10px"></i></div>
+              <span id="ustep-label-5">Calculating costs &amp; financials</span>
+            </div>
           </div>
-          <div class="prog-step">
-            <div class="prog-dot done" id="dot2"><i class="ti ti-check" style="font-size:10px"></i></div>
-            <span>Parsing structure &amp; sections</span>
+          <div style="background:var(--bg2);border-radius:20px;height:4px;overflow:hidden;">
+            <div id="ustep-bar" style="height:100%;background:var(--accent);border-radius:20px;width:0%;transition:width 0.8s ease;"></div>
           </div>
-          <div class="prog-step">
-            <div class="prog-dot active" id="dot3"><i class="ti ti-brain" style="font-size:10px"></i></div>
-            <span>Identifying flags &amp; risks</span>
-          </div>
-          <div class="prog-step">
-            <div class="prog-dot pending" id="dot4"><i class="ti ti-dots" style="font-size:10px"></i></div>
-            <span>Generating plain-English summary</span>
-          </div>
-          <div class="prog-step">
-            <div class="prog-dot pending" id="dot5"><i class="ti ti-dots" style="font-size:10px"></i></div>
-            <span>Building your questions list</span>
+          <div style="display:flex;justify-content:space-between;margin-top:5px;">
+            <span style="font-size:10px;color:var(--text2)" id="ustep-pct">0% complete</span>
+            <span style="font-size:10px;color:var(--text2)" id="ustep-eta">Calculating...</span>
           </div>
         </div>
 
-        <!-- COMPARE MODE STEPS -->
+        <!-- COMPARE MODE STEPS (kept separate — different structure) -->
         <div id="progress-compare" style="display:none;width:100%;max-width:320px;margin:0 auto;">
-
-          <!-- Doc progress bars -->
           <div id="compare-doc-progress" style="display:flex;flex-direction:column;gap:10px;margin-bottom:1rem;"></div>
-
-          <!-- Current action -->
           <div id="compare-current-action" style="font-size:12px;color:var(--text2);text-align:center;min-height:18px;"></div>
-
-          <!-- Overall progress bar -->
           <div style="background:var(--bg2);border-radius:20px;height:4px;margin-top:12px;overflow:hidden;">
             <div id="compare-progress-bar" style="height:100%;background:var(--accent);border-radius:20px;width:0%;transition:width 0.6s ease;"></div>
           </div>
@@ -1466,73 +1469,121 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
 
     showScreen('screen-analyzing');
     document.getElementById('result-doc-name').textContent = uploadedFileName;
-    animateProgress().then(() => {
-      showScreen('screen-results');
-      runAnalysis();
-      // For anonymous users, show email gate immediately before they can see results
-      handlePostAnalysis();
-    });
+    await animateProgress();
+    await runAnalysis();
+    handlePostAnalysis();
   }
 
   // ─── ANALYZING FLOW ───────────────────────────────────────────
-  function goToAnalyzing() {
+  async function goToAnalyzing() {
     showScreen('screen-analyzing');
     document.getElementById('result-doc-name').textContent = uploadedFileName;
-    animateProgress().then(() => {
-      showScreen('screen-results');
-      runAnalysis();
-    });
+    await animateProgress();
+    await runAnalysis();
   }
 
   async function animateProgress() {
-    const steps = [
-      { dot: 'dot3', next: 'dot4', delay: 1000 },
-      { dot: 'dot4', next: 'dot5', delay: 1200 },
-      { dot: 'dot5', next: null,   delay: 1400 },
-    ];
-    for (const s of steps) {
-      await wait(s.delay);
-      markDone(s.dot);
-      if (s.next) markActive(s.next);
+    // Show unified steps, hide compare
+    document.getElementById('progress-steps-unified').style.display = 'block';
+    document.getElementById('progress-compare').style.display = 'none';
+
+    if (isProfessionalMode) {
+      document.getElementById('analyzing-title').textContent = 'Running Professional analysis...';
+      document.getElementById('analyzing-sub').textContent = 'Exhaustive clause review — this takes 1–2 minutes.';
+      // Set Pro-specific step labels
+      const labels = [
+        'Reviewing every clause for flags',
+        'Building exhaustive section breakdown',
+        'Generating negotiation questions',
+        'Risk scoring & executive summary',
+        'Calculating costs & financial exposure'
+      ];
+      labels.forEach((l, i) => {
+        const el = document.getElementById('ustep-label-' + (i + 1));
+        if (el) el.textContent = l;
+      });
+    } else {
+      document.getElementById('analyzing-title').textContent = 'Analyzing your document...';
+      document.getElementById('analyzing-sub').textContent = 'This usually takes under 90 seconds.';
     }
-    await wait(800);
+    updateStep(1, 'active');
   }
 
-  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-  function markDone(id) {
-    const el = document.getElementById(id);
-    el.className = 'prog-dot done';
-    el.innerHTML = '<i class="ti ti-check" style="font-size:10px"></i>';
+  function updateStep(n, state) {
+    const dot = document.getElementById('ustep-dot-' + n);
+    if (!dot) return;
+    if (state === 'active') {
+      dot.className = 'prog-dot active';
+      dot.innerHTML = '<i class="ti ti-brain" style="font-size:10px"></i>';
+    } else if (state === 'done') {
+      dot.className = 'prog-dot done';
+      dot.innerHTML = '<i class="ti ti-check" style="font-size:10px"></i>';
+    }
+    // Advance next dot to active if not already done
+    if (state === 'done' && n < 5) {
+      const next = document.getElementById('ustep-dot-' + (n + 1));
+      if (next && next.className.includes('pending')) {
+        next.className = 'prog-dot active';
+        next.innerHTML = '<i class="ti ti-brain" style="font-size:10px"></i>';
+      }
+    }
+    // Update progress bar
+    const pct = state === 'done' ? n * 20 : (n - 1) * 20 + 10;
+    const bar = document.getElementById('ustep-bar');
+    const pctEl = document.getElementById('ustep-pct');
+    const eta = document.getElementById('ustep-eta');
+    if (bar) bar.style.width = pct + '%';
+    if (pctEl) pctEl.textContent = pct + '% complete';
+    if (eta) {
+      const stepsLeft = 5 - (state === 'done' ? n : n - 1);
+      const secPerStep = isProfessionalMode ? 25 : 15;
+      const secsLeft = stepsLeft * secPerStep;
+      eta.textContent = secsLeft > 0 ? '~' + secsLeft + 's remaining' : 'Almost done...';
+    }
   }
 
-  function markActive(id) {
-    const el = document.getElementById(id);
-    el.className = 'prog-dot active';
-    el.innerHTML = '<i class="ti ti-brain" style="font-size:10px"></i>';
-  }
 
   // ─── CLAUDE API ANALYSIS ─────────────────────────────────────
   async function runAnalysis() {
     const docContent = buildDocContent();
     const delay = ms => new Promise(r => setTimeout(r, ms));
+    const callDelay = isProfessionalMode ? 800 : 400;
 
-    // Use Professional prompts if paid for Pro tier
     const fPrompt = isProfessionalMode ? proFlagsPrompt : flagsPrompt;
     const sPrompt = isProfessionalMode ? proSectionsPrompt : sectionsPrompt;
     const qPrompt = isProfessionalMode ? proQuestionsPrompt : questionsPrompt;
 
-    const flagsData     = await analyzeWithClaude(fPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green');
-    await delay(400);
-    const sectionsData  = await analyzeWithClaude(sPrompt(docContent), 'sections-content');
-    await delay(400);
-    const questionsData = await analyzeWithClaude(qPrompt(docContent), 'questions-content');
-    await delay(400);
-    const summaryData   = await fetchSummary(docContent);
-    await delay(400);
-    const moneyData     = await fetchMoney(docContent);
+    // Step 1: Flags
+    updateStep(1, 'active');
+    const flagsData = await analyzeWithClaude(fPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green');
+    updateStep(1, 'done');
+    await delay(callDelay);
 
-    // Render summary
+    // Step 2: Sections
+    updateStep(2, 'active');
+    const sectionsData = await analyzeWithClaude(sPrompt(docContent), 'sections-content');
+    updateStep(2, 'done');
+    await delay(callDelay);
+
+    // Step 3: Questions
+    updateStep(3, 'active');
+    const questionsData = await analyzeWithClaude(qPrompt(docContent), 'questions-content');
+    updateStep(3, 'done');
+    await delay(callDelay);
+
+    // Step 4: Summary
+    updateStep(4, 'active');
+    const summaryData = await fetchSummary(docContent);
+    updateStep(4, 'done');
+    await delay(callDelay);
+
+    // Step 5: Money
+    updateStep(5, 'active');
+    const moneyData = await fetchMoney(docContent);
+    updateStep(5, 'done');
+    await delay(500);
+
+    // Render summary and money now that all data is in
     if (summaryData) {
       const el = document.getElementById('summary-content');
       if (el) renderSummary(summaryData, el);
@@ -1540,14 +1591,14 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       const el = document.getElementById('summary-content');
       if (el) el.innerHTML = '<p style="color:var(--text2);font-size:13px;">Summary could not be generated. Try re-analyzing the document.</p>';
     }
-
-    // Render money
     if (moneyData) {
       const el = document.getElementById('money-content');
       if (el) renderMoney(moneyData, el);
     }
 
-    // Save everything to Supabase
+    // Show results — all tabs complete
+    showScreen('screen-results');
+
     if (flagsData || sectionsData || questionsData) {
       saveAnalysis(flagsData || {}, sectionsData || [], questionsData || [], summaryData || {}, moneyData || {});
     }
@@ -1566,7 +1617,7 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: promptObj.systemPrompt, messages })
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
       });
       if (!response.ok) { console.error('Summary API error:', response.status); return {}; }
       const data = await response.json();
@@ -1594,7 +1645,7 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: promptObj.systemPrompt, messages })
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
       });
       if (!response.ok) { console.error('Money API error:', response.status); return {}; }
       const data = await response.json();
@@ -1672,7 +1723,7 @@ Analyze EVERY clause in this document. Return ONLY a JSON object — no markdown
   "riskBreakdown": {"financialRisk": 0-100, "legalRisk": 0-100, "operationalRisk": 0-100}
 }
 
-Be EXHAUSTIVE — flag every clause that deserves attention, no matter how minor. There is no cap on items.
+Be EXHAUSTIVE but focused — flag every clause that genuinely matters, up to 10 per category. There is no minimum.
 For each red flag include a severity score (1-10) and estimated financial exposure where calculable.
 riskScore: overall document risk 0-100. 0=perfectly balanced, 100=extremely one-sided.
 riskBreakdown: three sub-scores for financial, legal, and operational risk.
@@ -1698,7 +1749,7 @@ Write for a sophisticated reader who understands business but not legal jargon.`
   }
 
   function proSectionsPrompt(docContent) {
-    const systemPrompt = `You are FinePrintFix Professional. Analyze EVERY section of this document exhaustively. Return ONLY a JSON array — no markdown, no preamble:
+    const systemPrompt = `You are FinePrintFix Professional. Analyze ALL major sections of this document exhaustively. Return ONLY a JSON array — no markdown, no preamble:
 [
   {
     "title": "Exact section title from the document",
@@ -1709,9 +1760,22 @@ Write for a sophisticated reader who understands business but not legal jargon.`
   }
 ]
 
-Cover EVERY section — do not skip any. Use status "missing" for standard protections that are absent from this document type.
-Include jurisdiction-specific notes where the governing law affects how a clause would be interpreted or enforced.
-No cap on sections — cover all of them.`;
+Cover every section — prioritize these if present:
+- Payment / Compensation / Fees
+- Termination / Cancellation
+- Intellectual Property / Ownership
+- Non-compete / Non-solicitation
+- Confidentiality
+- Liability / Indemnification
+- Arbitration / Dispute Resolution
+- Auto-renewal / Notice periods
+- Warranties / Guarantees
+- Governing Law / Jurisdiction
+- Any section with unusual or one-sided terms
+
+Use status "missing" for standard protections absent from this document type.
+Include jurisdiction-specific notes where governing law affects enforceability.
+Cap at 15 sections maximum — prioritize the most important ones.`;
 
     return { systemPrompt, content: docContent };
   }
@@ -1986,7 +2050,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
         const response = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ system: promptObj.systemPrompt, messages })
+          body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
         });
         if (!response.ok) throw new Error('API error: ' + response.status);
         const data = await response.json();
@@ -2004,7 +2068,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: promptObj.systemPrompt, messages })
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
       });
 
       if (!response.ok) throw new Error('API error: ' + response.status);
@@ -2674,6 +2738,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
