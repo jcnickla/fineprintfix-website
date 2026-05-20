@@ -836,6 +836,29 @@
       <button class="new-doc-btn" onclick="resetFlow()">
         <i class="ti ti-plus"></i> Analyze another document
       </button>
+
+      <!-- PRO UPSELL BANNER — shown after Standard analysis -->
+      <div id="pro-upsell-banner" style="display:none;margin:0 0 1rem;background:#1a1a18;border-radius:var(--radius-lg);padding:14px 16px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div>
+            <div style="font-size:12px;font-weight:500;color:#C0DD97;margin-bottom:3px;display:flex;align-items:center;gap:5px;"><i class="ti ti-shield-check" style="font-size:12px"></i> Upgrade this document to Professional</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.7);line-height:1.55;">Risk score, replacement contract language, missing protections &amp; executive summary.</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:4px;">$24.99 − $3.99 already paid = <strong style="color:rgba(255,255,255,0.7)">$21.00</strong></div>
+          </div>
+          <button onclick="upgradeCurrentDocToPro()" style="flex-shrink:0;background:#fff;color:#1a1a18;border:none;padding:8px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Upgrade — $21.00</button>
+        </div>
+      </div>
+
+      <!-- COMPARE UPSELL — shown after any single-doc analysis -->
+      <div id="compare-upsell-banner" style="display:none;margin:0 0 1rem;border:0.5px solid #4F6AF5;border-radius:var(--radius-lg);padding:14px 16px;background:#F0F2FE;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+          <div>
+            <div style="font-size:12px;font-weight:500;color:#2C3E8C;margin-bottom:3px;display:flex;align-items:center;gap:5px;"><i class="ti ti-layout-columns" style="font-size:12px"></i> Got another version or competing offer?</div>
+            <div style="font-size:11px;color:#3a3a70;line-height:1.55;">Compare up to 3 documents side-by-side with a clear recommendation — $7.99.</div>
+          </div>
+          <button onclick="startCompareFromResults()" style="flex-shrink:0;background:#4F6AF5;color:#fff;border:none;padding:8px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;">Compare — $7.99</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -846,7 +869,7 @@
   <div class="modal-sheet">
     <div style="font-size:32px;margin-bottom:12px">🔍</div>
     <div class="modal-title">Your analysis is ready</div>
-    <div class="modal-sub">Enter your email to unlock your results. No account or password needed — just your email.</div>
+    <div class="modal-sub">Enter your email to save your results and unlock the Flags and Money tabs.</div>
     <input type="email" id="capture-email-input" class="modal-input" placeholder="your@email.com" onkeydown="if(event.key==='Enter') submitEmailCapture()" />
     <div id="capture-email-error" class="modal-error"></div>
     <button id="capture-email-btn" onclick="submitEmailCapture()" style="background:var(--accent);color:#fff;border:none;padding:13px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;">
@@ -855,7 +878,7 @@
     <div style="text-align:center;margin-top:12px;">
       <a href="auth.html" style="font-size:12px;color:var(--accent);text-decoration:none;">Already have an account? Sign in →</a>
     </div>
-    <p style="font-size:11px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;">We'll notify you when pricing launches. We never spam or share your email.</p>
+    <p style="font-size:11px;color:var(--text2);text-align:center;margin-top:10px;line-height:1.5;">No account needed. We never spam or share your email.</p>
   </div>
 </div>
 
@@ -873,6 +896,42 @@
     if (session) currentUser = session.user;
     checkPaymentReturn();
   });
+
+  // ─── TIER PRESELECTION FROM URL ──────────────────────────────
+  (function applyTierParam() {
+    const params = new URLSearchParams(window.location.search);
+    const tier = params.get('tier');
+    const resume = params.get('resume');
+
+    // Resume payment flow after auth redirect
+    if (resume === 'pay') {
+      window.history.replaceState({}, '', '/app.html');
+      const pendingDoc = sessionStorage.getItem('fpf_pending_doc');
+      const pendingPlan = sessionStorage.getItem('fpf_pending_plan') || 'standard';
+      if (pendingDoc) {
+        const doc = JSON.parse(pendingDoc);
+        uploadedFileName = doc.name || 'Document';
+        if (doc.type === 'pdf') window.pdfBase64 = doc.data;
+        else documentText = doc.data;
+        if (pendingPlan === 'professional') isProfessionalMode = true;
+        // Auto-trigger checkout
+        setTimeout(() => handleUpgrade(
+          pendingPlan === 'professional' ? 'professional' : pendingPlan === 'compare' ? 'compare' : 'payperDoc',
+          null
+        ), 500);
+      }
+      return;
+    }
+
+    if (!tier) return;
+    window.history.replaceState({}, '', '/app.html');
+    const map = { professional: 'professional', compare: 'compare', standard: 'single', free: 'single' };
+    const mode = map[tier];
+    if (mode) {
+      window.addEventListener('DOMContentLoaded', () => setUploadMode(mode), { once: true });
+      if (document.readyState !== 'loading') setUploadMode(mode);
+    }
+  })();
 
   // ─── STATE ───────────────────────────────────────────────────
   let documentText = '';
@@ -1307,7 +1366,8 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       if (session) {
         const credits = await getUserCredits(session.user.id);
         if (credits > 0) { await consumeCredit(session.user.id); return true; }
-        showUpgradeWall('loggedin-professional');
+        // Go straight to Stripe — no wall
+        handleUpgrade('professional', null);
       } else {
         showUpgradeWall('anonymous-professional');
       }
@@ -1315,12 +1375,11 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     }
 
     if (session) {
-      // Check credits first
       const credits = await getUserCredits(session.user.id);
       if (mode === 'compare') {
-        // Compare requires a comparison credit
         if (credits >= 3) { await consumeCredit(session.user.id); return true; }
-        showUpgradeWall('loggedin-compare');
+        // Go straight to Stripe for compare
+        handleUpgrade('compare', null);
         return false;
       }
       if (credits > 0) {
@@ -1332,7 +1391,13 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
         .select('id', { count: 'exact', head: true })
         .eq('user_id', session.user.id);
       if (count >= 1) {
-        showUpgradeWall(isProfessionalMode ? 'loggedin-professional' : 'loggedin');
+        // User has already used their free analysis — go straight to Stripe for Standard,
+        // or show wall only if they came in on the free tier (no tier param)
+        if (currentUploadMode === 'single') {
+          handleUpgrade('payperDoc', null);
+        } else {
+          showUpgradeWall('loggedin');
+        }
         return false;
       }
       return true;
@@ -1404,9 +1469,22 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
   // Called after analysis completes for anonymous users
   async function handlePostAnalysis() {
     const { data: { session } } = await sb.auth.getSession();
-    if (session) return; // logged in users don't need email gate
+    if (session) return;
 
-    // Show email capture modal
+    // Blur Flags and Money tabs to incentivize email capture
+    ['panel-flags', 'panel-money'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.position = 'relative';
+        const overlay = document.createElement('div');
+        overlay.id = id + '-blur-overlay';
+        overlay.style.cssText = 'position:absolute;inset:0;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(247,245,242,0.7);border-radius:var(--radius-lg);z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;';
+        overlay.innerHTML = '<div style="font-size:13px;font-weight:500;color:var(--text)">Enter your email to unlock</div><div style="font-size:11px;color:var(--text2)">Free — no account needed</div>';
+        overlay.onclick = () => showEmailCapture();
+        el.appendChild(overlay);
+      }
+    });
+
     showEmailCapture();
   }
 
@@ -1440,6 +1518,11 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       setCookie(FREE_TIER_COOKIE, '1', 365);
       setCookie(FREE_TIER_EMAIL_COOKIE, email, 365);
 
+      // Remove blur overlays
+      ['panel-flags-blur-overlay', 'panel-money-blur-overlay'].forEach(id => {
+        document.getElementById(id)?.remove();
+      });
+
       btn.textContent = '✓ Unlocked!';
       btn.style.background = '#3B6D11';
       setTimeout(() => {
@@ -1447,6 +1530,9 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       }, 800);
     } catch (err) {
       setCookie(FREE_TIER_COOKIE, '1', 365);
+      ['panel-flags-blur-overlay', 'panel-money-blur-overlay'].forEach(id => {
+        document.getElementById(id)?.remove();
+      });
       document.getElementById('email-capture-modal').style.display = 'none';
     }
   }
@@ -1599,6 +1685,15 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     // Show results — all tabs complete
     showScreen('screen-results');
 
+    // Show upsell banners for Standard tier only
+    if (!isProfessionalMode) {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) {
+        document.getElementById('pro-upsell-banner').style.display = 'block';
+      }
+      document.getElementById('compare-upsell-banner').style.display = 'block';
+    }
+
     if (flagsData || sectionsData || questionsData) {
       saveAnalysis(flagsData || {}, sectionsData || [], questionsData || [], summaryData || {}, moneyData || {});
     }
@@ -1645,13 +1740,15 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 8000 : 4000 })
       });
       if (!response.ok) { console.error('Money API error:', response.status); return {}; }
       const data = await response.json();
       if (!data.content) { console.error('Money: no content', data); return {}; }
       const raw = '{' + data.content.map(b => b.text || '').join('');
+      console.log('Money raw length:', raw.length, '| stop_reason:', data.stop_reason, '| last 100:', raw.slice(-100));
       const parsed = extractJSON(raw);
+      if (!parsed) { console.error('Money: JSON parse failed. Raw start:', raw.slice(0, 200)); return {}; }
       console.log('Money fetched successfully, hasFinancials:', parsed?.hasFinancials);
       return parsed || {};
     } catch (err) {
@@ -1835,41 +1932,25 @@ executiveSummary: the most important output — write this for someone who will 
     const systemPrompt = `You are FinePrintFix Professional. Provide exhaustive financial analysis. Return ONLY a valid JSON object — no markdown, no preamble, no trailing text:
 {
   "hasFinancials": true or false,
-  "totalValue": "Total with period" or null,
+  "totalValue": "Total contract value" or null,
   "costs": [
     {"label": "Cost name", "amount": "$X" or null, "description": "What triggers this and who pays", "severity": "high" or "medium" or "low", "negotiable": true or false, "worstCase": "Maximum possible exposure" or null}
   ],
   "marketComparison": [
-    {"item": "What is compared", "contractValue": "Rate with math shown", "marketRate": "Typical range", "gap": "Difference or Within market range", "assessment": "below_market" or "at_market" or "above_market"}
+    {"item": "What is compared", "contractValue": "Rate in contract", "marketRate": "Typical range", "gap": "Difference or Within range", "assessment": "below_market" or "at_market" or "above_market"}
   ],
   "negotiationScripts": [
-    {"clause": "Clause name", "currentLanguage": "Current text", "suggestedLanguage": "Word-for-word replacement text", "potentialSaving": "$X" or null, "priority": "high" or "medium" or "low"}
-  ],
-  "rewriteSuggestions": [
-    {"clause": "Clause name", "currentText": "Exact or paraphrased current language", "proposedText": "Complete replacement clause ready to paste into a redline", "rationale": "Why this change protects the reader", "financialImpact": "Quantified impact if possible"}
-  ],
-  "restructuringSuggestions": [
-    {"clause": "Clause name", "issue": "Financial problem", "suggestion": "Specific fix", "impact": "Financial impact"}
+    {"clause": "Clause name", "currentLanguage": "Current text summary", "suggestedLanguage": "Word-for-word script to say", "potentialSaving": "$X range" or null, "priority": "high" or "medium" or "low"}
   ]
 }
 
-rewriteSuggestions: PROFESSIONAL ONLY — provide complete replacement clause language ready to paste into a contract redline. This is the key differentiator. Write actual legal-quality contract language, not just suggestions.
-
-MARKET COMPARISON RULES:
-- Show unit math: "$17,909 ÷ 21.06 squares = $851/sq"
-- For roofing: 1 square = 100 sq ft
-- Conservative market ranges only
-- at_market if within range, above_market only if above TOP of range
-- No cap on comparisons — include all financially significant items
-
-NEGOTIATION SCRIPT RULES:
-- Below market: lock price in writing, protect scope
-- At market: terms, milestones, protections
-- Above market: price reduction with justification
-- Include priority ranking (high/medium/low) for each script
-- No cap — include all worth negotiating
-
-COSTS: include ALL costs present, no cap on items. Add worstCase exposure for variable costs.`;
+RULES:
+- hasFinancials must be true for any contract with dollar amounts, fees, or payment terms
+- Market comparison: show unit math where applicable (e.g. "$17,909 ÷ 21 squares = $853/sq"). Use conservative market ranges.
+- at_market if within range. above_market only if above TOP of range. below_market if below bottom.
+- Negotiation scripts: below market = lock in writing; at market = focus on terms; above market = price reduction with justification
+- Cap costs at 10 items, market comparisons at 6 items, negotiation scripts at 5 items
+- If no financial terms exist, set hasFinancials to false and use empty arrays`;
 
     return { systemPrompt, content: docContent };
   }
@@ -2436,6 +2517,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           red_count: (flags.red || []).length,
           amber_count: (flags.amber || []).length,
           green_count: (flags.green || []).length,
+          analysis_tier: isProfessionalMode ? 'professional' : 'standard',
         })
       });
       // Silently saved — user sees a "Saved" indicator
@@ -2452,13 +2534,25 @@ Max 3 items per array. Focus on the most financially significant items only.`;
   // ─── STRIPE CHECKOUT ─────────────────────────────────────────
   async function handleUpgrade(plan, evt) {
     const { data: { session } } = await sb.auth.getSession();
-    if (!session) { window.location.href = 'auth.html?next=pay'; return; }
+    if (!session) {
+      // Save pending doc and mode before redirecting to auth
+      if (window.pdfBase64) {
+        sessionStorage.setItem('fpf_pending_doc', JSON.stringify({ type: 'pdf', data: window.pdfBase64, name: uploadedFileName }));
+      } else if (documentText) {
+        sessionStorage.setItem('fpf_pending_doc', JSON.stringify({ type: 'text', data: documentText, name: uploadedFileName }));
+      }
+      if (isProfessionalMode) sessionStorage.setItem('fpf_pending_plan', 'professional');
+      else if (plan === 'compare') sessionStorage.setItem('fpf_pending_plan', 'compare');
+      else sessionStorage.setItem('fpf_pending_plan', 'standard');
+      window.location.href = 'auth.html?next=pay';
+      return;
+    }
 
     const btn = evt?.currentTarget || evt?.target;
     if (btn) { btn.textContent = 'Loading...'; btn.disabled = true; }
 
-    // Price ID is resolved server-side in create-checkout.js using env vars
-    // We just pass the plan name ('single' or 'compare')
+    // Normalise plan name — payperDoc → single for Stripe
+    const stripePlan = plan === 'payperDoc' ? 'single' : plan;
 
     try {
       // Save docs to sessionStorage before leaving
@@ -2478,7 +2572,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           user_id: session.user.id,
           user_email: session.user.email,
           doc_name: plan === 'compare' ? 'Document comparison' : uploadedFileName || 'Document',
-          plan,
+          plan: stripePlan,
         }),
       });
       const data = await res.json();
@@ -2490,7 +2584,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     } catch (err) {
       console.error('Checkout error:', err);
       if (btn) {
-        btn.textContent = plan === 'compare' ? 'Compare my documents — $7.99' : plan === 'professional' ? 'Professional analysis — $24.99' : 'Analyze this document — $3.99';
+        btn.textContent = plan === 'compare' ? 'Compare my documents — $7.99' : plan === 'professional' ? 'Professional analysis — $24.99' : plan === 'pro-upgrade' ? 'Upgrade — $21.00' : 'Analyze this document — $3.99';
         btn.disabled = false;
       }
       alert('Something went wrong. Please try again.');
@@ -2516,10 +2610,8 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           showPaymentSuccess();
         }
       } else {
-        // Single doc flow — professional or standard
-        if (plan === 'professional') {
+        if (plan === 'professional' || plan === 'pro-upgrade') {
           isProfessionalMode = true;
-          console.log('Professional mode activated');
         }
 
         const saved = sessionStorage.getItem('fpf_pending_doc');
@@ -2529,23 +2621,39 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           uploadedFileName = doc.name || 'Document';
           if (doc.type === 'pdf') { window.pdfBase64 = doc.data; }
           else { documentText = doc.data; }
-          showPaymentSuccess(plan === 'professional');
+          showPaymentSuccess(isProfessionalMode);
           await new Promise(r => setTimeout(r, 1800));
-
           document.getElementById('result-doc-name').textContent = uploadedFileName;
           showScreen('screen-analyzing');
-          animateProgress().then(async () => {
-            await runAnalysis();
-            handlePostAnalysis();
-          });
+          await animateProgress();
+          await runAnalysis();
+          handlePostAnalysis();
         } else {
-          showPaymentSuccess(plan === 'professional');
+          showPaymentSuccess(isProfessionalMode);
         }
       }
     } else if (params.get('payment') === 'cancelled') {
       window.history.replaceState({}, '', '/app.html');
       sessionStorage.removeItem('fpf_pending_doc');
       sessionStorage.removeItem('fpf_compare_docs');
+      // Show cancelled toast
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#FAEEDA;color:#633806;border:0.5px solid #E89A18;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;display:flex;align-items:center;gap:7px;';
+      toast.innerHTML = '<i class="ti ti-x" style="font-size:13px"></i> Payment cancelled — your document is still ready to analyze.';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // Restore pending plan if returning from auth redirect
+    const pendingPlan = sessionStorage.getItem('fpf_pending_plan');
+    if (pendingPlan) {
+      sessionStorage.removeItem('fpf_pending_plan');
+      if (pendingPlan === 'professional') {
+        isProfessionalMode = true;
+        setUploadMode('professional');
+      } else if (pendingPlan === 'compare') {
+        setUploadMode('compare');
+      }
     }
   }
 
@@ -2596,6 +2704,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     documentText = '';
     window.pdfBase64 = null;
     uploadedFileName = 'Your document';
+    isProfessionalMode = false;
     document.getElementById('paste-input').value = '';
     document.getElementById('char-count').textContent = '0';
     document.getElementById('drop-title').textContent = 'Drag & drop your PDF here';
@@ -2605,18 +2714,88 @@ Max 3 items per array. Focus on the most financially significant items only.`;
       const el = document.getElementById(id);
       if (el) { el.className = 'ai-response loading'; el.textContent = 'Analyzing your document...'; }
     });
-    ['dot3','dot4','dot5'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.className = 'prog-dot pending'; el.innerHTML = '<i class="ti ti-dots" style="font-size:10px"></i>'; }
-    });
-    // Reset upgrade screen state
-    ['upgrade-anonymous', 'upgrade-plans', 'upgrade-anon-paid'].forEach(id => {
+    // Reset unified progress dots
+    for (let i = 1; i <= 5; i++) {
+      const dot = document.getElementById('ustep-dot-' + i);
+      if (dot) { dot.className = 'prog-dot pending'; dot.innerHTML = '<i class="ti ti-dots" style="font-size:10px"></i>'; }
+    }
+    const bar = document.getElementById('ustep-bar');
+    if (bar) bar.style.width = '0%';
+    const pct = document.getElementById('ustep-pct');
+    if (pct) pct.textContent = '0% complete';
+    // Hide upsell banners
+    ['pro-upsell-banner','compare-upsell-banner'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
+    // Reset upgrade screen state
+    ['upgrade-anonymous','upgrade-plans','upgrade-anon-paid','upgrade-professional-anon'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    // Reset mode tabs
+    setUploadMode('single');
     showScreen('screen-upload');
     switchUploadTab('pdf');
   }
+
+  // ─── UPSELL HANDLERS ─────────────────────────────────────────
+  async function upgradeCurrentDocToPro() {
+    if (window.pdfBase64) {
+      sessionStorage.setItem('fpf_pending_doc', JSON.stringify({ type: 'pdf', data: window.pdfBase64, name: uploadedFileName }));
+    } else if (documentText) {
+      sessionStorage.setItem('fpf_pending_doc', JSON.stringify({ type: 'text', data: documentText, name: uploadedFileName }));
+    }
+    isProfessionalMode = true;
+
+    // Check if this doc was already paid for (has a saved analysis = paid $3.99)
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const { count } = await sb
+        .from('analyses')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', session.user.id);
+      // If they have at least one analysis saved, they paid — charge the difference
+      const plan = count > 0 ? 'pro-upgrade' : 'professional';
+      handleUpgrade(plan, null);
+    } else {
+      // Anonymous user — full price
+      handleUpgrade('professional', null);
+    }
+  }
+
+  function startCompareFromResults() {
+    // Pre-load current doc into compare slot 0 then go straight to compare checkout
+    if (window.pdfBase64) {
+      compareDocs[0] = { name: uploadedFileName, base64: window.pdfBase64 };
+      // Save all compare docs including this one before checkout
+      sessionStorage.setItem('fpf_compare_docs', JSON.stringify([compareDocs[0]]));
+    }
+    setUploadMode('compare');
+    showScreen('screen-upload');
+    // Update slot 0 UI to show the pre-loaded doc
+    if (window.pdfBase64) {
+      const nameEl = document.getElementById('slot-0-name');
+      if (nameEl) { nameEl.textContent = uploadedFileName; nameEl.style.color = 'var(--accent)'; }
+      const btn = document.querySelector('#slot-0 button:last-child');
+      if (btn) { btn.textContent = 'Change'; btn.style.background = 'var(--accent)'; }
+    }
+  }
+
+  // ─── AUTH STATE LISTENER ─────────────────────────────────────
+  // Handle session expiry gracefully
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT' || (event === 'TOKEN_REFRESHED' && !session)) {
+      // Only redirect if on a protected screen (not upload)
+      const activeScreen = document.querySelector('.screen.active');
+      if (activeScreen && activeScreen.id !== 'screen-upload') {
+        window.location.href = 'auth.html?expired=1';
+      }
+    }
+    if (event === 'SIGNED_IN') {
+      currentUser = session?.user || null;
+    }
+  });
 
   // ─── EXPORT FULL PDF ─────────────────────────────────────────
   function exportFullPDF() {
@@ -2731,6 +2910,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
