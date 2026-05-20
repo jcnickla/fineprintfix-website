@@ -1555,17 +1555,69 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
 
     showScreen('screen-analyzing');
     document.getElementById('result-doc-name').textContent = uploadedFileName;
-    await animateProgress();
-    await runAnalysis();
-    handlePostAnalysis();
+
+    _tabWarningShown = false;
+    await acquireWakeLock();
+    document.addEventListener('visibilitychange', _onTabHidden);
+
+    try {
+      await animateProgress();
+      await runAnalysis();
+      handlePostAnalysis();
+    } finally {
+      releaseWakeLock();
+      document.removeEventListener('visibilitychange', _onTabHidden);
+      _clearTabWarning();
+    }
   }
 
   // ─── ANALYZING FLOW ───────────────────────────────────────────
+  let _wakeLock = null;
+
+  async function acquireWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        _wakeLock = await navigator.wakeLock.request('screen');
+      }
+    } catch (e) { /* wakeLock not supported or denied — silent */ }
+  }
+
+  function releaseWakeLock() {
+    if (_wakeLock) { _wakeLock.release().catch(() => {}); _wakeLock = null; }
+  }
+
+  let _tabWarningShown = false;
+  function _onTabHidden() {
+    if (_tabWarningShown) return;
+    _tabWarningShown = true;
+    const warn = document.createElement('div');
+    warn.id = 'tab-warning-toast';
+    warn.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#E89A18;color:#fff;font-size:13px;font-weight:500;text-align:center;padding:10px 16px;z-index:9999;display:flex;align-items:center;justify-content:center;gap:7px;';
+    warn.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:14px"></i> Stay on this tab — switching tabs may interrupt your analysis.';
+    document.body.appendChild(warn);
+  }
+
+  function _clearTabWarning() {
+    document.getElementById('tab-warning-toast')?.remove();
+  }
+
   async function goToAnalyzing() {
     showScreen('screen-analyzing');
     document.getElementById('result-doc-name').textContent = uploadedFileName;
-    await animateProgress();
-    await runAnalysis();
+
+    // Prevent tab suspension and warn on tab switch
+    _tabWarningShown = false;
+    await acquireWakeLock();
+    document.addEventListener('visibilitychange', _onTabHidden);
+
+    try {
+      await animateProgress();
+      await runAnalysis();
+    } finally {
+      releaseWakeLock();
+      document.removeEventListener('visibilitychange', _onTabHidden);
+      _clearTabWarning();
+    }
   }
 
   async function animateProgress() {
@@ -1699,8 +1751,25 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     }
   }
 
+  // Retry a fetch-based function up to `attempts` times on network errors
+  async function withRetry(fn, attempts = 2, delayMs = 1200) {
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await fn();
+      } catch (err) {
+        const isNetwork = err.message.includes('fetch') || err.message.includes('network') || err.message.includes('Failed to fetch') || err.message.includes('ERR_NETWORK');
+        if (isNetwork && i < attempts - 1) {
+          console.warn(`Network error on attempt ${i + 1}, retrying in ${delayMs}ms...`, err.message);
+          await new Promise(r => setTimeout(r, delayMs));
+        } else {
+          throw err;
+        }
+      }
+    }
+  }
+
   async function fetchSummary(docContent) {
-    try {
+    return withRetry(async () => {
       const promptObj = isProfessionalMode ? proSummaryPrompt(docContent) : summaryPrompt(docContent);
       const messages = [];
       if (docContent.type === 'document') {
@@ -1721,14 +1790,11 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       const parsed = extractJSON(raw);
       console.log('Summary fetched successfully:', parsed?.docType);
       return parsed || {};
-    } catch (err) {
-      console.error('Summary fetch error:', err.message);
-      return {};
-    }
+    }).catch(err => { console.error('Summary fetch error:', err.message); return {}; });
   }
 
   async function fetchMoney(docContent) {
-    try {
+    return withRetry(async () => {
       const promptObj = isProfessionalMode ? proMoneyPrompt(docContent) : moneyPrompt(docContent);
       const messages = [];
       if (docContent.type === 'document') {
@@ -1740,21 +1806,20 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 8000 : 4000 })
+        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 7000 : 4000 })
       });
       if (!response.ok) { console.error('Money API error:', response.status); return {}; }
       const data = await response.json();
       if (!data.content) { console.error('Money: no content', data); return {}; }
       const raw = '{' + data.content.map(b => b.text || '').join('');
-      console.log('Money raw length:', raw.length, '| stop_reason:', data.stop_reason, '| last 100:', raw.slice(-100));
+      if (data.stop_reason === 'max_tokens') {
+        console.warn('Money response hit token limit — JSON may be truncated');
+      }
       const parsed = extractJSON(raw);
       if (!parsed) { console.error('Money: JSON parse failed. Raw start:', raw.slice(0, 200)); return {}; }
       console.log('Money fetched successfully, hasFinancials:', parsed?.hasFinancials);
       return parsed || {};
-    } catch (err) {
-      console.error('Money fetch error:', err.message);
-      return {};
-    }
+    }).catch(err => { console.error('Money fetch error:', err.message); return {}; });
   }
 
   function buildDocContent() {
@@ -2128,17 +2193,19 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 
     if (!el) {
       try {
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
+        return await withRetry(async () => {
+          const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
+          });
+          if (!response.ok) throw new Error('API error: ' + response.status);
+          const data = await response.json();
+          const raw = prefill + data.content.map(b => b.text || '').join('');
+          const result = extractJSON(raw);
+          if (!result) throw new Error('Could not parse JSON from response');
+          return result;
         });
-        if (!response.ok) throw new Error('API error: ' + response.status);
-        const data = await response.json();
-        const raw = prefill + data.content.map(b => b.text || '').join('');
-        const result = extractJSON(raw);
-        if (!result) throw new Error('Could not parse JSON from response');
-        return result;
       } catch (err) {
         console.error('Analysis error (no element):', err);
         return null;
@@ -2146,15 +2213,15 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     }
 
     try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
+      const data = await withRetry(async () => {
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ system: promptObj.systemPrompt, messages, max_tokens: isProfessionalMode ? 6000 : 4000 })
+        });
+        if (!response.ok) throw new Error('API error: ' + response.status);
+        return await response.json();
       });
-
-      if (!response.ok) throw new Error('API error: ' + response.status);
-
-      const data = await response.json();
       const raw = prefill + data.content.map(b => b.text || '').join('');
       const parsed = extractJSON(raw);
 
@@ -2625,9 +2692,18 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           await new Promise(r => setTimeout(r, 1800));
           document.getElementById('result-doc-name').textContent = uploadedFileName;
           showScreen('screen-analyzing');
-          await animateProgress();
-          await runAnalysis();
-          handlePostAnalysis();
+          _tabWarningShown = false;
+          await acquireWakeLock();
+          document.addEventListener('visibilitychange', _onTabHidden);
+          try {
+            await animateProgress();
+            await runAnalysis();
+            handlePostAnalysis();
+          } finally {
+            releaseWakeLock();
+            document.removeEventListener('visibilitychange', _onTabHidden);
+            _clearTabWarning();
+          }
         } else {
           showPaymentSuccess(isProfessionalMode);
         }
@@ -2910,6 +2986,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
