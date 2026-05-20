@@ -341,6 +341,11 @@
       <option value="medium">Medium risk</option>
       <option value="low">Low risk</option>
     </select>
+    <select class="filter-select" id="filter-tier" onchange="applyFilters()">
+      <option value="">All tiers</option>
+      <option value="professional">Professional</option>
+      <option value="standard">Standard</option>
+    </select>
     <select class="filter-select" id="filter-date" onchange="applyFilters()">
       <option value="">Any date</option>
       <option value="7">Last 7 days</option>
@@ -425,9 +430,20 @@
     if (error || !data || data.length === 0) {
       list.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon"><i class="ti ti-file-off"></i></div>
+          <div class="empty-icon"><i class="ti ti-file-description"></i></div>
           <div class="empty-title">No analyses yet</div>
-          <div class="empty-sub">Upload your first document above to get started</div>
+          <div class="empty-sub">Upload your first document to get started — first analysis is free.</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:1.25rem;width:100%;max-width:280px;">
+            <a href="app.html?tier=standard" style="display:flex;align-items:center;justify-content:center;gap:7px;background:var(--accent);color:#fff;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">
+              <i class="ti ti-upload"></i> Standard analysis — free to try
+            </a>
+            <a href="app.html?tier=professional" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#1a1a18;color:#fff;padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">
+              <i class="ti ti-shield-check"></i> Professional analysis — $24.99
+            </a>
+            <a href="app.html?tier=compare" style="display:flex;align-items:center;justify-content:center;gap:7px;background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:11px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;">
+              <i class="ti ti-layout-columns"></i> Compare documents — $7.99
+            </a>
+          </div>
         </div>`;
       document.getElementById('results-count').textContent = '';
       return;
@@ -457,17 +473,16 @@
     const search = document.getElementById('search-input').value.toLowerCase().trim();
     const typeFilter = document.getElementById('filter-type').value;
     const riskFilter = document.getElementById('filter-risk').value;
+    const tierFilter = document.getElementById('filter-tier').value;
     const dateFilter = parseInt(document.getElementById('filter-date').value);
 
-    // Update active state on selects
-    ['filter-type','filter-risk','filter-date'].forEach(id => {
+    ['filter-type','filter-risk','filter-tier','filter-date'].forEach(id => {
       const el = document.getElementById(id);
       el.classList.toggle('active', el.value !== '');
     });
 
     let filtered = [...allAnalyses];
 
-    // Search
     if (search) {
       filtered = filtered.filter(a =>
         a.doc_name.toLowerCase().includes(search) ||
@@ -475,24 +490,28 @@
       );
     }
 
-    // Doc type
     if (typeFilter) {
       filtered = filtered.filter(a => a.summary?.docType === typeFilter);
     }
 
-    // Risk level
     if (riskFilter) {
       filtered = filtered.filter(a => a.summary?.overallRisk === riskFilter);
     }
 
-    // Date range
+    if (tierFilter) {
+      filtered = filtered.filter(a =>
+        tierFilter === 'professional'
+          ? a.analysis_tier === 'professional'
+          : (a.analysis_tier === 'standard' || !a.analysis_tier)
+      );
+    }
+
     if (dateFilter) {
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - dateFilter);
       filtered = filtered.filter(a => new Date(a.created_at) >= cutoff);
     }
 
-    // Sort
     filtered.sort((a, b) => {
       const diff = new Date(b.created_at) - new Date(a.created_at);
       return sortAscending ? -diff : diff;
@@ -544,6 +563,10 @@
                 <div class="ac-meta" style="flex-wrap:wrap;gap:5px;">
                   <span>${date}</span>
                   ${docType ? `<span class="doc-type-badge">${escHtml(docType)}</span>` : ''}
+                  ${a.analysis_tier === 'professional' 
+                    ? `<span style="display:inline-flex;align-items:center;gap:3px;background:#1a1a18;color:#C0DD97;font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;letter-spacing:0.04em;text-transform:uppercase;"><i class="ti ti-shield-check" style="font-size:9px"></i> Pro</span>`
+                    : `<span style="display:inline-flex;align-items:center;gap:3px;background:var(--bg2);color:var(--text2);font-size:9px;font-weight:500;padding:2px 7px;border-radius:20px;letter-spacing:0.04em;text-transform:uppercase;">Standard</span>`
+                  }
                   ${risk ? `<span class="risk-badge ${risk}"><i class="ti ${riskIcon}" style="font-size:9px"></i> ${riskLabel}</span>` : ''}
                   <div class="ac-flags">
                     <span class="flag-dot red"><i class="ti ti-flag" style="font-size:9px"></i> ${a.red_count || 0}</span>
@@ -870,6 +893,7 @@
     }, 500);
   }
 </script>
+
 
 
 
