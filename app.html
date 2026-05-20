@@ -1556,17 +1556,17 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     showScreen('screen-analyzing');
     document.getElementById('result-doc-name').textContent = uploadedFileName;
 
-    _tabWarningShown = false;
+    _showAnalysisWarning();
+    _startAnalysisGuard();
     await acquireWakeLock();
-    document.addEventListener('visibilitychange', _onTabHidden);
 
     try {
       await animateProgress();
       await runAnalysis();
       handlePostAnalysis();
     } finally {
+      _stopAnalysisGuard();
       releaseWakeLock();
-      document.removeEventListener('visibilitychange', _onTabHidden);
       _clearTabWarning();
     }
   }
@@ -1579,21 +1579,19 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       if ('wakeLock' in navigator) {
         _wakeLock = await navigator.wakeLock.request('screen');
       }
-    } catch (e) { /* wakeLock not supported or denied — silent */ }
+    } catch (e) { /* silent */ }
   }
 
   function releaseWakeLock() {
     if (_wakeLock) { _wakeLock.release().catch(() => {}); _wakeLock = null; }
   }
 
-  let _tabWarningShown = false;
-  function _onTabHidden() {
-    if (_tabWarningShown) return;
-    _tabWarningShown = true;
+  function _showAnalysisWarning() {
+    if (document.getElementById('tab-warning-toast')) return;
     const warn = document.createElement('div');
     warn.id = 'tab-warning-toast';
-    warn.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#E89A18;color:#fff;font-size:13px;font-weight:500;text-align:center;padding:10px 16px;z-index:9999;display:flex;align-items:center;justify-content:center;gap:7px;';
-    warn.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:14px"></i> Stay on this tab — switching tabs may interrupt your analysis.';
+    warn.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#1a1a18;color:#fff;font-size:13px;font-weight:500;text-align:center;padding:10px 16px;z-index:9999;display:flex;align-items:center;justify-content:center;gap:7px;';
+    warn.innerHTML = '<i class="ti ti-lock" style="font-size:14px;color:#C0DD97"></i> Keep this tab open while your document is being analyzed.';
     document.body.appendChild(warn);
   }
 
@@ -1605,17 +1603,16 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     showScreen('screen-analyzing');
     document.getElementById('result-doc-name').textContent = uploadedFileName;
 
-    // Prevent tab suspension and warn on tab switch
-    _tabWarningShown = false;
+    _showAnalysisWarning();
+    _startAnalysisGuard();
     await acquireWakeLock();
-    document.addEventListener('visibilitychange', _onTabHidden);
 
     try {
       await animateProgress();
       await runAnalysis();
     } finally {
+      _stopAnalysisGuard();
       releaseWakeLock();
-      document.removeEventListener('visibilitychange', _onTabHidden);
       _clearTabWarning();
     }
   }
@@ -1691,6 +1688,12 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     const sPrompt = isProfessionalMode ? proSectionsPrompt : sectionsPrompt;
     const qPrompt = isProfessionalMode ? proQuestionsPrompt : questionsPrompt;
 
+    // Create a pending placeholder row so interrupted analyses are trackable
+    _pendingAnalysisId = await _createPendingAnalysis();
+    if (_pendingAnalysisId) {
+      sessionStorage.setItem('fpf_pending_analysis_id', _pendingAnalysisId);
+    }
+
     // Step 1: Flags
     updateStep(1, 'active');
     const flagsData = await analyzeWithClaude(fPrompt(docContent), 'flags-content', 'count-red', 'count-amber', 'count-green');
@@ -1721,7 +1724,7 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     updateStep(5, 'done');
     await delay(500);
 
-    // Render summary and money now that all data is in
+    // Render tabs
     if (summaryData) {
       const el = document.getElementById('summary-content');
       if (el) renderSummary(summaryData, el);
@@ -1734,21 +1737,21 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       if (el) renderMoney(moneyData, el);
     }
 
-    // Show results — all tabs complete
+    // Show results
     showScreen('screen-results');
 
-    // Show upsell banners for Standard tier only
+    // Show upsell banners for Standard tier
     if (!isProfessionalMode) {
       const { data: { session } } = await sb.auth.getSession();
-      if (session) {
-        document.getElementById('pro-upsell-banner').style.display = 'block';
-      }
+      if (session) document.getElementById('pro-upsell-banner').style.display = 'block';
       document.getElementById('compare-upsell-banner').style.display = 'block';
     }
 
-    if (flagsData || sectionsData || questionsData) {
-      saveAnalysis(flagsData || {}, sectionsData || [], questionsData || [], summaryData || {}, moneyData || {});
-    }
+    // Save completed analysis — update the pending row to complete
+    const id = _pendingAnalysisId || null;
+    sessionStorage.removeItem('fpf_pending_analysis_id');
+    _pendingAnalysisId = null;
+    await _completePendingAnalysis(id, flagsData || {}, sectionsData || [], questionsData || [], summaryData || {}, moneyData || {});
   }
 
   // Retry a fetch-based function up to `attempts` times on network errors
@@ -2563,18 +2566,56 @@ Max 3 items per array. Focus on the most financially significant items only.`;
   }
 
   // ─── SAVE TO SUPABASE ─────────────────────────────────────────
-  async function saveAnalysis(flags, sections, questions, summary, money) {
+  // ─── ANALYSIS INTERRUPTION PROTECTION ───────────────────────
+  let _analysisInProgress = false;
+  let _pendingAnalysisId = null;
+
+  function _beforeUnloadHandler(e) {
+    if (!_analysisInProgress) return;
+    e.preventDefault();
+    e.returnValue = 'Your analysis is still running. If you leave now your results may be lost.';
+    return e.returnValue;
+  }
+
+  function _startAnalysisGuard() {
+    _analysisInProgress = true;
+    window.addEventListener('beforeunload', _beforeUnloadHandler);
+  }
+
+  function _stopAnalysisGuard() {
+    _analysisInProgress = false;
+    window.removeEventListener('beforeunload', _beforeUnloadHandler);
+  }
+
+  async function _createPendingAnalysis() {
     try {
       const { data: { session } } = await sb.auth.getSession();
-      if (!session) return;
+      if (!session) return null;
+      const res = await fetch('/api/save-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify({
+          doc_name: uploadedFileName,
+          flags: {}, sections: [], questions: [], summary: {}, money: {},
+          red_count: 0, amber_count: 0, green_count: 0,
+          analysis_tier: isProfessionalMode ? 'professional' : 'standard',
+          analysis_status: 'pending',
+        })
+      });
+      const data = await res.json();
+      return data?.id || null;
+    } catch { return null; }
+  }
 
+  async function _completePendingAnalysis(id, flags, sections, questions, summary, money) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session || !id) return;
       await fetch('/api/save-analysis', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + session.access_token
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
         body: JSON.stringify({
+          id,
           doc_name: uploadedFileName,
           flags,
           sections,
@@ -2585,17 +2626,10 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           amber_count: (flags.amber || []).length,
           green_count: (flags.green || []).length,
           analysis_tier: isProfessionalMode ? 'professional' : 'standard',
+          analysis_status: 'complete',
         })
       });
-      // Silently saved — user sees a "Saved" indicator
-      const saveNote = document.createElement('div');
-      saveNote.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#EAF3DE;color:#27500A;border:0.5px solid #C0DD97;padding:8px 14px;border-radius:8px;font-size:12px;font-family:DM Sans,sans-serif;display:flex;align-items:center;gap:6px;z-index:999;';
-      saveNote.innerHTML = '<i class="ti ti-check" style="font-size:13px"></i> Analysis saved to your account';
-      document.body.appendChild(saveNote);
-      setTimeout(() => saveNote.remove(), 3500);
-    } catch (err) {
-      console.error('Save failed:', err);
-    }
+    } catch (err) { console.error('Complete analysis save failed:', err); }
   }
 
   // ─── STRIPE CHECKOUT ─────────────────────────────────────────
@@ -2692,16 +2726,16 @@ Max 3 items per array. Focus on the most financially significant items only.`;
           await new Promise(r => setTimeout(r, 1800));
           document.getElementById('result-doc-name').textContent = uploadedFileName;
           showScreen('screen-analyzing');
-          _tabWarningShown = false;
+          _showAnalysisWarning();
+          _startAnalysisGuard();
           await acquireWakeLock();
-          document.addEventListener('visibilitychange', _onTabHidden);
           try {
             await animateProgress();
             await runAnalysis();
             handlePostAnalysis();
           } finally {
+            _stopAnalysisGuard();
             releaseWakeLock();
-            document.removeEventListener('visibilitychange', _onTabHidden);
             _clearTabWarning();
           }
         } else {
@@ -2944,9 +2978,16 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 @page{margin:0.75in;size:letter}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 html{background:#e8e8e8}
-body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.6;max-width:820px;margin:32px auto;padding:48px 56px;box-shadow:0 2px 16px rgba(0,0,0,0.12);border-radius:4px}
-@media print{html{background:#fff}body{margin:0;padding:0;box-shadow:none;border-radius:0;max-width:none}}
-.header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #D85A30;padding-bottom:12px;margin-bottom:20px}
+body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.6;max-width:820px;margin:0 auto 32px;padding:48px 56px;box-shadow:0 2px 16px rgba(0,0,0,0.12);border-radius:0 0 4px 4px}
+.download-bar{position:fixed;top:0;left:0;right:0;background:#1a1a18;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;z-index:999;font-family:'DM Sans',sans-serif;}
+.download-bar .db-left{font-size:12px;color:rgba(255,255,255,0.6);}
+.download-bar .db-left strong{color:#fff;font-weight:500;}
+.download-bar .db-actions{display:flex;gap:8px;}
+.download-bar button{border:none;padding:8px 16px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-download{background:#D85A30;color:#fff;}
+.btn-print{background:rgba(255,255,255,0.12);color:#fff;}
+@media print{.download-bar{display:none}body{margin:0;padding:0;box-shadow:none;border-radius:0;max-width:none}}
+.header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #D85A30;padding-bottom:12px;margin-bottom:20px;margin-top:52px}
 .header-left .brand{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#D85A30;margin-bottom:3px}
 .header-left .doc-title{font-size:18px;font-weight:700;margin-bottom:2px}
 .header-left .doc-meta{font-size:10px;color:#6b6b67}
@@ -2976,6 +3017,13 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 .negotiation-script{font-size:11px;color:#2a2a28;background:#EAF3DE;border-radius:5px;padding:6px 8px;line-height:1.55;font-style:italic}
 .doc-footer{border-top:0.5px solid #e5e5e3;margin-top:24px;padding-top:10px;font-size:10px;color:#9b9b97;text-align:center;line-height:1.6}
 </style></head><body>
+<div class="download-bar">
+  <div class="db-left"><strong>__DOC_NAME__</strong> &nbsp;·&nbsp; FinePrintFix Analysis</div>
+  <div class="db-actions">
+    <button class="btn-print" onclick="window.print()">🖨 Print</button>
+    <button class="btn-download" onclick="window.print()">⬇ Download PDF</button>
+  </div>
+</div>
 <div class="header"><div class="header-left"><div class="brand">FinePrintFix — Document Analysis</div><div class="doc-title">__DOC_NAME__</div><div class="doc-meta">Generated __DATE__</div></div><div class="header-right">fineprintfix.com<br/>AI analysis · Not legal advice</div></div>
 <div class="score-row"><div class="score-card"><div class="score-num" style="color:#D85A30">__RED__</div><div class="score-label">Red flags</div></div><div class="score-card"><div class="score-num" style="color:#BA7517">__AMBER__</div><div class="score-label">Worth asking</div></div><div class="score-card"><div class="score-num" style="color:#3B6D11">__GREEN__</div><div class="score-label">Looks fine</div></div></div>
 <div class="section-title" style="page-break-before:avoid;">Summary</div><div>__SUMMARY__</div>
@@ -2988,6 +3036,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
