@@ -2602,11 +2602,11 @@ Max 3 items per array. Focus on the most financially significant items only.`;
       _startTitleFlash();
     } else if (document.visibilityState === 'visible') {
       _stopTitleFlash();
-      // Show urgent "you left" warning when they return
+      // Restore the normal warning — only flag a problem if analysis actually fails
       const existing = document.getElementById('tab-warning-toast');
       if (existing) {
-        existing.style.background = '#993C1D';
-        existing.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:15px"></i> You left this tab — your analysis may not have completed fully. Please stay on this page.';
+        existing.style.background = '#D85A30';
+        existing.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:15px"></i> Keep this tab open — switching tabs or closing this window may interrupt your analysis.';
       }
     }
   }
