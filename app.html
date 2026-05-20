@@ -2577,14 +2577,35 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     return e.returnValue;
   }
 
+  function _onVisibilityChange() {
+    if (!_analysisInProgress) return;
+    if (document.visibilityState === 'hidden') {
+      // Escalate the warning when they actually switch away
+      const existing = document.getElementById('tab-warning-toast');
+      if (existing) {
+        existing.style.background = '#D85A30';
+        existing.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:14px"></i> You switched tabs — your analysis may have been interrupted. Stay on this tab until complete.';
+      }
+    } else if (document.visibilityState === 'visible') {
+      // Return to calm warning when they come back
+      const existing = document.getElementById('tab-warning-toast');
+      if (existing) {
+        existing.style.background = '#1a1a18';
+        existing.innerHTML = '<i class="ti ti-lock" style="font-size:14px;color:#C0DD97"></i> Keep this tab open while your document is being analyzed.';
+      }
+    }
+  }
+
   function _startAnalysisGuard() {
     _analysisInProgress = true;
     window.addEventListener('beforeunload', _beforeUnloadHandler);
+    document.addEventListener('visibilitychange', _onVisibilityChange);
   }
 
   function _stopAnalysisGuard() {
     _analysisInProgress = false;
     window.removeEventListener('beforeunload', _beforeUnloadHandler);
+    document.removeEventListener('visibilitychange', _onVisibilityChange);
   }
 
   async function _createPendingAnalysis() {
@@ -3036,6 +3057,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
