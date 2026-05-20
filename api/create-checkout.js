@@ -19,6 +19,9 @@ module.exports = async function handler(req, res) {
     priceId = process.env.STRIPE_COMPARE_PRICE_ID;
   } else if (plan === 'professional') {
     priceId = process.env.STRIPE_PROFESSIONAL_PRICE_ID;
+  } else if (plan === 'pro-upgrade') {
+    // Upgrade from Standard → Professional: $24.99 - $3.99 = $21.00
+    priceId = process.env.STRIPE_PRO_UPGRADE_PRICE_ID;
   } else {
     priceId = process.env.STRIPE_PRICE_ID;
   }
@@ -44,4 +47,5 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 };
+
 
