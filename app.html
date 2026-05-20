@@ -2875,7 +2875,9 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 
   // ─── EXPORT FULL PDF ─────────────────────────────────────────
   function exportFullPDF() {
-    const docName = document.getElementById('result-doc-name')?.textContent || 'Analysis';
+    const rawName = document.getElementById('result-doc-name')?.textContent?.trim() || 'Analysis';
+    // Strip .pdf extension for display, clean up underscores
+    const docName = rawName.replace(/\.pdf$/i, '').replace(/_/g, ' ');
     const redCount = document.getElementById('count-red')?.textContent || '0';
     const amberCount = document.getElementById('count-amber')?.textContent || '0';
     const greenCount = document.getElementById('count-green')?.textContent || '0';
@@ -2903,19 +2905,16 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     const questionsHTML = document.getElementById('questions-content')?.innerHTML || '<p>Not available</p>';
     const moneyHTML     = document.getElementById('money-content')?.innerHTML || '<p>Not available</p>';
 
-    // Restore collapsed sections
+    // Restore collapsed sections and panels
     collapsedBodies.forEach(el => { el.style.display = 'none'; });
-
-    // Restore panel visibility
     panels.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.style.display = savedDisplay[id] || '';
     });
 
-    const printWindow = window.open('', '_blank');
     const tmpl = document.getElementById('pdf-print-template').innerHTML;
     const html = tmpl
-      .replace('__DOC_NAME__', docName)
+      .replaceAll('__DOC_NAME__', docName)
       .replace('__DATE__', new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}))
       .replace('__RED__', redCount)
       .replace('__AMBER__', amberCount)
@@ -2925,12 +2924,13 @@ Max 3 items per array. Focus on the most financially significant items only.`;
       .replace('__SECTIONS__', sectionsHTML)
       .replace('__QUESTIONS__', questionsHTML)
       .replace('__MONEY__', moneyHTML);
-    printWindow.document.open();
-    printWindow.document.write(html);
-    const s = printWindow.document.createElement('script');
-    s.textContent = 'window.onload=function(){setTimeout(function(){window.print();},1200);};';
-    printWindow.document.head.appendChild(s);
-    printWindow.document.close();
+
+    // Open as Blob URL in browser tab — user can save via browser's built-in PDF save
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    // Clean up blob URL after a delay
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
 </script>
@@ -2943,7 +2943,9 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
 @page{margin:0.75in;size:letter}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.6}
+html{background:#e8e8e8}
+body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.6;max-width:820px;margin:32px auto;padding:48px 56px;box-shadow:0 2px 16px rgba(0,0,0,0.12);border-radius:4px}
+@media print{html{background:#fff}body{margin:0;padding:0;box-shadow:none;border-radius:0;max-width:none}}
 .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid #D85A30;padding-bottom:12px;margin-bottom:20px}
 .header-left .brand{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#D85A30;margin-bottom:3px}
 .header-left .doc-title{font-size:18px;font-weight:700;margin-bottom:2px}
@@ -2986,6 +2988,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
