@@ -193,9 +193,25 @@
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  const params = new URLSearchParams(window.location.search);
+  const nextParam = params.get('next');
+  const expired = params.get('expired');
+
+  // Show session expired notice
+  if (expired) {
+    const notice = document.createElement('div');
+    notice.style.cssText = 'background:#FAEEDA;border:0.5px solid #E89A18;border-radius:8px;padding:10px 14px;font-size:12px;color:#633806;margin-bottom:1rem;text-align:center;';
+    notice.textContent = 'Your session expired. Please sign in again.';
+    document.querySelector('.card-body')?.prepend(notice);
+  }
+
   // Redirect if already logged in
   sb.auth.getSession().then(({ data: { session } }) => {
-    if (session) window.location.href = 'dashboard.html';
+    if (session) {
+      if (nextParam === 'professional') window.location.href = 'app.html?tier=professional';
+      else if (nextParam === 'pay') window.location.href = 'app.html?resume=pay';
+      else window.location.href = 'dashboard.html';
+    }
   });
 
   // ─── TAB SWITCH ────────────────────────────────────────────────
@@ -233,7 +249,9 @@
       btn.disabled = false;
       btn.innerHTML = '<i class="ti ti-login"></i> Sign in';
     } else {
-      window.location.href = 'dashboard.html';
+      if (nextParam === 'professional') window.location.href = 'app.html?tier=professional';
+      else if (nextParam === 'pay') window.location.href = 'app.html?resume=pay';
+      else window.location.href = 'dashboard.html';
     }
   }
 
@@ -298,5 +316,6 @@
 </div>
 </body>
 </html>
+
 
 
