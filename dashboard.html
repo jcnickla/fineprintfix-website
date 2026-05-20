@@ -450,6 +450,29 @@
     }
 
     allAnalyses = data;
+
+    // Surface any incomplete analyses
+    const pending = data.filter(a => a.analysis_status === 'pending');
+    if (pending.length > 0) {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:#FAEEDA;border:0.5px solid #E89A18;border-radius:10px;padding:12px 16px;margin-bottom:1rem;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;';
+      banner.innerHTML = `
+        <div>
+          <div style="font-size:13px;font-weight:500;color:#633806;margin-bottom:3px;">
+            <i class="ti ti-alert-triangle" style="font-size:13px"></i>
+            ${pending.length === 1 ? '1 analysis didn\'t complete' : pending.length + ' analyses didn\'t complete'}
+          </div>
+          <div style="font-size:12px;color:#7a4a10;line-height:1.5;">
+            ${pending[0].doc_name}${pending.length > 1 ? ` and ${pending.length - 1} other${pending.length > 2 ? 's' : ''}` : ''} — analysis was interrupted before finishing.
+          </div>
+        </div>
+        <a href="mailto:hello@fineprintfix.com?subject=Incomplete analysis — ${encodeURIComponent(pending[0].doc_name)}&body=Hi, my analysis for ${encodeURIComponent(pending[0].doc_name)} didn't complete. Please help."
+           style="flex-shrink:0;background:#E89A18;color:#fff;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:500;text-decoration:none;white-space:nowrap;">
+          Contact support
+        </a>`;
+      document.getElementById('analyses-list').prepend(banner);
+    }
+
     populateTypeFilter(data);
     applyFilters();
   }
@@ -893,6 +916,7 @@
     }, 500);
   }
 </script>
+
 
 
 
