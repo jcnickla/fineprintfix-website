@@ -129,7 +129,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: req.body.model || 'claude-haiku-4-5-20251001',
-        max_tokens: req.body.max_tokens || 8000,
+        max_tokens: Math.min(req.body.max_tokens || 4000, 8000),
         temperature: 0.2,
         system,
         messages,
@@ -149,6 +149,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+
 
 
 
