@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid token' });
   }
 
-  const { doc_name, flags, sections, questions, summary, money, red_count, amber_count, green_count, paid } = req.body;
+  const { doc_name, flags, sections, questions, summary, money, red_count, amber_count, green_count, paid, analysis_tier } = req.body;
 
   const { data, error } = await sb
     .from('analyses')
@@ -47,6 +47,7 @@ module.exports = async function handler(req, res) {
       amber_count: amber_count || 0,
       green_count: green_count || 0,
       paid: paid || false,
+      analysis_tier: analysis_tier || 'standard',
     })
     .select()
     .single();
@@ -58,4 +59,5 @@ module.exports = async function handler(req, res) {
 
   return res.status(200).json({ id: data.id });
 }
+
 
