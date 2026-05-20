@@ -1590,8 +1590,8 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     if (document.getElementById('tab-warning-toast')) return;
     const warn = document.createElement('div');
     warn.id = 'tab-warning-toast';
-    warn.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#1a1a18;color:#fff;font-size:13px;font-weight:500;text-align:center;padding:10px 16px;z-index:9999;display:flex;align-items:center;justify-content:center;gap:7px;';
-    warn.innerHTML = '<i class="ti ti-lock" style="font-size:14px;color:#C0DD97"></i> Keep this tab open while your document is being analyzed.';
+    warn.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#D85A30;color:#fff;font-size:13px;font-weight:600;text-align:center;padding:11px 16px;z-index:9999;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.2);';
+    warn.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:15px"></i> Keep this tab open — switching tabs or closing this window may interrupt your analysis.';
     document.body.appendChild(warn);
   }
 
@@ -2570,6 +2570,25 @@ Max 3 items per array. Focus on the most financially significant items only.`;
   let _analysisInProgress = false;
   let _pendingAnalysisId = null;
 
+  let _titleFlashInterval = null;
+
+  function _startTitleFlash() {
+    const original = document.title;
+    let toggle = false;
+    _titleFlashInterval = setInterval(() => {
+      document.title = toggle ? '⚠️ Stay on this tab!' : '🔴 Analysis running...';
+      toggle = !toggle;
+    }, 1000);
+  }
+
+  function _stopTitleFlash() {
+    if (_titleFlashInterval) {
+      clearInterval(_titleFlashInterval);
+      _titleFlashInterval = null;
+    }
+    document.title = 'FinePrintFix — Document Analysis';
+  }
+
   function _beforeUnloadHandler(e) {
     if (!_analysisInProgress) return;
     e.preventDefault();
@@ -2580,18 +2599,14 @@ Max 3 items per array. Focus on the most financially significant items only.`;
   function _onVisibilityChange() {
     if (!_analysisInProgress) return;
     if (document.visibilityState === 'hidden') {
-      // Escalate the warning when they actually switch away
-      const existing = document.getElementById('tab-warning-toast');
-      if (existing) {
-        existing.style.background = '#D85A30';
-        existing.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:14px"></i> You switched tabs — your analysis may have been interrupted. Stay on this tab until complete.';
-      }
+      _startTitleFlash();
     } else if (document.visibilityState === 'visible') {
-      // Return to calm warning when they come back
+      _stopTitleFlash();
+      // Show urgent "you left" warning when they return
       const existing = document.getElementById('tab-warning-toast');
       if (existing) {
-        existing.style.background = '#1a1a18';
-        existing.innerHTML = '<i class="ti ti-lock" style="font-size:14px;color:#C0DD97"></i> Keep this tab open while your document is being analyzed.';
+        existing.style.background = '#993C1D';
+        existing.innerHTML = '<i class="ti ti-alert-triangle" style="font-size:15px"></i> You left this tab — your analysis may not have completed fully. Please stay on this page.';
       }
     }
   }
@@ -2604,6 +2619,7 @@ Max 3 items per array. Focus on the most financially significant items only.`;
 
   function _stopAnalysisGuard() {
     _analysisInProgress = false;
+    _stopTitleFlash();
     window.removeEventListener('beforeunload', _beforeUnloadHandler);
     document.removeEventListener('visibilitychange', _onVisibilityChange);
   }
@@ -3057,6 +3073,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
