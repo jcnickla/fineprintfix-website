@@ -733,6 +733,19 @@
               <div class="prog-dot pending" id="ustep-dot-5"><i class="ti ti-dots" style="font-size:10px"></i></div>
               <span id="ustep-label-5">Calculating costs &amp; financials</span>
             </div>
+            <!-- Steps 6-8 shown for Pro only -->
+            <div class="prog-step" id="ustep-row-6" style="display:none;">
+              <div class="prog-dot pending" id="ustep-dot-6"><i class="ti ti-dots" style="font-size:10px"></i></div>
+              <span id="ustep-label-6">Extracting deadlines &amp; obligations</span>
+            </div>
+            <div class="prog-step" id="ustep-row-7" style="display:none;">
+              <div class="prog-dot pending" id="ustep-dot-7"><i class="ti ti-dots" style="font-size:10px"></i></div>
+              <span id="ustep-label-7">Building definitions glossary</span>
+            </div>
+            <div class="prog-step" id="ustep-row-8" style="display:none;">
+              <div class="prog-dot pending" id="ustep-dot-8"><i class="ti ti-dots" style="font-size:10px"></i></div>
+              <span id="ustep-label-8">Researching counterparty</span>
+            </div>
           </div>
           <div style="background:var(--bg2);border-radius:20px;height:4px;overflow:hidden;">
             <div id="ustep-bar" style="height:100%;background:var(--accent);border-radius:20px;width:0%;transition:width 0.8s ease;"></div>
@@ -767,6 +780,7 @@
       <div class="top-actions">
         <a href="dashboard.html" class="icon-btn"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
         <button class="icon-btn" onclick="exportFullPDF()"><i class="ti ti-download"></i> Save PDF</button>
+        <button class="icon-btn" id="share-brief-btn" onclick="shareOnePager()" style="display:none;background:#1a1a18;color:#fff;"><i class="ti ti-share"></i> Share brief</button>
         <button class="icon-btn" onclick="navigator.share && navigator.share({title:'FinePrintFix Analysis', url: window.location.href})"><i class="ti ti-share"></i> Share</button>
       </div>
     </div>
@@ -811,6 +825,16 @@
         <button class="rtab" id="rtab-money" onclick="switchResultTab('money')">
           <i class="ti ti-coin"></i> Money
         </button>
+        <!-- PRO-ONLY TABS -->
+        <button class="rtab pro-tab" id="rtab-deadlines" onclick="switchResultTab('deadlines')" style="display:none;">
+          <i class="ti ti-calendar-due"></i> Deadlines
+        </button>
+        <button class="rtab pro-tab" id="rtab-definitions" onclick="switchResultTab('definitions')" style="display:none;">
+          <i class="ti ti-book"></i> Definitions
+        </button>
+        <button class="rtab pro-tab" id="rtab-counterparty" onclick="switchResultTab('counterparty')" style="display:none;">
+          <i class="ti ti-building"></i> Counterparty
+        </button>
       </div>
 
       <div id="panel-summary" class="rtab-panel active">
@@ -831,6 +855,17 @@
 
       <div id="panel-money" class="rtab-panel">
         <div id="money-content" class="ai-response loading">Analyzing financial terms...</div>
+      </div>
+
+      <!-- PRO-ONLY PANELS -->
+      <div id="panel-deadlines" class="rtab-panel" style="display:none;">
+        <div id="deadlines-content" class="ai-response loading">Extracting deadlines &amp; obligations...</div>
+      </div>
+      <div id="panel-definitions" class="rtab-panel" style="display:none;">
+        <div id="definitions-content" class="ai-response loading">Building definitions glossary...</div>
+      </div>
+      <div id="panel-counterparty" class="rtab-panel" style="display:none;">
+        <div id="counterparty-content" class="ai-response loading">Researching counterparty...</div>
       </div>
 
       <button class="new-doc-btn" onclick="resetFlow()">
@@ -1624,18 +1659,25 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
 
     if (isProfessionalMode) {
       document.getElementById('analyzing-title').textContent = 'Running Professional analysis...';
-      document.getElementById('analyzing-sub').textContent = 'Exhaustive clause review — this takes 1–2 minutes.';
-      // Set Pro-specific step labels
+      document.getElementById('analyzing-sub').textContent = 'Exhaustive review — this takes 2–3 minutes.';
       const labels = [
         'Reviewing every clause for flags',
         'Building exhaustive section breakdown',
         'Generating negotiation questions',
         'Risk scoring & executive summary',
-        'Calculating costs & financial exposure'
+        'Calculating costs & financial exposure',
+        'Extracting deadlines & obligations',
+        'Building definitions glossary',
+        'Researching counterparty'
       ];
       labels.forEach((l, i) => {
         const el = document.getElementById('ustep-label-' + (i + 1));
         if (el) el.textContent = l;
+      });
+      // Show steps 6-8
+      [6,7,8].forEach(n => {
+        const row = document.getElementById('ustep-row-' + n);
+        if (row) row.style.display = '';
       });
     } else {
       document.getElementById('analyzing-title').textContent = 'Analyzing your document...';
@@ -1655,7 +1697,8 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       dot.innerHTML = '<i class="ti ti-check" style="font-size:10px"></i>';
     }
     // Advance next dot to active if not already done
-    if (state === 'done' && n < 5) {
+    const maxSteps = isProfessionalMode ? 8 : 5;
+    if (state === 'done' && n < maxSteps) {
       const next = document.getElementById('ustep-dot-' + (n + 1));
       if (next && next.className.includes('pending')) {
         next.className = 'prog-dot active';
@@ -1663,15 +1706,15 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
       }
     }
     // Update progress bar
-    const pct = state === 'done' ? n * 20 : (n - 1) * 20 + 10;
+    const pct = state === 'done' ? Math.round(n / maxSteps * 100) : Math.round((n - 1) / maxSteps * 100) + Math.round(50 / maxSteps);
     const bar = document.getElementById('ustep-bar');
     const pctEl = document.getElementById('ustep-pct');
     const eta = document.getElementById('ustep-eta');
     if (bar) bar.style.width = pct + '%';
     if (pctEl) pctEl.textContent = pct + '% complete';
     if (eta) {
-      const stepsLeft = 5 - (state === 'done' ? n : n - 1);
-      const secPerStep = isProfessionalMode ? 25 : 15;
+      const stepsLeft = maxSteps - (state === 'done' ? n : n - 1);
+      const secPerStep = isProfessionalMode ? 20 : 15;
       const secsLeft = stepsLeft * secPerStep;
       eta.textContent = secsLeft > 0 ? '~' + secsLeft + 's remaining' : 'Almost done...';
     }
@@ -1724,6 +1767,26 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
     updateStep(5, 'done');
     await delay(500);
 
+    // PRO-ONLY steps 6-8
+    let deadlinesData = null, definitionsData = null, counterpartyData = null;
+    if (isProfessionalMode) {
+      await delay(callDelay);
+      updateStep(6, 'active');
+      deadlinesData = await analyzeWithClaude(deadlinesPrompt(docContent), 'deadlines-content');
+      updateStep(6, 'done');
+      await delay(callDelay);
+
+      updateStep(7, 'active');
+      definitionsData = await analyzeWithClaude(definitionsPrompt(docContent), 'definitions-content');
+      updateStep(7, 'done');
+      await delay(callDelay);
+
+      updateStep(8, 'active');
+      counterpartyData = await analyzeWithClaude(counterpartyPrompt(docContent), 'counterparty-content');
+      updateStep(8, 'done');
+      await delay(500);
+    }
+
     // Render tabs
     if (summaryData) {
       const el = document.getElementById('summary-content');
@@ -1739,6 +1802,24 @@ Max 4 category winners. Max 3 pros/cons each. Max 4 side-by-side rows. Be specif
 
     // Show results
     showScreen('screen-results');
+
+    // Show/hide Pro-only tabs and Share brief button
+    document.querySelectorAll('.pro-tab').forEach(el => {
+      el.style.display = isProfessionalMode ? '' : 'none';
+    });
+    ['panel-deadlines','panel-definitions','panel-counterparty'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = isProfessionalMode ? '' : 'none';
+    });
+    const shareBriefBtn = document.getElementById('share-brief-btn');
+    if (shareBriefBtn) shareBriefBtn.style.display = isProfessionalMode ? '' : 'none';
+
+    // Render Pro-only tabs
+    if (isProfessionalMode) {
+      if (deadlinesData) renderDeadlines(deadlinesData, document.getElementById('deadlines-content'));
+      if (definitionsData) renderDefinitions(definitionsData, document.getElementById('definitions-content'));
+      if (counterpartyData) renderCounterparty(counterpartyData, document.getElementById('counterparty-content'));
+    }
 
     // Show upsell banners for Standard tier
     if (!isProfessionalMode) {
@@ -2147,6 +2228,62 @@ COSTS RULES:
 
 Max 3 items per array. Focus on the most financially significant items only.`;
 
+    return { systemPrompt, content: docContent };
+  }
+
+  // ─── PRO-ONLY PROMPTS ────────────────────────────────────────
+
+  function deadlinesPrompt(docContent) {
+    const systemPrompt = `You are FinePrintFix Professional. Extract every deadline, notice requirement, time limit, and obligation from this document. Return ONLY a JSON array — no markdown, no preamble:
+[
+  {
+    "title": "Short name for this deadline or obligation",
+    "party": "Who must act — 'You', 'Other party', or 'Both'",
+    "trigger": "What starts the clock — e.g. 'From signing', 'Upon delivery', 'After defect discovered'",
+    "deadline": "The time limit — e.g. '48 hours', '30 days', 'Before project start'",
+    "consequence": "What happens if missed — be specific",
+    "priority": "high" or "medium" or "low",
+    "exact_language": "The exact clause text this comes from (keep under 30 words)"
+  }
+]
+
+Include ALL of: notice requirements, payment deadlines, response windows, warranty claim periods, cancellation windows, opt-out periods, renewal dates, performance deadlines.
+Priority "high" = missing this has serious financial or legal consequences.
+If no deadlines exist, return an empty array [].`;
+    return { systemPrompt, content: docContent };
+  }
+
+  function definitionsPrompt(docContent) {
+    const systemPrompt = `You are FinePrintFix Professional. Extract every defined term from this document and explain it in plain English. Return ONLY a JSON array — no markdown, no preamble:
+[
+  {
+    "term": "The defined term exactly as written",
+    "definition": "What it actually means in plain English — 1-2 sentences max",
+    "why_it_matters": "Why this definition matters to the person signing — 1 sentence",
+    "risk": "high" or "medium" or "low" or "none"
+  }
+]
+
+Include: capitalized defined terms, terms defined in a definitions section, and any terms given special meaning in the contract.
+risk "high" = the definition is narrow, unusual, or benefits the other party.
+risk "none" = standard definition, nothing surprising.
+Order by risk (high first). Cap at 20 terms maximum.`;
+    return { systemPrompt, content: docContent };
+  }
+
+  function counterpartyPrompt(docContent) {
+    const systemPrompt = `You are FinePrintFix Professional. Based on this document, identify the counterparty (the other party the user is contracting with) and provide research context. Return ONLY a JSON object — no markdown, no preamble:
+{
+  "name": "Full legal name of the counterparty",
+  "type": "Type of entity — e.g. 'LLC', 'Corporation', 'Individual', 'Government agency'",
+  "jurisdiction": "State/country of incorporation or operation if mentioned",
+  "role": "Their role in this contract — e.g. 'Contractor', 'Employer', 'Landlord', 'Service provider'",
+  "red_flags": ["Any concerning things about how they've described themselves or their obligations in this contract"],
+  "questions_to_verify": ["Things to independently verify about this party before signing — e.g. 'Verify contractor license number', 'Confirm LLC is in good standing'"],
+  "what_to_search": "Suggested search query to research this company online — e.g. 'Pro Roof Group Atlanta reviews BBB'"
+}
+
+Base this entirely on what's IN the document. Do not fabricate external information. The red_flags should come from how the contract is written, not assumed facts about the company.`;
     return { systemPrompt, content: docContent };
   }
 
@@ -2834,10 +2971,159 @@ Max 3 items per array. Focus on the most financially significant items only.`;
   }
 
   // ─── UI HELPERS ───────────────────────────────────────────────
+  function renderDeadlines(data, el) {
+    if (!el) return;
+    if (!Array.isArray(data) || data.length === 0) {
+      el.innerHTML = '<p style="color:var(--text2);font-size:13px;text-align:center;padding:1rem 0;">No deadlines or time-sensitive obligations found in this document.</p>';
+      return;
+    }
+    const priorityColor = { high: '#D85A30', medium: '#E89A18', low: '#3B6D11' };
+    const priorityBg = { high: '#FAECE7', medium: '#FAEEDA', low: '#EAF3DE' };
+    el.innerHTML = data.map(d => `
+      <div style="border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:8px;border-left:3px solid ${priorityColor[d.priority]||'var(--border2)'};">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">
+          <div style="font-size:13px;font-weight:500;color:var(--text)">${d.title}</div>
+          <span style="flex-shrink:0;font-size:10px;font-weight:600;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:${priorityBg[d.priority]||'var(--bg2)'};color:${priorityColor[d.priority]||'var(--text2)'};">${d.priority}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px;margin-bottom:8px;">
+          <div><span style="color:var(--text2)">Who: </span>${d.party}</div>
+          <div><span style="color:var(--text2)">Deadline: </span><strong>${d.deadline}</strong></div>
+          <div style="grid-column:span 2"><span style="color:var(--text2)">Trigger: </span>${d.trigger}</div>
+        </div>
+        <div style="font-size:11px;color:#D85A30;margin-bottom:6px;"><strong>If missed:</strong> ${d.consequence}</div>
+        ${d.exact_language ? `<div style="font-size:10px;color:var(--text2);font-style:italic;border-top:0.5px solid var(--border);padding-top:6px;">"${d.exact_language}"</div>` : ''}
+      </div>`).join('');
+    el.className = 'ai-response';
+  }
+
+  function renderDefinitions(data, el) {
+    if (!el) return;
+    if (!Array.isArray(data) || data.length === 0) {
+      el.innerHTML = '<p style="color:var(--text2);font-size:13px;text-align:center;padding:1rem 0;">No defined terms found in this document.</p>';
+      return;
+    }
+    const riskColor = { high: '#D85A30', medium: '#E89A18', low: '#3B6D11', none: 'var(--text2)' };
+    const riskBg = { high: '#FAECE7', medium: '#FAEEDA', low: '#EAF3DE', none: 'var(--bg2)' };
+    el.innerHTML = `
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px;">${data.length} defined term${data.length!==1?'s':''} found — ordered by risk</div>
+      ${data.map(d => `
+      <div style="padding:10px 0;border-bottom:0.5px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:13px;font-weight:600;color:var(--text)">${d.term}</span>
+          ${d.risk !== 'none' ? `<span style="font-size:9px;font-weight:600;text-transform:uppercase;padding:2px 7px;border-radius:20px;background:${riskBg[d.risk]};color:${riskColor[d.risk]};">${d.risk} risk</span>` : ''}
+        </div>
+        <div style="font-size:12px;color:var(--text);line-height:1.55;margin-bottom:3px;">${d.definition}</div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.5;">${d.why_it_matters}</div>
+      </div>`).join('')}`;
+    el.className = 'ai-response';
+  }
+
+  function renderCounterparty(data, el) {
+    if (!el) return;
+    if (!data || !data.name) {
+      el.innerHTML = '<p style="color:var(--text2);font-size:13px;">Could not identify the counterparty from this document.</p>';
+      return;
+    }
+    el.innerHTML = `
+      <div style="border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:12px;">
+        <div style="font-size:16px;font-weight:600;margin-bottom:4px;">${data.name}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          ${data.type ? `<span style="font-size:11px;background:var(--bg2);padding:2px 8px;border-radius:20px;color:var(--text2);">${data.type}</span>` : ''}
+          ${data.role ? `<span style="font-size:11px;background:var(--bg2);padding:2px 8px;border-radius:20px;color:var(--text2);">${data.role}</span>` : ''}
+          ${data.jurisdiction ? `<span style="font-size:11px;background:var(--bg2);padding:2px 8px;border-radius:20px;color:var(--text2);">${data.jurisdiction}</span>` : ''}
+        </div>
+      </div>
+      ${data.red_flags?.length ? `
+      <div style="margin-bottom:12px;">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;">Contract concerns</div>
+        ${data.red_flags.map(f => `<div style="background:#FAECE7;border-left:3px solid #D85A30;border-radius:0 6px 6px 0;padding:7px 10px;margin-bottom:5px;font-size:12px;color:var(--text);">${f}</div>`).join('')}
+      </div>` : ''}
+      ${data.questions_to_verify?.length ? `
+      <div style="margin-bottom:12px;">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text2);margin-bottom:8px;">Verify before signing</div>
+        ${data.questions_to_verify.map((q,i) => `<div style="display:flex;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:12px;"><span style="color:#D85A30;font-weight:600;flex-shrink:0">${i+1}.</span>${q}</div>`).join('')}
+      </div>` : ''}
+      ${data.what_to_search ? `
+      <div style="background:var(--bg2);border-radius:var(--radius);padding:10px 12px;">
+        <div style="font-size:11px;color:var(--text2);margin-bottom:5px;">Suggested search to research this company:</div>
+        <a href="https://www.google.com/search?q=${encodeURIComponent(data.what_to_search)}" target="_blank" style="font-size:13px;color:var(--accent);font-weight:500;text-decoration:none;display:flex;align-items:center;gap:5px;">
+          <i class="ti ti-search" style="font-size:12px"></i> "${data.what_to_search}"
+        </a>
+      </div>` : ''}`;
+    el.className = 'ai-response';
+  }
+
+  function shareOnePager() {
+    const docName = document.getElementById('result-doc-name')?.textContent?.trim().replace(/\.pdf$/i,'').replace(/_/g,' ') || 'Analysis';
+    const summary = document.getElementById('summary-content')?.innerHTML || '';
+    const flags = document.getElementById('flags-content')?.innerHTML || '';
+    const deadlines = document.getElementById('deadlines-content')?.innerHTML || '';
+    const redCount = document.getElementById('count-red')?.textContent || '0';
+    const amberCount = document.getElementById('count-amber')?.textContent || '0';
+    const greenCount = document.getElementById('count-green')?.textContent || '0';
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+<title>FinePrintFix — ${docName} — One-Page Brief</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#e8e8e8}
+body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12px;line-height:1.6;max-width:740px;margin:0 auto;padding:36px 44px;box-shadow:0 2px 12px rgba(0,0,0,0.1);}
+.download-bar{position:fixed;top:0;left:0;right:0;background:#1a1a18;padding:9px 20px;display:flex;align-items:center;justify-content:space-between;font-family:'DM Sans',sans-serif;}
+.download-bar span{font-size:12px;color:rgba(255,255,255,0.6);}
+.download-bar button{background:#D85A30;color:#fff;border:none;padding:7px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+@media print{.download-bar,.share-notice{display:none}body{margin:0;padding:0;max-width:none;box-shadow:none}}
+.header{border-bottom:2px solid #D85A30;padding-bottom:10px;margin-bottom:16px;margin-top:44px;}
+.brand{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#D85A30;margin-bottom:3px;}
+.doc-title{font-size:20px;font-weight:700;}
+.doc-meta{font-size:10px;color:#6b6b67;margin-top:2px;}
+.score-row{display:flex;gap:8px;margin-bottom:16px;}
+.score-card{flex:1;border:0.5px solid #e5e5e3;border-radius:8px;padding:8px;text-align:center;}
+.score-num{font-size:20px;font-weight:700;}
+.score-label{font-size:9px;color:#6b6b67;text-transform:uppercase;}
+.section-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#D85A30;border-bottom:0.5px solid #e5e5e3;padding-bottom:4px;margin:16px 0 10px;}
+.flag-item{border-radius:6px;padding:7px 10px;margin-bottom:5px;}
+.flag-item.red-flag{background:#FAECE7;border-left:3px solid #D85A30;}
+.flag-item.amber-flag{background:#FAEEDA;border-left:3px solid #E89A18;}
+.share-notice{background:#f7f5f2;border-radius:8px;padding:10px 12px;margin-top:16px;font-size:11px;color:#6b6b67;text-align:center;}
+.footer{border-top:0.5px solid #e5e5e3;margin-top:16px;padding-top:8px;font-size:10px;color:#9b9b97;text-align:center;}
+</style></head><body>
+<div class="download-bar">
+  <span><strong style="color:#fff">${docName}</strong> &nbsp;·&nbsp; FinePrintFix One-Page Brief</span>
+  <button onclick="window.print()">⬇ Save as PDF</button>
+</div>
+<div class="header">
+  <div class="brand">FinePrintFix — Document Brief</div>
+  <div class="doc-title">${docName}</div>
+  <div class="doc-meta">Generated ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})} · Professional analysis</div>
+</div>
+<div class="score-row">
+  <div class="score-card"><div class="score-num" style="color:#D85A30">${redCount}</div><div class="score-label">Red flags</div></div>
+  <div class="score-card"><div class="score-num" style="color:#BA7517">${amberCount}</div><div class="score-label">Worth asking</div></div>
+  <div class="score-card"><div class="score-num" style="color:#3B6D11">${greenCount}</div><div class="score-label">Looks fine</div></div>
+</div>
+<div class="section-label">Summary</div>
+<div>${summary}</div>
+<div class="section-label">Key Flags</div>
+<div>${flags}</div>
+${deadlines ? `<div class="section-label">Key Deadlines</div><div>${deadlines}</div>` : ''}
+<div class="share-notice">This brief was generated by FinePrintFix — AI-powered document analysis. This is informational only and does not constitute legal advice. <a href="https://fineprintfix.com" style="color:#D85A30;">fineprintfix.com</a></div>
+<div class="footer">Shared via FinePrintFix · Not legal advice · Consult a qualified attorney before making decisions</div>
+</body></html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
   function switchResultTab(tab) {
-    ['summary','flags','sections','questions','money'].forEach(t => {
-      document.getElementById('rtab-'+t).classList.toggle('active', t===tab);
-      document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+    const allTabs = ['summary','flags','sections','questions','money','deadlines','definitions','counterparty'];
+    allTabs.forEach(t => {
+      const btn = document.getElementById('rtab-'+t);
+      const panel = document.getElementById('panel-'+t);
+      if (btn) btn.classList.toggle('active', t===tab);
+      if (panel) panel.classList.toggle('active', t===tab);
     });
   }
 
@@ -2857,15 +3143,21 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     document.getElementById('drop-title').textContent = 'Drag & drop your PDF here';
     document.getElementById('drop-sub').textContent = 'Contracts, NDAs, leases, terms of service — up to 20MB';
     document.getElementById('drop-zone').style.borderColor = '';
-    ['flags-content','sections-content','questions-content','summary-content','money-content'].forEach(id => {
+    ['flags-content','sections-content','questions-content','summary-content','money-content',
+     'deadlines-content','definitions-content','counterparty-content'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.className = 'ai-response loading'; el.textContent = 'Analyzing your document...'; }
     });
-    // Reset unified progress dots
-    for (let i = 1; i <= 5; i++) {
+    // Reset unified progress dots 1-8
+    for (let i = 1; i <= 8; i++) {
       const dot = document.getElementById('ustep-dot-' + i);
       if (dot) { dot.className = 'prog-dot pending'; dot.innerHTML = '<i class="ti ti-dots" style="font-size:10px"></i>'; }
     }
+    // Hide Pro-only step rows 6-8
+    [6,7,8].forEach(n => {
+      const row = document.getElementById('ustep-row-' + n);
+      if (row) row.style.display = 'none';
+    });
     const bar = document.getElementById('ustep-bar');
     if (bar) bar.style.width = '0%';
     const pct = document.getElementById('ustep-pct');
@@ -2963,7 +3255,8 @@ Max 3 items per array. Focus on the most financially significant items only.`;
     });
 
     // Make all panels visible temporarily
-    const panels = ['panel-summary','panel-flags','panel-sections','panel-questions','panel-money'];
+    const panels = ['panel-summary','panel-flags','panel-sections','panel-questions','panel-money',
+                    'panel-deadlines','panel-definitions','panel-counterparty'];
     const savedDisplay = {};
     panels.forEach(id => {
       const el = document.getElementById(id);
@@ -3073,6 +3366,7 @@ body{font-family:'DM Sans',sans-serif;color:#1a1a18;background:#fff;font-size:12
 </script>
 </body>
 </html>
+
 
 
 
